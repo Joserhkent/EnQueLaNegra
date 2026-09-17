@@ -545,7 +545,7 @@ export default function PedidosPage() {
                 <th className="py-4 px-4">Cliente</th>
                 <th className="py-4 px-4">Detalle de Productos</th>
                 <th className="py-4 px-4">Tipo / Pago</th>
-                <th className="py-4 px-4">Total ($)</th>
+                <th className="py-4 px-4">Total (S/.)</th>
                 <th className="py-4 px-4 text-center">Estado / Avance Comanda</th>
                 <th className="py-4 px-4 text-center">Fecha</th>
                 <th className="py-4 px-4 text-center">Hora</th>
@@ -583,7 +583,7 @@ export default function PedidosPage() {
                         </div>
                       </td>
                       <td className="py-4 px-4 font-extrabold text-slate-900 text-sm">
-                        ${order.total.toFixed(2)}
+                        S/ {order.total.toFixed(2)}
                       </td>
                       <td className="py-4 px-4 text-center">
                         {getStatusBadge(order)}
@@ -753,7 +753,7 @@ export default function PedidosPage() {
                             {prod.nombre}
                           </div>
                           <div className="text-[11px] font-extrabold text-slate-600 mt-0.5">
-                            ${precioNum.toFixed(2)}
+                            S/ {precioNum.toFixed(2)}
                           </div>
                         </div>
                         <div className="w-7 h-7 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 group-hover:bg-amber-500 group-hover:text-slate-950 group-hover:border-amber-500 transition">
@@ -794,7 +794,7 @@ export default function PedidosPage() {
                                 {item.product.nombre}
                               </div>
                               <div className="text-[10px] text-slate-500 font-semibold">
-                                ${getCartItemTotal(item).toFixed(2)}
+                                S/ {getCartItemTotal(item).toFixed(2)}
                               </div>
                             </div>
 
@@ -872,7 +872,7 @@ export default function PedidosPage() {
                                             : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
                                         }`}
                                       >
-                                        {agregado.nombre} +${agregado.precio.toFixed(2)}
+                                        {agregado.nombre} +S/{agregado.precio.toFixed(2)}
                                       </button>
                                     );
                                   })}
@@ -917,11 +917,11 @@ export default function PedidosPage() {
                       <div className="mt-3 p-3 bg-amber-50 rounded-2xl border border-amber-200 space-y-2 animate-in fade-in duration-200">
                         <div className="text-[11px] font-extrabold text-amber-900 flex items-center justify-between">
                           <span>Desglose de Pago Dividido:</span>
-                          <span className="text-amber-700 font-mono font-bold">Total: ${calculateCartTotal().toFixed(2)}</span>
+                          <span className="text-amber-700 font-mono font-bold">Total: S/ {calculateCartTotal().toFixed(2)}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div>
-                            <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Yape / Plin ($)</label>
+                            <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Yape / Plin (S/)</label>
                             <input
                               type="number"
                               step="0.50"
@@ -938,7 +938,7 @@ export default function PedidosPage() {
                             />
                           </div>
                           <div>
-                            <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Efectivo ($)</label>
+                            <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Efectivo (S/)</label>
                             <input
                               type="number"
                               step="0.50"
@@ -962,7 +962,7 @@ export default function PedidosPage() {
                   <div className="flex items-center justify-between bg-amber-500/10 p-3 rounded-2xl border border-amber-500/20">
                     <span className="text-xs font-bold text-amber-900">Total a Pagar</span>
                     <span className="text-xl font-extrabold text-amber-900">
-                      ${calculateCartTotal().toFixed(2)}
+                      S/ {calculateCartTotal().toFixed(2)}
                     </span>
                   </div>
 

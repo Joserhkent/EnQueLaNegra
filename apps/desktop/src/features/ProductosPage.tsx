@@ -377,7 +377,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                     Precio POS
                   </span>
                   <span className="text-lg font-extrabold text-slate-900">
-                    ${typeof prod.precio === "number" ? prod.precio.toFixed(2) : Number(prod.precio || 0).toFixed(2)}
+                    S/ {typeof prod.precio === "number" ? prod.precio.toFixed(2) : Number(prod.precio || 0).toFixed(2)}
                   </span>
                 </div>
 
@@ -466,7 +466,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                       </div>
                     </td>
                     <td className="py-4 px-4 font-extrabold text-slate-900 text-sm">
-                      ${typeof prod.precio === "number" ? prod.precio.toFixed(2) : Number(prod.precio || 0).toFixed(2)}
+                      S/ {typeof prod.precio === "number" ? prod.precio.toFixed(2) : Number(prod.precio || 0).toFixed(2)}
                     </td>
                     <td className="py-4 px-4 text-center">
                       <button
@@ -644,7 +644,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Precio ($)
+                    Precio (S/.)
                   </label>
                   <input
                     type="number"

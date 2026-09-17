@@ -101,7 +101,6 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
         <div className="hidden w-1/2 bg-black sm:flex">
           <div className="relative flex h-full w-full flex-col items-center justify-center gap-6 p-10 text-center">
             <img src="/logo.jpg" alt="En que la Negra" className="w-full max-w-sm object-contain" />
-            <p className="max-w-xs text-sm font-medium text-amber-200/80">Sabor venezolano de siempre: arepas, cachapas, patacones y más.</p>
           </div>
         </div>
       </div>

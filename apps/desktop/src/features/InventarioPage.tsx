@@ -192,7 +192,7 @@ export default function InventarioPage() {
         <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-lg flex items-center justify-between">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Valorización Stock</span>
-            <div className="text-3xl font-extrabold text-amber-400 mt-1">${totalInventoryValue.toFixed(2)}</div>
+            <div className="text-3xl font-extrabold text-amber-400 mt-1">S/ {totalInventoryValue.toFixed(2)}</div>
             <span className="text-[11px] text-slate-400 mt-1 block">Costo total acumulado</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-amber-400 backdrop-blur-md">
@@ -346,10 +346,10 @@ export default function InventarioPage() {
                             {item.stockMinimo} {formatUnidad(item.unidadMedida, item.stockMinimo)}
                           </td>
                           <td className="py-4 px-4 font-semibold text-slate-700">
-                            ${Number(item.costoUnitario || 0).toFixed(2)}
+                            S/ {Number(item.costoUnitario || 0).toFixed(2)}
                           </td>
                           <td className="py-4 px-4 font-bold text-slate-900">
-                            ${(item.stockActual * item.costoUnitario).toFixed(2)}
+                            S/ {(item.stockActual * item.costoUnitario).toFixed(2)}
                           </td>
                           <td className="py-4 px-4 text-center">
                             {getStatusBadge(status)}

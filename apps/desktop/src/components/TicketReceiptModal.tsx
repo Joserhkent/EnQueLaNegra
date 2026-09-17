@@ -143,12 +143,12 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
                         {item.cantidad}x {item.nombre}
                       </div>
                       {!isComanda && (
-                        <div className="text-[9px] text-slate-500">@ ${item.precio.toFixed(2)} c/u</div>
+                        <div className="text-[9px] text-slate-500">@ S/ {item.precio.toFixed(2)} c/u</div>
                       )}
                     </div>
                     {!isComanda && (
                       <span className="font-extrabold shrink-0">
-                        ${lineTotal.toFixed(2)}
+                        S/ {lineTotal.toFixed(2)}
                       </span>
                     )}
                   </div>
@@ -168,7 +168,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
                   {agregadosDelItem.map((agregado, i) => (
                     <div key={`agregado-${i}`} className="flex justify-between text-[9px] text-slate-600 pl-2">
                       <span>+ {agregado.insumo?.nombre || "Agregado"}</span>
-                      {!isComanda && <span>${agregado.precioExtra.toFixed(2)}</span>}
+                      {!isComanda && <span>S/ {agregado.precioExtra.toFixed(2)}</span>}
                     </div>
                   ))}
                 </div>
@@ -181,7 +181,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
             <div className="space-y-1.5 pt-1 text-[11px]">
               <div className="flex justify-between items-center text-sm font-black pt-1">
                 <span>{mode === "precuenta" ? "TOTAL ESTIMADO:" : "TOTAL A PAGAR:"}</span>
-                <span className="text-slate-950 text-base font-extrabold">${order.total.toFixed(2)}</span>
+                <span className="text-slate-950 text-base font-extrabold">S/ {order.total.toFixed(2)}</span>
               </div>
 
               {mode === "boleta" && (
@@ -195,11 +195,11 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
                     <div className="bg-slate-100 p-2 rounded-xl text-[10px] space-y-0.5 mt-1 border border-slate-300">
                       <div className="flex justify-between text-slate-700">
                         <span>• En Yape / Plin:</span>
-                        <span className="font-bold">${(order.montoDigital || 0).toFixed(2)}</span>
+                        <span className="font-bold">S/ {(order.montoDigital || 0).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-slate-700">
                         <span>• En Efectivo:</span>
-                        <span className="font-bold">${(order.montoEfectivo || 0).toFixed(2)}</span>
+                        <span className="font-bold">S/ {(order.montoEfectivo || 0).toFixed(2)}</span>
                       </div>
                     </div>
                   )}

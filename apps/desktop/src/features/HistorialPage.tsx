@@ -57,7 +57,7 @@ export default function HistorialPage() {
       return;
     }
 
-    const headers = ["Código", "Cliente", "Fecha", "Hora", "Items", "Método Pago", "Tipo", "Total ($)"];
+    const headers = ["Código", "Cliente", "Fecha", "Hora", "Items", "Método Pago", "Tipo", "Total (S/)"];
     const rows = filteredOrders.map((o) => [
       o.code,
       `"${o.customer}"`,
@@ -109,7 +109,7 @@ export default function HistorialPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-lg">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Vendido</span>
-          <div className="text-3xl font-extrabold text-amber-400 mt-1">${totalSales.toFixed(2)}</div>
+          <div className="text-3xl font-extrabold text-amber-400 mt-1">S/ {totalSales.toFixed(2)}</div>
           <span className="text-[11px] text-slate-400 mt-1 block">Facturación acumulada</span>
         </div>
 
@@ -121,7 +121,7 @@ export default function HistorialPage() {
 
         <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Ticket Promedio</span>
-          <div className="text-3xl font-extrabold text-slate-900 mt-1">${averageTicket.toFixed(2)}</div>
+          <div className="text-3xl font-extrabold text-slate-900 mt-1">S/ {averageTicket.toFixed(2)}</div>
           <span className="text-[11px] text-slate-500 mt-1 block">Promedio por cliente</span>
         </div>
 
@@ -221,7 +221,7 @@ export default function HistorialPage() {
                           </span>
                         </td>
                         <td className="py-4 px-4 font-extrabold text-slate-900 text-base">
-                          ${order.total.toFixed(2)}
+                          S/ {order.total.toFixed(2)}
                         </td>
                         <td className="py-4 px-4 text-right">
                           <button
@@ -268,16 +268,16 @@ export default function HistorialPage() {
                         {cierre.fecha} {cierre.hora}
                       </td>
                       <td className="py-4 px-4 font-extrabold text-amber-600 text-base">
-                        ${cierre.totalVendido.toFixed(2)}
+                        S/ {cierre.totalVendido.toFixed(2)}
                       </td>
                       <td className="py-4 px-4 font-semibold text-emerald-700">
-                        ${cierre.efectivo.toFixed(2)}
+                        S/ {cierre.efectivo.toFixed(2)}
                       </td>
                       <td className="py-4 px-4 font-semibold text-purple-700">
-                        ${cierre.yapePlin.toFixed(2)}
+                        S/ {cierre.yapePlin.toFixed(2)}
                       </td>
                       <td className="py-4 px-4 font-semibold text-blue-700">
-                        ${cierre.tarjeta.toFixed(2)}
+                        S/ {cierre.tarjeta.toFixed(2)}
                       </td>
                       <td className="py-4 px-4 font-bold text-slate-900">
                         {cierre.cantidadPedidos} comanda(s)

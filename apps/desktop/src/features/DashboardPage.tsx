@@ -253,7 +253,7 @@ export default function DashboardPage() {
         <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Ventas Totales</span>
-            <div className="text-3xl font-black text-slate-900 mt-1">${totalSales.toFixed(2)}</div>
+            <div className="text-3xl font-black text-slate-900 mt-1">S/ {totalSales.toFixed(2)}</div>
             <span className="text-[11px] font-semibold text-emerald-600 mt-1 flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5" /> En tiempo real
             </span>
@@ -283,7 +283,7 @@ export default function DashboardPage() {
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Hamburguesa Estrella</span>
             <div className="text-lg font-bold text-slate-900 mt-1 truncate max-w-[170px]">{starProduct.name}</div>
             <span className="text-[11px] font-medium text-amber-600 mt-1 block">
-              {starProduct.count} unidades vendidas (${starProduct.revenue.toFixed(2)})
+              {starProduct.count} unidades vendidas (S/ {starProduct.revenue.toFixed(2)})
             </span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
@@ -345,7 +345,7 @@ export default function DashboardPage() {
                 >
                   {isHovered && (
                     <div className="absolute -top-10 bg-slate-900 text-white px-2 py-1 rounded-lg text-[10px] font-bold shadow-lg z-10 whitespace-nowrap">
-                      ${d.total.toFixed(2)}
+                      S/ {d.total.toFixed(2)}
                     </div>
                   )}
 
@@ -387,7 +387,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs font-extrabold text-slate-900">${p.revenue.toFixed(2)}</span>
+                    <span className="text-xs font-extrabold text-slate-900">S/ {p.revenue.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
@@ -474,7 +474,7 @@ export default function DashboardPage() {
                     </span>
                     <span className="text-[10px] text-slate-400 block mt-0.5">{order.paymentMethod}</span>
                   </td>
-                  <td className="py-4 px-4 font-extrabold text-slate-900 text-sm">${order.total.toFixed(2)}</td>
+                  <td className="py-4 px-4 font-extrabold text-slate-900 text-sm">S/ {order.total.toFixed(2)}</td>
                   <td className="py-4 px-4 text-center">{renderStatusBadge(order.status)}</td>
                   <td className="py-4 px-4 text-right">
                     <div className="flex items-center justify-end gap-2">

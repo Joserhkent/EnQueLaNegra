@@ -67,7 +67,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
                       {item.cantidad}x {item.nombre}
                     </div>
                     <div className="font-extrabold text-slate-900 text-sm">
-                      ${(item.precio * item.cantidad).toFixed(2)}
+                      S/ {(item.precio * item.cantidad).toFixed(2)}
                     </div>
                   </div>
 
@@ -109,7 +109,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
                             key={i}
                             className="px-2 py-1 rounded-lg text-[10px] font-bold bg-blue-500/10 text-blue-700 border border-blue-500/20"
                           >
-                            {agregado.insumo?.nombre || "Agregado"} +${agregado.precioExtra.toFixed(2)}
+                            {agregado.insumo?.nombre || "Agregado"} +S/{agregado.precioExtra.toFixed(2)}
                           </span>
                         ))}
                       </div>
@@ -131,7 +131,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
           <div className="flex items-center justify-between bg-amber-500/10 p-3 rounded-2xl border border-amber-500/20">
             <span className="text-xs font-bold text-amber-900">Total del Pedido</span>
             <span className="text-xl font-extrabold text-amber-900">
-              ${order.total.toFixed(2)}
+              S/ {order.total.toFixed(2)}
             </span>
           </div>
         </div>

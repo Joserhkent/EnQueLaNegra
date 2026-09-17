@@ -347,7 +347,7 @@ export default function MesasPage() {
                 </div>
                 {mesa.currentOrder && (
                   <div className="mt-3 pt-3 border-t border-slate-900/10 space-y-1">
-                    <div className="text-sm font-extrabold text-slate-900">${mesa.currentOrder.total.toFixed(2)}</div>
+                    <div className="text-sm font-extrabold text-slate-900">S/ {mesa.currentOrder.total.toFixed(2)}</div>
                     <div className="flex items-center gap-1 text-[10px] text-slate-500 font-semibold">
                       <Clock className="w-3 h-3" /> {formatElapsed(mesa.currentOrder.createdAt)}
                     </div>
@@ -476,7 +476,7 @@ export default function MesasPage() {
                           <span className="text-xl">{prod.iconoEmoji}</span>
                           <div className="font-bold text-slate-900 text-xs mt-1 group-hover:text-amber-700">{prod.nombre}</div>
                           <div className="text-[11px] font-extrabold text-slate-600 mt-0.5">
-                            ${Number(prod.precio || 0).toFixed(2)}
+                            S/ {Number(prod.precio || 0).toFixed(2)}
                           </div>
                         </div>
                         <div className="w-7 h-7 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 group-hover:bg-amber-500 group-hover:text-slate-950 group-hover:border-amber-500 transition">
@@ -501,7 +501,7 @@ export default function MesasPage() {
                               <span className="font-semibold text-slate-700">
                                 {item.cantidad}x {item.nombre}
                               </span>
-                              <span className="font-bold text-slate-500">${(item.precio * item.cantidad).toFixed(2)}</span>
+                              <span className="font-bold text-slate-500">S/ {(item.precio * item.cantidad).toFixed(2)}</span>
                             </div>
                           ))}
                         </div>
@@ -532,7 +532,7 @@ export default function MesasPage() {
                           <div className="flex items-center justify-between">
                             <div className="overflow-hidden pr-2">
                               <div className="font-bold text-slate-900 text-xs truncate">{item.product.nombre}</div>
-                              <div className="text-[10px] text-slate-500 font-semibold">${getCartItemTotal(item).toFixed(2)}</div>
+                              <div className="text-[10px] text-slate-500 font-semibold">S/ {getCartItemTotal(item).toFixed(2)}</div>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0 bg-slate-100 p-1 rounded-lg">
                               <button
@@ -600,7 +600,7 @@ export default function MesasPage() {
                                             : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
                                         }`}
                                       >
-                                        {agregado.nombre} +${agregado.precio.toFixed(2)}
+                                        {agregado.nombre} +S/{agregado.precio.toFixed(2)}
                                       </button>
                                     );
                                   })}
@@ -619,7 +619,7 @@ export default function MesasPage() {
                       onClick={handleSendTanda}
                       className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
                     >
-                      <UtensilsCrossed className="w-4 h-4 text-amber-400" /> Enviar Tanda a Cocina (${calculateCartTotal().toFixed(2)})
+                      <UtensilsCrossed className="w-4 h-4 text-amber-400" /> Enviar Tanda a Cocina (S/ {calculateCartTotal().toFixed(2)})
                     </button>
                   )}
                 </div>
@@ -627,7 +627,7 @@ export default function MesasPage() {
                 <div className="pt-4 border-t border-slate-200 space-y-3">
                   <div className="flex items-center justify-between bg-amber-500/10 p-3 rounded-2xl border border-amber-500/20">
                     <span className="text-xs font-bold text-amber-900">Total Acumulado Mesa</span>
-                    <span className="text-xl font-extrabold text-amber-900">${(selectedMesa.currentOrder?.total || 0).toFixed(2)}</span>
+                    <span className="text-xl font-extrabold text-amber-900">S/ {(selectedMesa.currentOrder?.total || 0).toFixed(2)}</span>
                   </div>
 
                   {!showCheckout ? (
@@ -678,7 +678,7 @@ export default function MesasPage() {
                         <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 space-y-2">
                           <div className="grid grid-cols-2 gap-2">
                             <div>
-                              <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Yape / Plin ($)</label>
+                              <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Yape / Plin (S/)</label>
                               <input
                                 type="number"
                                 step="0.50"
@@ -694,7 +694,7 @@ export default function MesasPage() {
                               />
                             </div>
                             <div>
-                              <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Efectivo ($)</label>
+                              <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Efectivo (S/)</label>
                               <input
                                 type="number"
                                 step="0.50"

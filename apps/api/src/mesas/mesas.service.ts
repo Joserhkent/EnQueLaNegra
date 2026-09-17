@@ -253,8 +253,8 @@ export class MesasService {
       return acc + item.subtotal + extrasTotal;
     }, 0);
 
-    // IVA Venezuela 16%
-    const subtotal = Math.round((total / 1.16) * 100) / 100;
+    // IGV Perú 18%
+    const subtotal = Math.round((total / 1.18) * 100) / 100;
     const igv = Math.round((total - subtotal) * 100) / 100;
 
     await this.prisma.order.update({
