@@ -1,0 +1,305 @@
+// Prisma Schema for "En que la Negra POS System"
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Accion {
+  VER
+  CREAR
+  EDITAR
+  ELIMINAR
+}
+
+enum CategoriaTipo {
+  PRODUCTO
+  INSUMO
+}
+
+enum OrderType {
+  MESA
+  LLEVAR
+  DELIVERY
+}
+
+enum PaymentMethod {
+  EFECTIVO
+  YAPE_PLIN
+  TARJETA
+  MIXTO
+}
+
+enum OrderStatus {
+  PENDIENTE
+  PREPARACION
+  LISTO
+  ENTREGADO
+  CANCELADO
+  OPEN // cuenta de mesa abierta y acumulando tandas (dine-in)
+}
+
+enum TableStatus {
+  AVAILABLE // Libre
+  OCCUPIED // Ocupada, consumiendo
+  BILLING // Pre-cuenta emitida / pidiendo cuenta
+}
+
+enum ItemKitchenStatus {
+  PENDING
+  IN_KITCHEN
+  DELIVERED
+}
+
+enum MovimientoTipo {
+  ENTRADA
+  SALIDA
+  AJUSTE
+}
+
+// ---------- Roles y Permisos (RBAC por módulo) ----------
+model Modulo {
+  id     String @id @default(uuid())
+  clave  String @unique // "dashboard", "productos", "pedidos", "pagos", "inventario", "historial"
+  nombre String
+  orden  Int    @default(0)
+
+  permisos Permiso[]
+}
+
+model Permiso {
+  id       String @id @default(uuid())
+  moduloId String
+  accion   Accion
+
+  modulo Modulo       @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  roles  RolPermiso[]
+
+  @@unique([moduloId, accion])
+}
+
+model Rol {
+  id          String  @id @default(uuid())
+  nombre      String  @unique // Jefe, Empleado, Cajero, Supervisor...
+  descripcion String?
+
+  usuarios User[]
+  permisos RolPermiso[]
+}
+
+model RolPermiso {
+  rolId     String
+  permisoId String
+
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  rolId     String
+  name      String
+  username  String   @unique
+  password  String
+  turn      String?  @default("Turno Noche • Lun - Sáb")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rol         Rol               @relation(fields: [rolId], references: [id])
+  orders      Order[]
+  movimientos MovimientoStock[]
+  cierres     CierreCaja[]
+}
+
+// ---------- Catálogo ----------
+model Categoria {
+  id     String        @id @default(uuid())
+  nombre String
+  tipo   CategoriaTipo
+  orden  Int           @default(0)
+
+  productos Producto[]
+  insumos   Insumo[]
+
+  @@unique([nombre, tipo])
+}
+
+model Insumo {
+  id            String   @id // slug: pan_brioche, carne_hamburguesa, etc.
+  categoriaId   String
+  nombre        String
+  unidadMedida  String   // unidad, porción, ml
+  stockActual   Float    @default(0)
+  stockMinimo   Float    @default(0)
+  costoUnitario Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  categoria       Categoria         @relation(fields: [categoriaId], references: [id])
+  recetaItems     RecetaItem[]
+  movimientos     MovimientoStock[]
+  orderItemExtras OrderItemExtra[]
+}
+
+model Producto {
+  id          String   @id // slug or SKU
+  sku         String   @unique // e.g. HC01, PD01
+  categoriaId String
+  nombre      String
+  precio      Float
+  isAvailable Boolean  @default(true)
+  isPopular   Boolean  @default(false)
+  descripcion String?
+  iconoEmoji  String?  @default("🍔")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  categoria   Categoria       @relation(fields: [categoriaId], references: [id])
+  recetaItems RecetaItem[]
+  orderItems  OrderItem[]
+}
+
+model RecetaItem {
+  id                String   @id @default(uuid())
+  productoId        String
+  insumoId          String
+  cantidadRequerida Float    @default(1.0)
+
+  producto Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  insumo   Insumo   @relation(fields: [insumoId], references: [id], onDelete: Cascade)
+
+  @@unique([productoId, insumoId])
+}
+
+// ---------- Salón / Mesas (Dine-in) ----------
+model Table {
+  id             String      @id @default(uuid())
+  number         Int         @unique
+  capacity       Int         @default(4)
+  status         TableStatus @default(AVAILABLE)
+  currentOrderId String?     @unique
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  currentOrder Order?  @relation("TableCurrentOrder", fields: [currentOrderId], references: [id])
+  orders       Order[] @relation("TableOrders")
+}
+
+// ---------- Clientes ----------
+model Cliente {
+  id        String   @id @default(uuid())
+  nombre    String
+  telefono  String?
+  direccion String?
+  createdAt DateTime @default(now())
+
+  orders Order[]
+}
+
+// ---------- Ventas ----------
+model Order {
+  id            String        @id @default(uuid())
+  code          String        @unique // #ORD-1048
+  clienteId     String?       // null = cliente de mostrador, sin registrar
+  customer      String        @default("Cliente Mostrador") // nombre rápido para mostrador, sin exigir registro
+  type          OrderType     @default(MESA)
+  status        OrderStatus   @default(PREPARACION)
+  paymentMethod PaymentMethod @default(YAPE_PLIN)
+  montoEfectivo Float?        // solo se usa cuando paymentMethod = MIXTO
+  montoDigital  Float?        // solo se usa cuando paymentMethod = MIXTO
+  subtotal      Float
+  igv           Float
+  total         Float
+  userId        String?
+  tableId       String?       // presente cuando type = MESA (atención por mesa acumulativa)
+  fecha         String        // YYYY-MM-DD
+  hora          String        // HH:mm
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  cliente         Cliente?    @relation(fields: [clienteId], references: [id])
+  user            User?       @relation(fields: [userId], references: [id])
+  table           Table?      @relation("TableOrders", fields: [tableId], references: [id])
+  asCurrentOfMesa Table?      @relation("TableCurrentOrder")
+  items           OrderItem[]
+  pagos           Pago[]
+}
+
+model OrderItem {
+  id            String             @id @default(uuid())
+  orderId       String
+  productoId    String
+  sku           String
+  nombre        String
+  precio        Float
+  cantidad      Int
+  subtotal      Float
+  notas         String? // texto libre: "sin cebolla", "bien cocido", etc.
+  ronda         Int                @default(1) // tanda/ronda de pedido dentro de una mesa acumulativa
+  kitchenStatus ItemKitchenStatus  @default(PENDING)
+  createdAt     DateTime           @default(now())
+
+  order    Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  producto Producto         @relation(fields: [productoId], references: [id])
+  extras   OrderItemExtra[]
+}
+
+// Personalización por ítem: cremas y agregados sueltos (ej. "extra mayonesa", "doble queso")
+model OrderItemExtra {
+  id          String @id @default(uuid())
+  orderItemId String
+  insumoId    String
+  cantidad    Float  @default(1)
+  precioExtra Float  @default(0) // 0 si el extra es gratis (ej. crema de ajo); >0 si se cobra aparte
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  insumo    Insumo    @relation(fields: [insumoId], references: [id])
+}
+
+model Pago {
+  id         String        @id @default(uuid())
+  orderId    String
+  metodoPago PaymentMethod
+  monto      Float
+  fecha      DateTime      @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ---------- Inventario ----------
+model MovimientoStock {
+  id        String         @id @default(uuid())
+  insumoId  String
+  tipo      MovimientoTipo
+  cantidad  Float
+  motivo    String
+  fecha     DateTime       @default(now())
+  usuarioId String?
+  usuario   String         @default("Sistema POS")
+
+  insumo Insumo @relation(fields: [insumoId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [usuarioId], references: [id])
+}
+
+// ---------- Caja ----------
+model CierreCaja {
+  id              String   @id @default(uuid())
+  fecha           String   // YYYY-MM-DD
+  hora            String   // HH:mm
+  totalVendido    Float
+  efectivo        Float
+  yapePlin        Float
+  tarjeta         Float
+  cantidadPedidos Int
+  usuarioId       String?
+  usuario         String   @default("Administrador")
+  notas           String?
+  createdAt       DateTime @default(now())
+
+  user User? @relation(fields: [usuarioId], references: [id])
+}
