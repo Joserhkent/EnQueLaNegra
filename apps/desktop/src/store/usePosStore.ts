@@ -72,7 +72,7 @@ export interface Order {
   items: OrderItem[];
   total: number;
   type: "Llevar" | "Mesa" | "Delivery";
-  paymentMethod: "Efectivo" | "Yape/Plin" | "Tarjeta" | "Mixto";
+  paymentMethod: "Efectivo" | "Yape/Plin" | "Mixto";
   montoEfectivo?: number;
   montoDigital?: number;
   status: "preparacion" | "listo" | "entregado" | "cancelado";

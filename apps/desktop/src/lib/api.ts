@@ -138,10 +138,8 @@ export async function fetchPedidosApi(productos: Producto[]): Promise<Order[]> {
     } else if (o.pagos && o.pagos.length > 0) {
       const p = o.pagos[0].metodoPago;
       if (p === "YAPE_PLIN") paymentMethod = "Yape/Plin";
-      else if (p === "TARJETA") paymentMethod = "Tarjeta";
       else paymentMethod = "Efectivo";
     } else if (o.paymentMethod === "YAPE_PLIN") paymentMethod = "Yape/Plin";
-    else if (o.paymentMethod === "TARJETA") paymentMethod = "Tarjeta";
 
     let type: Order["type"] = "Mesa";
     if (o.type === "LLEVAR") type = "Llevar";
@@ -168,8 +166,6 @@ export async function createPedidoApi(order: any, productos: Producto[]): Promis
   const paymentMethod =
     order.paymentMethod === "Yape/Plin"
       ? "YAPE_PLIN"
-      : order.paymentMethod === "Tarjeta"
-      ? "TARJETA"
       : order.paymentMethod === "Mixto"
       ? "MIXTO"
       : "EFECTIVO";

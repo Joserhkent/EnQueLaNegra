@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { usePosStore } from "../store/usePosStore";
 import {
-  CreditCard,
   QrCode,
   Receipt,
   Lock,
@@ -87,10 +86,6 @@ export default function PagosPage() {
     return acc;
   }, 0);
 
-  const cardSales = rangeOrders
-    .filter((o) => normalizePaymentMethod(o.paymentMethod) === "TARJETA")
-    .reduce((acc, curr) => acc + curr.total, 0);
-
   const filteredOrders = rangeOrders.filter((order) => {
     const matchesMethod = methodFilter === "all" || order.paymentMethod === methodFilter;
     const matchesSearch =
@@ -143,7 +138,7 @@ export default function PagosPage() {
       </div>
 
       {/* Turn Breakdown KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {/* Total Collected */}
         <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden">
           <div className="flex items-center justify-between">
@@ -187,20 +182,6 @@ export default function PagosPage() {
             <QrCode className="w-5 h-5" />
           </div>
         </div>
-
-        {/* Tarjetas */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-700">Tarjetas POS</span>
-            <div className="text-2xl font-extrabold text-slate-900 mt-1">S/ {cardSales.toFixed(2)}</div>
-            <span className="text-[11px] text-slate-400 mt-1 block">
-              {((cardSales / (totalSales || 1)) * 100).toFixed(0)}% del total
-            </span>
-          </div>
-          <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-            <CreditCard className="w-5 h-5" />
-          </div>
-        </div>
       </div>
 
       {/* Main Table: Payments Feed */}
@@ -218,7 +199,6 @@ export default function PagosPage() {
                 { key: "all", label: "Todos" },
                 { key: "Efectivo", label: "Efectivo" },
                 { key: "Yape/Plin", label: "Yape/Plin" },
-                { key: "Tarjeta", label: "Tarjeta" },
               ].map((m) => (
                 <button
                   key={m.key}
@@ -466,10 +446,6 @@ export default function PagosPage() {
                 <div className="flex justify-between">
                   <span className="text-slate-500">Yape / Plin:</span>
                   <span className="font-bold text-purple-700">S/ {yapePlinSales.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Tarjetas POS:</span>
-                  <span className="font-bold text-blue-700">S/ {cardSales.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between border-t border-slate-200 pt-2 font-bold text-slate-800">
                   <span>Total Pedidos Atendidos:</span>

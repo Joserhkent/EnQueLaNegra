@@ -249,7 +249,6 @@ export default function HistorialPage() {
                   <th className="py-4 px-4">Total Recaudado</th>
                   <th className="py-4 px-4">Efectivo</th>
                   <th className="py-4 px-4">Yape / Plin</th>
-                  <th className="py-4 px-4">Tarjetas</th>
                   <th className="py-4 px-4">N° Pedidos</th>
                   <th className="py-4 px-4 text-right">Cajero / Notas</th>
                 </tr>
@@ -257,7 +256,7 @@ export default function HistorialPage() {
               <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                 {cierresCaja.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-slate-400 font-medium">
+                    <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
                       No se han registrado cierres de caja todavía.
                     </td>
                   </tr>
@@ -275,9 +274,6 @@ export default function HistorialPage() {
                       </td>
                       <td className="py-4 px-4 font-semibold text-purple-700">
                         S/ {cierre.yapePlin.toFixed(2)}
-                      </td>
-                      <td className="py-4 px-4 font-semibold text-blue-700">
-                        S/ {cierre.tarjeta.toFixed(2)}
                       </td>
                       <td className="py-4 px-4 font-bold text-slate-900">
                         {cierre.cantidadPedidos} comanda(s)

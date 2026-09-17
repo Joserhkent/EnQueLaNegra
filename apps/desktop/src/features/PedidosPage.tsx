@@ -67,7 +67,7 @@ export default function PedidosPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [orderType, setOrderType] = useState<"Llevar" | "Delivery">("Llevar");
-  const [paymentMethod, setPaymentMethod] = useState<"Efectivo" | "Yape/Plin" | "Tarjeta" | "Mixto">("Yape/Plin");
+  const [paymentMethod, setPaymentMethod] = useState<"Efectivo" | "Yape/Plin" | "Mixto">("Yape/Plin");
   const [montoEfectivo, setMontoEfectivo] = useState<string>("");
   const [montoDigital, setMontoDigital] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
@@ -889,14 +889,13 @@ export default function PedidosPage() {
                 <div className="pt-4 border-t border-slate-200 space-y-4">
                   <div>
                     <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">Método de Pago</label>
-                    <div className="grid grid-cols-4 gap-1.5">
+                    <div className="grid grid-cols-3 gap-1.5">
                       {(
                         [
                           { key: "Yape/Plin", label: "Yape/Plin" },
                           { key: "Efectivo", label: "Efectivo" },
-                          { key: "Tarjeta", label: "Tarjeta" },
                           { key: "Mixto", label: "🔀 Mixto" },
-                        ] as { key: "Efectivo" | "Yape/Plin" | "Tarjeta" | "Mixto"; label: string }[]
+                        ] as { key: "Efectivo" | "Yape/Plin" | "Mixto"; label: string }[]
                       ).map((m) => (
                         <button
                           key={m.key}

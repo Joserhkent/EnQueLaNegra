@@ -95,7 +95,7 @@ export default function MesasPage() {
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const categoryScrollRef = useRef<HTMLDivElement>(null);
 
-  const [paymentMethod, setPaymentMethod] = useState<"Efectivo" | "Yape/Plin" | "Tarjeta" | "Mixto">("Efectivo");
+  const [paymentMethod, setPaymentMethod] = useState<"Efectivo" | "Yape/Plin" | "Mixto">("Efectivo");
   const [montoEfectivo, setMontoEfectivo] = useState("");
   const [montoDigital, setMontoDigital] = useState("");
   const [showCheckout, setShowCheckout] = useState(false);
@@ -657,8 +657,8 @@ export default function MesasPage() {
                     </div>
                   ) : (
                     <div className="space-y-3 animate-in fade-in duration-200">
-                      <div className="grid grid-cols-4 gap-1.5">
-                        {(["Efectivo", "Yape/Plin", "Tarjeta", "Mixto"] as const).map((m) => (
+                      <div className="grid grid-cols-3 gap-1.5">
+                        {(["Efectivo", "Yape/Plin", "Mixto"] as const).map((m) => (
                           <button
                             key={m}
                             type="button"
