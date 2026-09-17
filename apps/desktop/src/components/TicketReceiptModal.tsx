@@ -80,9 +80,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
 
           {/* Header & Logo */}
           <div className="text-center space-y-1 pb-3 border-b border-dashed border-slate-400">
-            <div className="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-amber-500 to-red-600 p-1 border border-slate-800 flex items-center justify-center overflow-hidden mb-1 print:hidden text-2xl">
-              🌽
-            </div>
+            <img src="/logo.jpg" alt="En que la Negra" className="w-32 mx-auto mb-1 print:hidden" />
             <h2 className="font-black text-base tracking-tight text-slate-900 uppercase">En que la Negra</h2>
             <p className="text-[10px] font-sans text-slate-600 font-medium">Sabor Venezolano de Siempre</p>
             <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wide">{meta.title}</p>

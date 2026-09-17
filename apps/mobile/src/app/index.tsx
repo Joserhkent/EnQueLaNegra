@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -9,13 +9,7 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView type="backgroundElement" style={styles.badge}>
-          <ThemedText style={styles.emoji}>🌽</ThemedText>
-        </ThemedView>
-
-        <ThemedText type="title" style={styles.title}>
-          En que la Negra
-        </ThemedText>
+        <Image source={require('@/assets/images/logo.jpg')} style={styles.logo} resizeMode="contain" />
 
         <ThemedText type="smallBold" style={styles.eyebrow}>
           App móvil próximamente
@@ -41,20 +35,11 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
     paddingHorizontal: Spacing.five,
   },
-  badge: {
-    width: 96,
-    height: 96,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
+  logo: {
+    width: '100%',
+    maxWidth: 340,
+    height: 170,
     marginBottom: Spacing.two,
-  },
-  emoji: {
-    fontSize: 48,
-  },
-  title: {
-    fontSize: 30,
-    textAlign: 'center',
   },
   eyebrow: {
     textTransform: 'uppercase',

@@ -98,12 +98,9 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
           </div>
         </div>
 
-        <div className="hidden w-1/2 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 sm:flex">
-          <div className="relative flex h-full w-full flex-col items-center justify-center gap-4 p-10 text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-amber-500 to-red-600 text-5xl shadow-2xl shadow-black/40">
-              🌽
-            </div>
-            <h1 className="text-3xl font-black uppercase tracking-tight text-white">En que la Negra</h1>
+        <div className="hidden w-1/2 bg-black sm:flex">
+          <div className="relative flex h-full w-full flex-col items-center justify-center gap-6 p-10 text-center">
+            <img src="/logo.jpg" alt="En que la Negra" className="w-full max-w-sm object-contain" />
             <p className="max-w-xs text-sm font-medium text-amber-200/80">Sabor venezolano de siempre: arepas, cachapas, patacones y más.</p>
           </div>
         </div>

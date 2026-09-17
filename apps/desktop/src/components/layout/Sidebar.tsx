@@ -83,13 +83,8 @@ export default function Sidebar({ activePage, onChangePage, onLogout }: SidebarP
     <aside className="h-screen w-[280px] bg-slate-900 text-white flex flex-col justify-between p-5 border-r border-slate-800 shrink-0 sticky top-0">
       <div className="space-y-8">
         {/* Brand Logo & Header */}
-        <div className="flex items-center gap-3 px-2 pt-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-red-600 border border-slate-700/80 shadow-xl shadow-black/50 flex items-center justify-center shrink-0 overflow-hidden group hover:border-amber-500/50 transition duration-300 text-2xl">
-            🌽
-          </div>
-          <div>
-            <h2 className="font-black tracking-tight text-white text-lg leading-tight">En que la Negra</h2>
-          </div>
+        <div className="px-2 pt-2">
+          <img src="/logo.jpg" alt="En que la Negra" className="w-full rounded-2xl object-contain" />
         </div>
 
         {/* User Card with Role Badge */}

@@ -56,10 +56,9 @@ async function loginWithApi(username: string, password: string) {
 }
 
 export default function App() {
-  const { 
-    currentUser, 
-    setCurrentUser, 
-    login: storeLogin, 
+  const {
+    currentUser,
+    setCurrentUser,
     logout: storeLogout,
     fetchProductos,
     fetchInsumos,
@@ -158,18 +157,10 @@ export default function App() {
       }
 
       if (err.isNetworkError) {
-        const localUser = await storeLogin(username, password);
-        if (localUser) {
-          localStorage.setItem("eqln_token", "demo-token");
-          localStorage.setItem("eqln_user", JSON.stringify(localUser));
-          setCurrentUser(localUser);
-          setIsLoggedIn(true);
-          setActivePage(localUser.role === "empleado" ? "mesas" : "dashboard");
-          return true;
-        } else {
-          setAuthError("Credenciales incorrectas");
-          return false;
-        }
+        setAuthError(
+          "No se pudo conectar con el servidor. Verifica que la API esté corriendo (npm run dev) en el puerto 3000."
+        );
+        return false;
       }
 
       setAuthError(err.message || "Credenciales inválidas");
