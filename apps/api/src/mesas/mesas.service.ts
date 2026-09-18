@@ -80,76 +80,122 @@ export class MesasService {
       data: { status: TableStatus.OCCUPIED, currentOrderId: order.id },
     });
 
-    return this.getTableDetail(table.id);
+    // Una mesa recién abierta no tiene ítems/pagos todavía — se arma la respuesta
+    // con lo que ya tenemos en vez de una vuelta más a la base solo para releerlo.
+    return {
+      ...table,
+      status: TableStatus.OCCUPIED,
+      currentOrderId: order.id,
+      currentOrder: { ...order, items: [], pagos: [], user: null },
+    };
   }
 
   async addItems(tableId: string, dto: AddItemsDto, userId?: string) {
-    const table = await this.getTableOrThrow(tableId);
+    // Todo lo que no depende de un resultado previo se dispara junto: traer la
+    // mesa (con su orden actual y el último ítem, para calcular la ronda) y
+    // resolver los sku->productoId que falten (caso raro; el frontend ya manda
+    // productoId casi siempre, así que esto normalmente no hace ninguna consulta).
+    const skusToResolve = [
+      ...new Set(
+        dto.items.filter((i) => !i.productoId && i.sku).map((i) => i.sku),
+      ),
+    ];
+    const [table, resolvedBySku] = await Promise.all([
+      this.prisma.table.findUnique({
+        where: { id: tableId },
+        include: {
+          currentOrder: {
+            include: { items: { orderBy: { ronda: 'desc' }, take: 1 } },
+          },
+        },
+      }),
+      skusToResolve.length
+        ? this.prisma.producto.findMany({
+            where: { sku: { in: skusToResolve } },
+            select: { id: true, sku: true },
+          })
+        : Promise.resolve<{ id: string; sku: string }[]>([]),
+    ]);
 
-    if (!table.currentOrderId) {
+    if (!table) throw new NotFoundException('Mesa no encontrada');
+    if (!table.currentOrderId || !table.currentOrder) {
       throw new BadRequestException(
         `La mesa ${table.number} no tiene una cuenta abierta`,
       );
     }
 
-    const lastItem = await this.prisma.orderItem.findFirst({
-      where: { orderId: table.currentOrderId },
-      orderBy: { ronda: 'desc' },
-    });
-    const ronda = (lastItem?.ronda ?? 0) + 1;
+    const skuToId = new Map<string, string>(
+      resolvedBySku.map((p) => [p.sku, p.id]),
+    );
+    const itemsWithProductoId = dto.items.map((item) => ({
+      ...item,
+      productoId: item.productoId || skuToId.get(item.sku) || '',
+    }));
+
+    const ronda = (table.currentOrder.items[0]?.ronda ?? 0) + 1;
     const motivo = `Mesa ${table.number} · ronda ${ronda}`;
 
-    await this.deductInventoryForItems(dto.items, userId, motivo);
+    const itemsFormatted = itemsWithProductoId.map((item) => ({
+      productoId: item.productoId,
+      sku: item.sku,
+      nombre: item.nombre,
+      precio: item.precio,
+      cantidad: item.cantidad,
+      subtotal: item.precio * item.cantidad,
+      notas: item.notas,
+      ronda,
+      extras: item.extras?.length
+        ? {
+            create: item.extras.map((extra) => ({
+              insumoId: extra.insumoId,
+              cantidad: extra.cantidad ?? 1,
+              precioExtra: extra.precioExtra ?? 0,
+            })),
+          }
+        : undefined,
+    }));
 
-    const itemsFormatted = await Promise.all(
-      dto.items.map(async (item) => {
-        let productoId = item.productoId;
-        if (!productoId && item.sku) {
-          const prod = await this.prisma.producto.findFirst({
-            where: { sku: item.sku },
-            select: { id: true },
-          });
-          if (prod) productoId = prod.id;
-        }
+    // Total calculado en memoria (ya tenemos precio/cantidad/extras del DTO) para
+    // no tener que releer los ítems de la orden y recalcular desde cero.
+    const tandaTotal = itemsWithProductoId.reduce((acc, item) => {
+      const extrasTotal = (item.extras ?? []).reduce(
+        (sum, e) => sum + (e.precioExtra ?? 0) * (e.cantidad ?? 1),
+        0,
+      );
+      return acc + item.precio * item.cantidad + extrasTotal;
+    }, 0);
+    const total = table.currentOrder.total + tandaTotal;
+    // IGV Perú 18%
+    const subtotal = Math.round((total / 1.18) * 100) / 100;
+    const igv = Math.round((total - subtotal) * 100) / 100;
 
-        return {
-          productoId,
-          sku: item.sku,
-          nombre: item.nombre,
-          precio: item.precio,
-          cantidad: item.cantidad,
-          subtotal: item.precio * item.cantidad,
-          notas: item.notas,
-          ronda,
-          extras: item.extras?.length
-            ? {
-                create: item.extras.map((extra) => ({
-                  insumoId: extra.insumoId,
-                  cantidad: extra.cantidad ?? 1,
-                  precioExtra: extra.precioExtra ?? 0,
-                })),
-              }
-            : undefined,
-        };
+    // El descuento de inventario (updates de stock + kardex) y la inserción de los
+    // ítems son escrituras independientes entre sí — se disparan juntas en vez de
+    // una detrás de otra.
+    const [updatedOrder] = await Promise.all([
+      this.prisma.order.update({
+        where: { id: table.currentOrderId },
+        data: { items: { create: itemsFormatted }, total, subtotal, igv },
+        include: ORDER_INCLUDE,
       }),
-    );
+      this.deductInventoryForItems(itemsWithProductoId, userId, motivo),
+      // Si ya se había pedido la pre-cuenta y llega una tanda nueva, vuelve a "consumiendo"
+      table.status === TableStatus.BILLING
+        ? this.prisma.table.update({
+            where: { id: table.id },
+            data: { status: TableStatus.OCCUPIED },
+          })
+        : Promise.resolve(null),
+    ]);
 
-    await this.prisma.order.update({
-      where: { id: table.currentOrderId },
-      data: { items: { create: itemsFormatted } },
-    });
-
-    await this.recalcOrderTotals(table.currentOrderId);
-
-    // Si ya se había pedido la pre-cuenta y llega una tanda nueva, vuelve a "consumiendo"
-    if (table.status === TableStatus.BILLING) {
-      await this.prisma.table.update({
-        where: { id: table.id },
-        data: { status: TableStatus.OCCUPIED },
-      });
-    }
-
-    return this.getTableDetail(table.id);
+    return {
+      ...table,
+      status:
+        table.status === TableStatus.BILLING
+          ? TableStatus.OCCUPIED
+          : table.status,
+      currentOrder: updatedOrder,
+    };
   }
 
   async preBill(tableId: string) {
@@ -170,19 +216,19 @@ export class MesasService {
   }
 
   async checkout(tableId: string, dto: CheckoutDto, userId?: string) {
-    const table = await this.getTableOrThrow(tableId);
+    const table = await this.prisma.table.findUnique({
+      where: { id: tableId },
+      include: { currentOrder: { include: ORDER_INCLUDE } },
+    });
+    if (!table) throw new NotFoundException('Mesa no encontrada');
 
-    if (!table.currentOrderId) {
+    if (!table.currentOrderId || !table.currentOrder) {
       throw new BadRequestException(
         `La mesa ${table.number} no tiene una cuenta abierta`,
       );
     }
 
-    const order = await this.prisma.order.findUnique({
-      where: { id: table.currentOrderId },
-      include: ORDER_INCLUDE,
-    });
-    if (!order) throw new NotFoundException('Cuenta de la mesa no encontrada');
+    const order = table.currentOrder;
     if (order.items.length === 0) {
       throw new BadRequestException(
         'No se puede cobrar una mesa sin ítems registrados',
@@ -204,25 +250,28 @@ export class MesasService {
 
     const now = new Date();
 
-    const updatedOrder = await this.prisma.order.update({
-      where: { id: order.id },
-      data: {
-        status: OrderStatus.ENTREGADO,
-        paymentMethod,
-        montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
-        montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
-        fecha: formatFecha(now),
-        hora: formatHora(now),
-        userId: userId ?? order.userId ?? undefined,
-        pagos: { create: pagosData },
-      },
-      include: ORDER_INCLUDE,
-    });
-
-    await this.prisma.table.update({
-      where: { id: table.id },
-      data: { status: TableStatus.AVAILABLE, currentOrderId: null },
-    });
+    // El pedido pasa a ENTREGADO y la mesa vuelve a AVAILABLE en el mismo golpe —
+    // son escrituras a tablas distintas sin dependencia entre sí.
+    const [updatedOrder] = await Promise.all([
+      this.prisma.order.update({
+        where: { id: order.id },
+        data: {
+          status: OrderStatus.ENTREGADO,
+          paymentMethod,
+          montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
+          montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
+          fecha: formatFecha(now),
+          hora: formatHora(now),
+          userId: userId ?? order.userId ?? undefined,
+          pagos: { create: pagosData },
+        },
+        include: ORDER_INCLUDE,
+      }),
+      this.prisma.table.update({
+        where: { id: table.id },
+        data: { status: TableStatus.AVAILABLE, currentOrderId: null },
+      }),
+    ]);
 
     return updatedOrder;
   }
@@ -242,97 +291,76 @@ export class MesasService {
     });
   }
 
-  private async recalcOrderTotals(orderId: string) {
-    const items = await this.prisma.orderItem.findMany({
-      where: { orderId },
-      include: { extras: true },
-    });
-
-    const total = items.reduce((acc, item) => {
-      const extrasTotal = item.extras.reduce(
-        (sum, extra) => sum + extra.precioExtra * extra.cantidad,
-        0,
-      );
-      return acc + item.subtotal + extrasTotal;
-    }, 0);
-
-    // IGV Perú 18%
-    const subtotal = Math.round((total / 1.18) * 100) / 100;
-    const igv = Math.round((total - subtotal) * 100) / 100;
-
-    await this.prisma.order.update({
-      where: { id: orderId },
-      data: { total, subtotal, igv },
-    });
-  }
-
+  // Descuenta el inventario de TODA la tanda en un puñado de consultas en vez de
+  // ~3 por cada insumo de cada ítem (findUnique + update + create, secuencial).
+  // Con la base de datos ahora en Supabase (red, no un archivo local), cada
+  // round-trip pesa de verdad — encadenar 10-15 de forma secuencial es justo el
+  // "lag" que se siente al enviar una tanda. Aquí: 1 consulta para TODAS las
+  // recetas, deducciones agrupadas por insumo, updates atómicos en paralelo
+  // (`decrement`, sin leer antes) y un solo `createMany` para el kardex.
   private async deductInventoryForItems(
-    items: AddItemsDto['items'],
+    items: (AddItemsDto['items'][number] & { productoId?: string })[],
     userId: string | undefined,
     motivo: string,
   ) {
-    for (const item of items) {
-      let productoId = item.productoId;
-      if (!productoId && item.sku) {
-        const prod = await this.prisma.producto.findFirst({
-          where: { sku: item.sku },
-          select: { id: true },
-        });
-        if (prod) productoId = prod.id;
-      }
+    const productoIds = [
+      ...new Set(
+        items.map((i) => i.productoId).filter((id): id is string => !!id),
+      ),
+    ];
 
-      if (productoId) {
-        const receta = await this.prisma.recetaItem.findMany({
-          where: { productoId },
-        });
-        for (const recipeItem of receta) {
-          await this.descontarInsumo(
+    const recetas = productoIds.length
+      ? await this.prisma.recetaItem.findMany({
+          where: { productoId: { in: productoIds } },
+        })
+      : [];
+    const recetaPorProducto = new Map<string, typeof recetas>();
+    for (const r of recetas) {
+      if (!recetaPorProducto.has(r.productoId))
+        recetaPorProducto.set(r.productoId, []);
+      recetaPorProducto.get(r.productoId)!.push(r);
+    }
+
+    // insumoId -> cantidad total a descontar (suma de todos los ítems/extras de la tanda)
+    const deducciones = new Map<string, number>();
+    const acumular = (insumoId: string, cantidad: number) => {
+      deducciones.set(insumoId, (deducciones.get(insumoId) ?? 0) + cantidad);
+    };
+
+    for (const item of items) {
+      if (item.productoId) {
+        for (const recipeItem of recetaPorProducto.get(item.productoId) ?? []) {
+          acumular(
             recipeItem.insumoId,
             recipeItem.cantidadRequerida * item.cantidad,
-            motivo,
-            userId,
           );
         }
       }
-
       for (const extra of item.extras ?? []) {
-        await this.descontarInsumo(
-          extra.insumoId,
-          (extra.cantidad ?? 1) * item.cantidad,
-          `Extra en ${motivo}`,
-          userId,
-        );
+        acumular(extra.insumoId, (extra.cantidad ?? 1) * item.cantidad);
       }
     }
-  }
 
-  private async descontarInsumo(
-    insumoId: string,
-    cantidad: number,
-    motivo: string,
-    userId?: string,
-  ) {
-    const insumo = await this.prisma.insumo.findUnique({
-      where: { id: insumoId },
-    });
-    if (!insumo) return;
+    if (deducciones.size === 0) return;
 
-    const newStock = Math.max(0, insumo.stockActual - cantidad);
+    await Promise.all(
+      [...deducciones.entries()].map(([insumoId, cantidad]) =>
+        this.prisma.insumo.update({
+          where: { id: insumoId },
+          data: { stockActual: { decrement: cantidad } },
+        }),
+      ),
+    );
 
-    await this.prisma.insumo.update({
-      where: { id: insumoId },
-      data: { stockActual: newStock },
-    });
-
-    await this.prisma.movimientoStock.create({
-      data: {
+    await this.prisma.movimientoStock.createMany({
+      data: [...deducciones.entries()].map(([insumoId, cantidad]) => ({
         insumoId,
         tipo: MovimientoTipo.SALIDA,
         cantidad,
         motivo,
         usuario: 'Sistema POS Automático',
         usuarioId: userId,
-      },
+      })),
     });
   }
 }

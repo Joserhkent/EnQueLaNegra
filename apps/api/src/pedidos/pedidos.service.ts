@@ -49,17 +49,30 @@ export class PedidosService {
     const fecha = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const hora = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    // 🎯 Descuenta el inventario (receta BOM + extras) al MOMENTO de crear el pedido,
-    // 🎯 Descuenta el inventario (receta BOM + extras) al MOMENTO de crear el pedido,
-    // no al entregarlo. Se hace antes de crear el Order en BD.
-    console.log(
-      '🔥🔥🔥 INICIANDO DESCUENTO DE INVENTARIO AL CREAR PEDIDO 🔥🔥🔥',
-    );
-    await this.deductInventoryForNewOrder(dto, userId);
-    console.log('✅✅✅ DESCUENTO DE INVENTARIO COMPLETADO ✅✅✅');
+    // Resuelve todos los productoId faltantes en UNA sola consulta (antes se hacía
+    // una por ítem, dos veces — una para descontar inventario y otra para guardar).
+    const skusToResolve = dto.items
+      .filter((i) => !i.productoId && i.sku)
+      .map((i) => i.sku);
+    const resolvedBySku = skusToResolve.length
+      ? await this.prisma.producto.findMany({
+          where: { sku: { in: skusToResolve } },
+          select: { id: true, sku: true },
+        })
+      : [];
+    const skuToId = new Map(resolvedBySku.map((p) => [p.sku, p.id]));
+    const itemsWithProductoId = dto.items.map((item) => ({
+      ...item,
+      productoId: item.productoId || skuToId.get(item.sku) || '',
+    }));
+
+    // Insumo -> cantidad total a descontar, calculado en memoria (1 sola consulta
+    // para todas las recetas involucradas, agrupando ítems repetidos).
+    const deducciones =
+      await this.buildInventoryDeductions(itemsWithProductoId);
 
     // Total de productos + extras cobrados aparte
-    const total = dto.items.reduce((acc, item) => {
+    const total = itemsWithProductoId.reduce((acc, item) => {
       const itemTotal = item.precio * item.cantidad;
       const extrasTotal = (item.extras ?? []).reduce(
         (accExtra, extra) =>
@@ -100,67 +113,62 @@ export class PedidosService {
         ].filter((p) => p.monto > 0)
       : [{ metodoPago: paymentMethod, monto: total }];
 
-    // 🎯 3. RESOLVER PRODUCTO ID (Evita que productoId llegue como undefined)
-    const itemsFormatted = await Promise.all(
-      dto.items.map(async (item) => {
-        let finalProductoId = item.productoId;
-
-        // Si no viene productoId pero sí sku, lo buscamos en la BD
-        if (!finalProductoId && item.sku) {
-          const prod = await this.prisma.producto.findFirst({
-            where: { sku: item.sku },
-            select: { id: true },
-          });
-          if (prod) {
-            finalProductoId = prod.id;
+    const itemsFormatted = itemsWithProductoId.map((item) => ({
+      productoId: item.productoId,
+      sku: item.sku,
+      nombre: item.nombre,
+      precio: item.precio,
+      cantidad: item.cantidad,
+      subtotal: item.precio * item.cantidad,
+      notas: item.notas,
+      extras: item.extras?.length
+        ? {
+            create: item.extras.map((extra) => ({
+              insumoId: extra.insumoId,
+              cantidad: extra.cantidad ?? 1,
+              precioExtra: extra.precioExtra ?? 0,
+            })),
           }
-        }
+        : undefined,
+    }));
 
-        return {
-          productoId: finalProductoId,
-          sku: item.sku,
-          nombre: item.nombre,
-          precio: item.precio,
-          cantidad: item.cantidad,
-          subtotal: item.precio * item.cantidad,
-          notas: item.notas,
-          extras: item.extras?.length
-            ? {
-                create: item.extras.map((extra) => ({
-                  insumoId: extra.insumoId,
-                  cantidad: extra.cantidad ?? 1,
-                  precioExtra: extra.precioExtra ?? 0,
-                })),
-              }
-            : undefined,
-        };
+    const codeLabel = dto.code ?? 'Nuevo Pedido';
+
+    // Crear el pedido y descontar el inventario son escrituras a tablas distintas
+    // sin dependencia entre sí — se disparan juntas en vez de una tras otra.
+    const [order] = await Promise.all([
+      this.prisma.order.create({
+        data: {
+          code: dto.code ?? `#ORD-${Date.now()}`,
+          customer: dto.customer ?? 'Cliente Mostrador',
+          type: orderType,
+          status: OrderStatus.PREPARACION,
+          paymentMethod,
+          montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
+          montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
+          subtotal,
+          igv,
+          total,
+          userId,
+          fecha,
+          hora,
+          items: {
+            create: itemsFormatted,
+          },
+          pagos: {
+            create: pagosData,
+          },
+        },
+        include: ORDER_INCLUDE,
       }),
-    );
-
-    return this.prisma.order.create({
-      data: {
-        code: dto.code ?? `#ORD-${Date.now()}`,
-        customer: dto.customer ?? 'Cliente Mostrador',
-        type: orderType,
-        status: OrderStatus.PREPARACION,
-        paymentMethod,
-        montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
-        montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
-        subtotal,
-        igv,
-        total,
+      this.applyInventoryDeductions(
+        deducciones,
         userId,
-        fecha,
-        hora,
-        items: {
-          create: itemsFormatted,
-        },
-        pagos: {
-          create: pagosData,
-        },
-      },
-      include: ORDER_INCLUDE,
-    });
+        `Venta comanda ${codeLabel}`,
+      ),
+    ]);
+
+    return order;
   }
 
   async updateStatus(id: string, newStatus: OrderStatus) {
@@ -179,82 +187,79 @@ export class PedidosService {
     });
   }
 
-  // 🎯 Nueva versión: descuenta inventario ANTES de crear el pedido, usando el DTO directamente
-  private async deductInventoryForNewOrder(
-    dto: CreatePedidoDto,
-    userId?: string,
-  ) {
-    const codeLabel = dto.code ?? 'Nuevo Pedido';
+  // Separado en dos pasos (calcular vs. escribir) para poder disparar la escritura
+  // en paralelo con la creación del pedido, en vez de una detrás de otra. Antes
+  // esto hacía ~3 consultas por cada insumo de cada ítem (findUnique + update +
+  // create, secuencial) — con la base de datos en Supabase (red, no un archivo
+  // local), encadenar 10-15 round-trips seguidos es justo el lag que se sentía
+  // al crear un pedido.
+  private async buildInventoryDeductions(
+    items: (CreatePedidoDto['items'][number] & { productoId?: string })[],
+  ): Promise<Map<string, number>> {
+    const productoIds = [
+      ...new Set(
+        items.map((i) => i.productoId).filter((id): id is string => !!id),
+      ),
+    ];
 
-    for (const item of dto.items) {
-      // Resuelve el productoId (por si viene vacío pero sí hay sku)
-      let productoId = item.productoId;
-      if (!productoId && item.sku) {
-        const prod = await this.prisma.producto.findFirst({
-          where: { sku: item.sku },
-          select: { id: true },
-        });
-        if (prod) productoId = prod.id;
-      }
+    const recetas = productoIds.length
+      ? await this.prisma.recetaItem.findMany({
+          where: { productoId: { in: productoIds } },
+        })
+      : [];
+    const recetaPorProducto = new Map<string, typeof recetas>();
+    for (const r of recetas) {
+      if (!recetaPorProducto.has(r.productoId))
+        recetaPorProducto.set(r.productoId, []);
+      recetaPorProducto.get(r.productoId)!.push(r);
+    }
 
-      // 1. Descuenta la receta base (BOM) del producto
-      if (productoId) {
-        const receta = await this.prisma.recetaItem.findMany({
-          where: { productoId },
-        });
+    const deducciones = new Map<string, number>();
+    const acumular = (insumoId: string, cantidad: number) => {
+      deducciones.set(insumoId, (deducciones.get(insumoId) ?? 0) + cantidad);
+    };
 
-        for (const recipeItem of receta) {
-          const qtyNeeded = recipeItem.cantidadRequerida * item.cantidad;
-          await this.descontarInsumo(
+    for (const item of items) {
+      if (item.productoId) {
+        for (const recipeItem of recetaPorProducto.get(item.productoId) ?? []) {
+          acumular(
             recipeItem.insumoId,
-            qtyNeeded,
-            `Venta comanda ${codeLabel}`,
-            userId,
+            recipeItem.cantidadRequerida * item.cantidad,
           );
         }
       }
-
-      // 2. Descuenta los extras/cremas seleccionados manualmente en el ítem
       for (const extra of item.extras ?? []) {
-        const qtyNeeded = (extra.cantidad ?? 1) * item.cantidad;
-        await this.descontarInsumo(
-          extra.insumoId,
-          qtyNeeded,
-          `Extra en comanda ${codeLabel}`,
-          userId,
-        );
+        acumular(extra.insumoId, (extra.cantidad ?? 1) * item.cantidad);
       }
     }
+
+    return deducciones;
   }
 
-  private async descontarInsumo(
-    insumoId: string,
-    cantidad: number,
+  private async applyInventoryDeductions(
+    deducciones: Map<string, number>,
+    userId: string | undefined,
     motivo: string,
-    userId?: string,
   ) {
-    const targetInsumo = await this.prisma.insumo.findUnique({
-      where: { id: insumoId },
-    });
+    if (deducciones.size === 0) return;
 
-    if (!targetInsumo) return;
-
-    const newStock = Math.max(0, targetInsumo.stockActual - cantidad);
-
-    await this.prisma.insumo.update({
-      where: { id: insumoId },
-      data: { stockActual: newStock },
-    });
-
-    await this.prisma.movimientoStock.create({
-      data: {
-        insumoId,
-        tipo: MovimientoTipo.SALIDA,
-        cantidad,
-        motivo,
-        usuario: 'Sistema POS Automático',
-        usuarioId: userId,
-      },
-    });
+    await Promise.all([
+      ...[...deducciones.entries()].map(([insumoId, cantidad]) =>
+        this.prisma.insumo.update({
+          where: { id: insumoId },
+          data: { stockActual: { decrement: cantidad } },
+        }),
+      ),
+      this.prisma.movimientoStock.createMany({
+        data: [...deducciones.entries()].map(([insumoId, cantidad]) => ({
+          insumoId,
+          tipo: MovimientoTipo.SALIDA,
+          cantidad,
+          motivo,
+          usuario: 'Sistema POS Automático',
+          usuarioId: userId,
+        })),
+      }),
+    ]);
   }
 }
