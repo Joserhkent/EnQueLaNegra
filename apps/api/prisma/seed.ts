@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import { PrismaClient, Accion, CategoriaTipo } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcrypt';
 
-const adapter = new PrismaBetterSqlite3({ url: 'en_que_la_negra.db' });
+const adapter = new PrismaPg(process.env.DATABASE_URL as string);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {

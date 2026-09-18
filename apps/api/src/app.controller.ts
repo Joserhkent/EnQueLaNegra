@@ -19,7 +19,7 @@ export class AppController {
       status: 'online',
       schedule: 'Todos los días',
       database: {
-        type: 'SQLite (Prisma ORM)',
+        type: 'PostgreSQL (Supabase + Prisma)',
         users: usersCount,
         insumosBase: insumosCount,
         productosCarta: productosCount,

@@ -1,6 +1,6 @@
 // Prisma Schema for "En que la Negra POS System"
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 generator client {
