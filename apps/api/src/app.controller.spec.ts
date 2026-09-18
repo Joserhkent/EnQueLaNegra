@@ -12,10 +12,19 @@ describe('AppController', () => {
         {
           provide: PrismaService,
           useValue: {
-            insumo: { count: jest.fn().mockResolvedValue(0), findMany: jest.fn().mockResolvedValue([]) },
-            producto: { count: jest.fn().mockResolvedValue(0), findMany: jest.fn().mockResolvedValue([]) },
+            insumo: {
+              count: jest.fn().mockResolvedValue(0),
+              findMany: jest.fn().mockResolvedValue([]),
+            },
+            producto: {
+              count: jest.fn().mockResolvedValue(0),
+              findMany: jest.fn().mockResolvedValue([]),
+            },
             user: { count: jest.fn().mockResolvedValue(0) },
-            order: { count: jest.fn().mockResolvedValue(0), findMany: jest.fn().mockResolvedValue([]) },
+            order: {
+              count: jest.fn().mockResolvedValue(0),
+              findMany: jest.fn().mockResolvedValue([]),
+            },
           },
         },
       ],

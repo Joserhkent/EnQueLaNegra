@@ -52,7 +52,9 @@ export class PedidosService {
     // 🎯 Descuenta el inventario (receta BOM + extras) al MOMENTO de crear el pedido,
     // 🎯 Descuenta el inventario (receta BOM + extras) al MOMENTO de crear el pedido,
     // no al entregarlo. Se hace antes de crear el Order en BD.
-    console.log('🔥🔥🔥 INICIANDO DESCUENTO DE INVENTARIO AL CREAR PEDIDO 🔥🔥🔥');
+    console.log(
+      '🔥🔥🔥 INICIANDO DESCUENTO DE INVENTARIO AL CREAR PEDIDO 🔥🔥🔥',
+    );
     await this.deductInventoryForNewOrder(dto, userId);
     console.log('✅✅✅ DESCUENTO DE INVENTARIO COMPLETADO ✅✅✅');
 
@@ -83,7 +85,7 @@ export class PedidosService {
         .toUpperCase()
         .replace('/', '_')
         .replace(/\s+/g, '_');
-      
+
       paymentMethod =
         PaymentMethod[rawPayment as keyof typeof PaymentMethod] ??
         PaymentMethod.EFECTIVO;
@@ -142,8 +144,8 @@ export class PedidosService {
         type: orderType,
         status: OrderStatus.PREPARACION,
         paymentMethod,
-        montoEfectivo: isMixto ? dto.montoEfectivo ?? 0 : undefined,
-        montoDigital: isMixto ? dto.montoDigital ?? 0 : undefined,
+        montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
+        montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
         subtotal,
         igv,
         total,
@@ -161,7 +163,7 @@ export class PedidosService {
     });
   }
 
-  async updateStatus(id: string, newStatus: OrderStatus, userId?: string) {
+  async updateStatus(id: string, newStatus: OrderStatus) {
     const order = await this.findOne(id);
 
     if (order.status === newStatus) {

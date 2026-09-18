@@ -17,11 +17,14 @@ async function bootstrap() {
     }),
   );
 
-  // Enable CORS for Desktop, Mobile & Web clients
+  // Enable CORS for Desktop, Mobile & Web clients. La app se autentica con un
+  // Bearer token (no cookies), así que no hace falta `credentials: true` — y de
+  // hecho combinarlo con origin "*" es una combinación inválida que los
+  // navegadores rechazan. CORS_ORIGIN permite restringir el origen en producción
+  // (ej: "https://miapp.vercel.app,https://miapp.com"); sin definirla, acepta todos.
   app.enableCors({
-    origin: '*',
+    origin: process.env.CORS_ORIGIN?.split(',') ?? '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
   });
 
   const port = process.env.PORT || 3000;
@@ -35,4 +38,7 @@ async function bootstrap() {
   console.log(`==================================================\n`);
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('❌ Error fatal al iniciar la API:', err);
+  process.exit(1);
+});

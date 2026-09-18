@@ -48,13 +48,12 @@ export default function InventarioPage() {
 
   const categories = [
     "Todos",
-    "Panes y Carnes",
-    "Embutidos",
-    "Verduras y Frutas",
+    "Panes y Masas",
+    "Carnes y Proteínas",
     "Quesos y Lácteos",
+    "Verduras y Legumbres",
     "Papas",
-    "Cremas y Aderezos",
-    "Bebidas y Varios",
+    "Salsas y Aderezos",
   ];
 
   // Helper status calculator
@@ -331,7 +330,7 @@ export default function InventarioPage() {
                               {/* 🛠️ FIX 1: Renderizado seguro de la categoría */}
                               {categoriaNombre || "Sin Categoría"}
                             </span>
-                            {categoriaNombre === "Cremas y Aderezos" && (
+                            {categoriaNombre === "Salsas y Aderezos" && (
                               <span className="block mt-1 px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200/60 rounded text-[9px] font-bold w-max">
                                 🧪 Aderezo Libre (Consumo General)
                               </span>

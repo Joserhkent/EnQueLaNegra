@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { PedidosService } from './pedidos.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
@@ -41,12 +42,11 @@ export class PedidosController {
   updateStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateStatusDto,
-    @GetUser('id') userId?: string,
   ) {
     if (!updateStatusDto.status) {
-      throw new Error('El status del pedido es obligatorio');
+      throw new BadRequestException('El status del pedido es obligatorio');
     }
 
-    return this.pedidosService.updateStatus(id, updateStatusDto.status, userId);
+    return this.pedidosService.updateStatus(id, updateStatusDto.status);
   }
 }

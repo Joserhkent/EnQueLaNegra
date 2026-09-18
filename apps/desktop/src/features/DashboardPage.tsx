@@ -93,7 +93,7 @@ export default function DashboardPage() {
   });
 
   const sortedTopProducts = Object.values(productSalesMap).sort((a, b) => b.count - a.count);
-  const starProduct = sortedTopProducts[0] || { name: "Reina Pepiada", count: 0, revenue: 0 };
+  const starProduct = sortedTopProducts[0] || { name: "Sin ventas todavía", count: 0, revenue: 0 };
 
   // Hourly Sales Distribution (horario real del restaurante: 11am - 9pm, servicio completo)
   const hourlyData = Array.from({ length: 11 }, (_, i) => {
@@ -107,10 +107,7 @@ export default function DashboardPage() {
       })
       .reduce((acc, curr) => acc + curr.total, 0);
 
-    // Fallback baseline for visual presentation if no sales in that specific hour
-    const demoFallback = totalSales > 0 ? (i % 3 === 0 ? (i + 2) * 15 : (i + 1) * 10) : 0;
-
-    return { hour: hourStr, total: hourSales || demoFallback };
+    return { hour: hourStr, total: hourSales };
   });
 
   const maxHourlyValue = Math.max(...hourlyData.map((d) => d.total), 10);
@@ -280,7 +277,7 @@ export default function DashboardPage() {
         {/* Top Seller Card */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Hamburguesa Estrella</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Producto Estrella</span>
             <div className="text-lg font-bold text-slate-900 mt-1 truncate max-w-[170px]">{starProduct.name}</div>
             <span className="text-[11px] font-medium text-amber-600 mt-1 block">
               {starProduct.count} unidades vendidas (S/ {starProduct.revenue.toFixed(2)})
@@ -302,7 +299,7 @@ export default function DashboardPage() {
               Stock Crítico
             </span>
             <div className={`text-3xl font-black mt-1 ${criticalInsumos.length > 0 ? "text-rose-600" : "text-slate-900"}`}>
-              {criticalInsumos.length} Insumos
+              {criticalInsumos.length} {criticalInsumos.length === 1 ? "Insumo" : "Insumos"}
             </div>
             <span className={`text-[11px] mt-1 block truncate max-w-[170px] ${
               criticalInsumos.length > 0 ? "text-rose-500 font-semibold" : "text-slate-500"

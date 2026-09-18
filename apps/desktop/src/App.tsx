@@ -40,7 +40,7 @@ async function loginWithApi(username: string, password: string) {
   }
 
   if (!response.ok) {
-    let errorText = "";
+    let errorText: string;
     try {
       const errJson = await response.json();
       errorText = Array.isArray(errJson.message) ? errJson.message.join(", ") : (errJson.message || errJson.error || "");
@@ -136,7 +136,7 @@ export default function App() {
         name: data.user?.name || username,
         username: data.user?.username || username,
         role: isJefeRole ? "jefe" : "empleado",
-        turn: data.user?.turn || "Lun - Sáb",
+        turn: data.user?.turn || "Lun - Dom",
       };
 
       const token = data.accessToken || data.token || "demo-token";

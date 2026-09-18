@@ -190,8 +190,9 @@ export class MesasService {
     }
 
     const paymentMethod =
-      PaymentMethod[dto.paymentMethod as unknown as keyof typeof PaymentMethod] ??
-      PaymentMethod.EFECTIVO;
+      PaymentMethod[
+        dto.paymentMethod as unknown as keyof typeof PaymentMethod
+      ] ?? PaymentMethod.EFECTIVO;
     const isMixto = paymentMethod === PaymentMethod.MIXTO;
 
     const pagosData: Prisma.PagoCreateWithoutOrderInput[] = isMixto
@@ -208,8 +209,8 @@ export class MesasService {
       data: {
         status: OrderStatus.ENTREGADO,
         paymentMethod,
-        montoEfectivo: isMixto ? dto.montoEfectivo ?? 0 : undefined,
-        montoDigital: isMixto ? dto.montoDigital ?? 0 : undefined,
+        montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
+        montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
         fecha: formatFecha(now),
         hora: formatHora(now),
         userId: userId ?? order.userId ?? undefined,
@@ -227,7 +228,9 @@ export class MesasService {
   }
 
   private async getTableOrThrow(tableId: string) {
-    const table = await this.prisma.table.findUnique({ where: { id: tableId } });
+    const table = await this.prisma.table.findUnique({
+      where: { id: tableId },
+    });
     if (!table) throw new NotFoundException('Mesa no encontrada');
     return table;
   }

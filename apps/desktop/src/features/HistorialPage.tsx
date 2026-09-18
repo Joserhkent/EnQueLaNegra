@@ -46,8 +46,8 @@ export default function HistorialPage() {
   });
 
   const starProduct = Object.values(productCountMap).sort((a, b) => b.count - a.count)[0] || {
-    name: "Reina Pepiada",
-    count: 28,
+    name: "Sin ventas todavía",
+    count: 0,
   };
 
   // CSV Export Handler

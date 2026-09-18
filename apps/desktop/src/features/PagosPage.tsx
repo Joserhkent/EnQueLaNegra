@@ -420,7 +420,7 @@ export default function PagosPage() {
                   <Lock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base">Cierre de Caja Diario (Turno Noche)</h3>
+                  <h3 className="font-bold text-base">Cierre de Caja Diario</h3>
                   <p className="text-xs text-slate-400">Consolidación diaria de ventas, efectivo en caja y cobros digitales</p>
                 </div>
               </div>

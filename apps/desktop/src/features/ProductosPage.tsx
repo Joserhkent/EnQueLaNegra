@@ -79,8 +79,8 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     nombre: "",
     descripcion: "",
     precio: 0,
-    categoria: "Hamburguesas de Carne",
-    iconoEmoji: "🍔",
+    categoria: "Arepas Tradicionales",
+    iconoEmoji: "🌽",
     isAvailable: true,
     isPopular: false,
     selectedReceta: [] as string[],
@@ -89,12 +89,14 @@ export function ProductosPageContent(props?: ProductosPageProps) {
   // Categorías fijas de navegación
   const categories = [
     "Todas",
-    "Hamburguesas de Carne",
-    "Pollo Deshilachado",
-    "Embutidos",
-    "Salchipapas y Salchipollos",
+    "Arepas Tradicionales",
+    "Empanadas",
+    "Cachapas",
+    "Patacones",
+    "Comida Rápida",
+    "Horneados",
+    "Especiales de Fin de Semana",
     "Agregados",
-    "Bebidas",
   ];
 
   // Helper para extraer nombre de la categoría de forma segura
@@ -129,8 +131,8 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           nombre: prod.nombre || "",
           descripcion: prod.descripcion || "",
           precio: typeof prod.precio === "number" ? prod.precio : (parseFloat(String(prod.precio)) || 0),
-          categoria: getCatName(prod.categoria) || "Hamburguesas de Carne",
-          iconoEmoji: prod.iconoEmoji || "🍔",
+          categoria: getCatName(prod.categoria) || "Arepas Tradicionales",
+          iconoEmoji: prod.iconoEmoji || "🌽",
           isAvailable: prod.isAvailable !== false,
           isPopular: !!prod.isPopular,
           selectedReceta: Array.isArray(prod.receta) ? [...prod.receta] : [],
@@ -139,12 +141,12 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         setEditingProduct(null);
         const nextNum = (products?.length || 0) + 1;
         setFormData({
-          sku: `HC0${nextNum}`,
+          sku: `PROD${nextNum}`,
           nombre: "",
           descripcion: "",
           precio: 0,
-          categoria: "Hamburguesas de Carne",
-          iconoEmoji: "🍔",
+          categoria: "Arepas Tradicionales",
+          iconoEmoji: "🌽",
           isAvailable: true,
           isPopular: false,
           selectedReceta: [],
@@ -176,12 +178,12 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     try {
       const productPayload = {
         id: editingProduct?.id || formData.sku || `PROD-${Date.now()}`,
-        sku: formData.sku?.trim() || `HC0${(products?.length || 0) + 1}`,
+        sku: formData.sku?.trim() || `PROD${(products?.length || 0) + 1}`,
         nombre: formData.nombre?.trim() || "Nuevo Producto",
         descripcion: formData.descripcion?.trim() || "",
         precio: Number(formData.precio) || 0,
-        categoria: formData.categoria || "Hamburguesas de Carne",
-        iconoEmoji: formData.iconoEmoji || "🍔",
+        categoria: formData.categoria || "Arepas Tradicionales",
+        iconoEmoji: formData.iconoEmoji || "🌽",
         isAvailable: formData.isAvailable !== false,
         isPopular: Boolean(formData.isPopular),
         receta: Array.isArray(formData.selectedReceta) ? formData.selectedReceta : [],
@@ -194,6 +196,15 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     } catch (err) {
       console.error("Error al guardar producto:", err);
       alert("Ocurrió un error al guardar el producto. Intenta nuevamente.");
+    }
+  };
+
+  const handleDeleteProduct = (prod: Producto) => {
+    const confirmado = window.confirm(
+      `¿Seguro que deseas eliminar "${prod.nombre}"? Esta acción no se puede deshacer.`
+    );
+    if (confirmado) {
+      deleteProduct(prod.id);
     }
   };
 
@@ -391,7 +402,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => deleteProduct(prod.id)}
+                      onClick={() => handleDeleteProduct(prod)}
                       className="p-2 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition shadow-sm"
                       title="Eliminar"
                     >
@@ -491,7 +502,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => deleteProduct(prod.id)}
+                            onClick={() => handleDeleteProduct(prod)}
                             className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition"
                             title="Eliminar"
                           >
@@ -567,12 +578,14 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                     }
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   >
-                    <option value="Hamburguesas de Carne">Hamburguesas de Carne</option>
-                    <option value="Pollo Deshilachado">Pollo Deshilachado</option>
-                    <option value="Embutidos">Embutidos</option>
-                    <option value="Salchipapas y Salchipollos">Salchipapas y Salchipollos</option>
+                    <option value="Arepas Tradicionales">Arepas Tradicionales</option>
+                    <option value="Empanadas">Empanadas</option>
+                    <option value="Cachapas">Cachapas</option>
+                    <option value="Patacones">Patacones</option>
+                    <option value="Comida Rápida">Comida Rápida</option>
+                    <option value="Horneados">Horneados</option>
+                    <option value="Especiales de Fin de Semana">Especiales de Fin de Semana</option>
                     <option value="Agregados">Agregados</option>
-                    <option value="Bebidas">Bebidas</option>
                   </select>
                 </div>
               </div>
@@ -616,8 +629,8 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                   {isEmojiPickerOpen && (
                     <div className="absolute right-0 top-full mt-2 z-50 p-2.5 bg-white border border-slate-200 shadow-2xl rounded-2xl grid grid-cols-4 gap-1.5 w-48 animate-in fade-in zoom-in-95 duration-150">
                       {[
-                        "🍔", "🥩", "🍗", "🥪", "🌭", "🍳", "💥", "🍟", 
-                        "🧀", "👑", "🥓", "🍌", "🍍", "🥤", "🍾", "☕"
+                        "🌽", "🥑", "🧀", "🥟", "🍖", "🍗", "🥓", "🍌",
+                        "🍟", "🌭", "🌯", "🍝", "🍲", "👑", "🔥", "🥤"
                       ].map((emoji) => (
                         <button
                           key={emoji}
@@ -707,7 +720,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
                     const rawCategories = safeInsumos
                       .map((i) => (typeof i.categoria === "string" && i.categoria.trim() ? i.categoria : "General"))
-                      .filter((c) => c !== "Cremas y Aderezos");
+                      .filter((c) => c !== "Salsas y Aderezos");
 
                     const recipeCategories = Array.from(new Set(rawCategories));
 

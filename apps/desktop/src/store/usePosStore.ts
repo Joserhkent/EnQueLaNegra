@@ -183,6 +183,18 @@ const normalizeStatusFromBackend = (status: unknown): Order["status"] => {
 
 const statusToBackend = (status: Order["status"]): string => status.toUpperCase();
 
+// 🔧 Mismo problema que con el status: el backend guarda/devuelve el método de pago
+// en MAYÚSCULAS con guion bajo (EFECTIVO, YAPE_PLIN, MIXTO), pero toda la UI (boletas,
+// tablas de Pedidos/Historial, comparaciones con "Mixto") espera el formato legible
+// del frontend ("Efectivo", "Yape/Plin", "Mixto"). Sin normalizar, cualquier pedido
+// recién leído del API muestra el enum crudo en la boleta.
+const normalizePaymentMethodFromBackend = (metodo: unknown): Order["paymentMethod"] => {
+  const s = String(metodo || "").toUpperCase().replace(/\s+/g, "_");
+  if (s === "YAPE_PLIN" || s === "YAPE/PLIN") return "Yape/Plin";
+  if (s === "MIXTO") return "Mixto";
+  return "Efectivo";
+};
+
 export const usePosStore = create<PosStore>((set, get) => ({
   currentUser: null,
   users: [],
@@ -202,7 +214,15 @@ export const usePosStore = create<PosStore>((set, get) => ({
       });
       if (!res.ok) throw new Error("Error obteniendo productos");
       const data = await res.json();
-      set({ productos: data, loading: false });
+      // 🔧 El backend manda `recetaItems: [{ insumoId, insumo }]`, no un `receta: string[]`
+      // plano. Sin esto, el formulario de editar producto nunca ve la receta actual.
+      const normalizados: Producto[] = data.map((p: any) => ({
+        ...p,
+        receta: Array.isArray(p.recetaItems)
+          ? p.recetaItems.map((ri: any) => ri.insumoId)
+          : [],
+      }));
+      set({ productos: normalizados, loading: false });
     } catch (error) {
       console.error("Error al obtener productos:", error);
       set({ loading: false });
@@ -217,7 +237,17 @@ export const usePosStore = create<PosStore>((set, get) => ({
       });
       if (!res.ok) throw new Error("Error obteniendo insumos");
       const data = await res.json();
-      set({ insumos: data, loading: false });
+      // 🔧 El backend manda `categoria` como objeto anidado ({ id, nombre, ... }), no
+      // como string plano — sin esto, cualquier comparación por nombre de categoría
+      // (ej. el selector de receta BOM en Productos) nunca encuentra coincidencias.
+      const normalizados: Insumo[] = data.map((i: any) => ({
+        ...i,
+        categoria:
+          typeof i.categoria === "object" && i.categoria !== null
+            ? i.categoria.nombre
+            : i.categoria,
+      }));
+      set({ insumos: normalizados, loading: false });
     } catch (error) {
       console.error("Error al obtener insumos:", error);
       set({ loading: false });
@@ -346,7 +376,11 @@ export const usePosStore = create<PosStore>((set, get) => ({
       }
       const order = await res.json();
       await Promise.all([get().fetchMesas(), get().fetchPedidos(), get().fetchInsumos()]);
-      return { ...order, status: normalizeStatusFromBackend(order.status) };
+      return {
+        ...order,
+        status: normalizeStatusFromBackend(order.status),
+        paymentMethod: normalizePaymentMethodFromBackend(order.paymentMethod),
+      };
     } catch (error) {
       console.error("Error al cobrar mesa:", error);
       return null;
@@ -368,6 +402,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
         .map((o: any) => ({
           ...o,
           status: normalizeStatusFromBackend(o.status),
+          paymentMethod: normalizePaymentMethodFromBackend(o.paymentMethod),
         }));
       set({ pedidos: normalizados, loading: false });
     } catch (error) {
@@ -482,18 +517,6 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   addOrder: async (order) => {
     try {
-      const AGREGADO_TO_INSUMO_MAP: Record<string, string> = {
-        "Huevo": "huevo",
-        "Queso Suizo": "queso_suizo",
-        "Plátano": "platano",
-        "Piña": "piña",
-        "Tocino": "tocino",
-        "Hotdog": "frankfurter",
-        "Hamburguesa": "carne_hamburguesa",
-        "Pollo Deshilachado": "pollo_deshilachado",
-        "Chorizo Finas Hierbas": "chorizo_finas_hierbas",
-      };
-
       const payload = {
         code: order.code,
         customer: order.customer,
@@ -512,16 +535,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
           precio: item.precio,
           cantidad: item.cantidad,
           notas: item.notas,
-          extras:
-            item.extras ||
-            (item as any).agregados?.map((ag: any) => ({
-              insumoId:
-                ag.insumoId ||
-                AGREGADO_TO_INSUMO_MAP[ag.nombre] ||
-                ag.nombre.toLowerCase(),
-              cantidad: 1,
-              precioExtra: ag.precio || 0,
-            })),
+          extras: item.extras || [],
         })),
       };
 

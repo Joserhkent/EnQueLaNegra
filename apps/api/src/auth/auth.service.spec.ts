@@ -61,9 +61,14 @@ describe('AuthService (White-box & Integration Tests)', () => {
 
   describe('Black-box & White-box Auth Validation', () => {
     it('1. Should authenticate Jefe successfully with correct password "123456"', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUserAdmin as any);
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUserAdmin as any);
 
-      const result = await authService.login({ username: 'admin', password: '123456' });
+      const result = await authService.login({
+        username: 'admin',
+        password: '123456',
+      });
 
       expect(result).toHaveProperty('accessToken', 'mock-jwt-token');
       expect(result.user).toEqual({
@@ -76,9 +81,14 @@ describe('AuthService (White-box & Integration Tests)', () => {
     });
 
     it('2. Should authenticate Empleado successfully with correct password "123456"', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUserEmpleado as any);
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUserEmpleado as any);
 
-      const result = await authService.login({ username: 'empleado', password: '123456' });
+      const result = await authService.login({
+        username: 'empleado',
+        password: '123456',
+      });
 
       expect(result).toHaveProperty('accessToken', 'mock-jwt-token');
       expect(result.user).toEqual({
@@ -91,7 +101,9 @@ describe('AuthService (White-box & Integration Tests)', () => {
     });
 
     it('3. Should REJECT login with incorrect password for Empleado', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUserEmpleado as any);
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUserEmpleado as any);
 
       await expect(
         authService.login({ username: 'empleado', password: 'wrongpassword' }),
@@ -99,7 +111,9 @@ describe('AuthService (White-box & Integration Tests)', () => {
     });
 
     it('4. Should REJECT login with incorrect password for Jefe', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUserAdmin as any);
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUserAdmin as any);
 
       await expect(
         authService.login({ username: 'admin', password: 'wrongpassword' }),

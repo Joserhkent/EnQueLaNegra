@@ -99,7 +99,7 @@ export default function Sidebar({ activePage, onChangePage, onLogout }: SidebarP
                 {isJefe ? "Rol Jefe" : "Rol Empleado"}
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 font-medium mt-0.5">{currentUser?.turn || "Lun - Sáb"}</p>
+            <p className="text-[10px] text-slate-400 font-medium mt-0.5">{currentUser?.turn || "Lun - Dom"}</p>
           </div>
         </div>
 

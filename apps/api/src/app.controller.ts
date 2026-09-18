@@ -7,12 +7,13 @@ export class AppController {
 
   @Get()
   async getSystemStatus() {
-    const [insumosCount, productosCount, usersCount, ordersCount] = await Promise.all([
-      this.prisma.insumo.count(),
-      this.prisma.producto.count(),
-      this.prisma.user.count(),
-      this.prisma.order.count(),
-    ]);
+    const [insumosCount, productosCount, usersCount, ordersCount] =
+      await Promise.all([
+        this.prisma.insumo.count(),
+        this.prisma.producto.count(),
+        this.prisma.user.count(),
+        this.prisma.order.count(),
+      ]);
 
     return {
       system: 'En que la Negra POS API',
