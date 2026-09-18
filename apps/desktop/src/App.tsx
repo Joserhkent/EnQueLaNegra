@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ComponentType } from "react";
 import Sidebar from "./components/layout/Sidebar";
 import DashboardPage from "./features/DashboardPage";
 import MesasPage from "./features/MesasPage";
@@ -184,14 +184,19 @@ export default function App() {
   const isJefe = currentUser?.role === "jefe";
   const isRestrictedPage = (activePage === "dashboard" || activePage === "historial") && !isJefe;
   const pageToRender = isRestrictedPage ? "mesas" : activePage;
-  const ActivePageComponent = pages[pageToRender];
+  // "pedidos" se renderiza aparte (necesita onGoToMesas); el resto no toma props.
+  const ActivePageComponent = pages[pageToRender] as ComponentType<object>;
 
   return (
     <div className="flex min-h-screen bg-[#F4F5F7]">
       <Sidebar activePage={pageToRender} onChangePage={setActivePage} onLogout={handleLogout} />
       <main className="flex-1 p-8">
         <ErrorBoundary key={pageToRender} fallbackTitle="Error al cargar esta sección">
-          <ActivePageComponent />
+          {pageToRender === "pedidos" ? (
+            <PedidosPage onGoToMesas={() => setActivePage("mesas")} />
+          ) : (
+            <ActivePageComponent />
+          )}
         </ErrorBoundary>
       </main>
     </div>

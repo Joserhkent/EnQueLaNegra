@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { MesasService } from './mesas.service';
 import { OpenTableDto } from './dto/open-table.dto';
 import { AddItemsDto } from './dto/add-items.dto';
 import { CheckoutDto } from './dto/checkout.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
 
@@ -33,6 +43,27 @@ export class MesasController {
     @GetUser('id') userId?: string,
   ) {
     return this.mesasService.addItems(id, dto, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/items/:itemId')
+  updateItem(
+    @Param('id') id: string,
+    @Param('itemId') itemId: string,
+    @Body() dto: UpdateItemDto,
+    @GetUser('id') userId?: string,
+  ) {
+    return this.mesasService.updateItem(id, itemId, dto, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/items/:itemId')
+  removeItem(
+    @Param('id') id: string,
+    @Param('itemId') itemId: string,
+    @GetUser('id') userId?: string,
+  ) {
+    return this.mesasService.removeItem(id, itemId, userId);
   }
 
   @UseGuards(JwtAuthGuard)

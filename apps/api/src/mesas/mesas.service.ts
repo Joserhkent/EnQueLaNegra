@@ -14,6 +14,7 @@ import {
 import { OpenTableDto } from './dto/open-table.dto';
 import { AddItemsDto } from './dto/add-items.dto';
 import { CheckoutDto } from './dto/checkout.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 
 const ORDER_INCLUDE = {
   items: {
@@ -274,6 +275,208 @@ export class MesasService {
     ]);
 
     return updatedOrder;
+  }
+
+  // Corrige un ítem ya creado (cantidad y/o notas) — para cuando el mesero se
+  // equivoca al armar una tanda y ya se envió. Ajusta inventario por la
+  // diferencia (no por el total) y recalcula el total de la orden en memoria.
+  async updateItem(
+    tableId: string,
+    itemId: string,
+    dto: UpdateItemDto,
+    userId?: string,
+  ) {
+    const [table, item] = await Promise.all([
+      this.prisma.table.findUnique({
+        where: { id: tableId },
+        include: { currentOrder: true },
+      }),
+      this.prisma.orderItem.findUnique({
+        where: { id: itemId },
+        include: { extras: true },
+      }),
+    ]);
+
+    if (!table) throw new NotFoundException('Mesa no encontrada');
+    if (!table.currentOrderId || !table.currentOrder) {
+      throw new BadRequestException(
+        `La mesa ${table.number} no tiene una cuenta abierta`,
+      );
+    }
+    if (!item || item.orderId !== table.currentOrderId) {
+      throw new NotFoundException(
+        'Ítem no encontrado en la cuenta de esta mesa',
+      );
+    }
+
+    const nuevaCantidad = dto.cantidad ?? item.cantidad;
+    const cantidadDelta = nuevaCantidad - item.cantidad;
+    const nuevoSubtotalItem = item.precio * nuevaCantidad;
+    const extrasSubtotalPorUnidad = item.extras.reduce(
+      (sum, e) => sum + e.precioExtra * e.cantidad,
+      0,
+    );
+    const totalDelta =
+      nuevoSubtotalItem -
+      item.subtotal +
+      extrasSubtotalPorUnidad * cantidadDelta;
+
+    const nuevoTotal = table.currentOrder.total + totalDelta;
+    const nuevoSubtotal = Math.round((nuevoTotal / 1.18) * 100) / 100;
+    const nuevoIgv = Math.round((nuevoTotal - nuevoSubtotal) * 100) / 100;
+    const motivo = `Corrección de ítem — Mesa ${table.number}`;
+
+    const [, updatedOrder] = await Promise.all([
+      cantidadDelta !== 0
+        ? this.adjustInventoryForItem(item, cantidadDelta, userId, motivo)
+        : Promise.resolve(null),
+      this.prisma.order.update({
+        where: { id: table.currentOrderId },
+        data: {
+          total: nuevoTotal,
+          subtotal: nuevoSubtotal,
+          igv: nuevoIgv,
+          items: {
+            update: {
+              where: { id: itemId },
+              data: {
+                cantidad: nuevaCantidad,
+                subtotal: nuevoSubtotalItem,
+                notas: dto.notas,
+              },
+            },
+          },
+        },
+        include: ORDER_INCLUDE,
+      }),
+    ]);
+
+    return { ...table, currentOrder: updatedOrder };
+  }
+
+  // Quita un ítem agregado por error. Revierte el inventario que se había
+  // descontado al agregarlo (como si nunca se hubiera pedido). Si era el
+  // último ítem de la cuenta, la mesa vuelve a estar libre en vez de quedar
+  // "ocupada" con una orden vacía — misma regla que rige al abrir la mesa.
+  async removeItem(tableId: string, itemId: string, userId?: string) {
+    const [table, item] = await Promise.all([
+      this.prisma.table.findUnique({
+        where: { id: tableId },
+        include: { currentOrder: true },
+      }),
+      this.prisma.orderItem.findUnique({
+        where: { id: itemId },
+        include: { extras: true },
+      }),
+    ]);
+
+    if (!table) throw new NotFoundException('Mesa no encontrada');
+    if (!table.currentOrderId || !table.currentOrder) {
+      throw new BadRequestException(
+        `La mesa ${table.number} no tiene una cuenta abierta`,
+      );
+    }
+    if (!item || item.orderId !== table.currentOrderId) {
+      throw new NotFoundException(
+        'Ítem no encontrado en la cuenta de esta mesa',
+      );
+    }
+
+    const motivo = `Eliminación de ítem — Mesa ${table.number}`;
+    await this.adjustInventoryForItem(item, -item.cantidad, userId, motivo);
+
+    const remainingCount = await this.prisma.orderItem.count({
+      where: { orderId: table.currentOrderId, id: { not: itemId } },
+    });
+
+    if (remainingCount === 0) {
+      // El pedido queda vacío: primero se libera la mesa (la FK de Table
+      // apunta a Order) y recién entonces se borra la orden vacía, en cascada
+      // con su único ítem — mismo orden usado para limpiar mesas fantasma.
+      await this.prisma.table.update({
+        where: { id: table.id },
+        data: { status: TableStatus.AVAILABLE, currentOrderId: null },
+      });
+      await this.prisma.order.delete({ where: { id: table.currentOrderId } });
+      return {
+        ...table,
+        status: TableStatus.AVAILABLE,
+        currentOrderId: null,
+        currentOrder: null,
+      };
+    }
+
+    const extrasTotalDelItem =
+      item.extras.reduce((sum, e) => sum + e.precioExtra * e.cantidad, 0) *
+      item.cantidad;
+    const nuevoTotal =
+      table.currentOrder.total - (item.subtotal + extrasTotalDelItem);
+    const nuevoSubtotal = Math.round((nuevoTotal / 1.18) * 100) / 100;
+    const nuevoIgv = Math.round((nuevoTotal - nuevoSubtotal) * 100) / 100;
+
+    const updatedOrder = await this.prisma.order.update({
+      where: { id: table.currentOrderId },
+      data: {
+        total: nuevoTotal,
+        subtotal: nuevoSubtotal,
+        igv: nuevoIgv,
+        items: { delete: { id: itemId } },
+      },
+      include: ORDER_INCLUDE,
+    });
+
+    return { ...table, currentOrder: updatedOrder };
+  }
+
+  // Ajusta el inventario por la DIFERENCIA de cantidad de un ítem ya existente
+  // (positiva = se pidió más, se descuenta más; negativa = se quitó cantidad
+  // o se eliminó el ítem entero, se repone stock). Reutiliza la misma receta
+  // que se usó para descontar al crear el ítem.
+  private async adjustInventoryForItem(
+    item: {
+      productoId: string;
+      extras: { insumoId: string; cantidad: number }[];
+    },
+    cantidadDelta: number,
+    userId: string | undefined,
+    motivo: string,
+  ) {
+    const recetas = await this.prisma.recetaItem.findMany({
+      where: { productoId: item.productoId },
+    });
+
+    const deltas = new Map<string, number>();
+    const acumular = (insumoId: string, cantidad: number) => {
+      deltas.set(insumoId, (deltas.get(insumoId) ?? 0) + cantidad);
+    };
+    for (const r of recetas)
+      acumular(r.insumoId, r.cantidadRequerida * cantidadDelta);
+    for (const e of item.extras)
+      acumular(e.insumoId, e.cantidad * cantidadDelta);
+
+    if (deltas.size === 0) return;
+
+    const tipo =
+      cantidadDelta > 0 ? MovimientoTipo.SALIDA : MovimientoTipo.ENTRADA;
+
+    await Promise.all([
+      ...[...deltas.entries()].map(([insumoId, cantidad]) =>
+        this.prisma.insumo.update({
+          where: { id: insumoId },
+          data: { stockActual: { decrement: cantidad } },
+        }),
+      ),
+      this.prisma.movimientoStock.createMany({
+        data: [...deltas.entries()].map(([insumoId, cantidad]) => ({
+          insumoId,
+          tipo,
+          cantidad: Math.abs(cantidad),
+          motivo,
+          usuario: 'Sistema POS Automático',
+          usuarioId: userId,
+        })),
+      }),
+    ]);
   }
 
   private async getTableOrThrow(tableId: string) {

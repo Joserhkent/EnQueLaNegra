@@ -54,6 +54,7 @@ export interface OrderItemExtra {
 }
 
 export interface OrderItem {
+  id?: string; // presente cuando el ítem ya viene guardado desde el backend (no al armar una tanda nueva)
   productoId?: string;
   sku: string;
   nombre: string;
@@ -126,6 +127,12 @@ interface PosStore {
   fetchMesas: () => Promise<void>;
   openMesa: (tableId: string, customer?: string) => Promise<Mesa | null>;
   addItemsToMesa: (tableId: string, items: OrderItem[]) => Promise<Mesa | null>;
+  updateMesaItem: (
+    tableId: string,
+    itemId: string,
+    dto: { cantidad?: number; notas?: string }
+  ) => Promise<Mesa | null>;
+  removeMesaItem: (tableId: string, itemId: string) => Promise<Mesa | null>;
   preBillMesa: (tableId: string) => Promise<Mesa | null>;
   checkoutMesa: (
     tableId: string,
@@ -182,6 +189,16 @@ const normalizeStatusFromBackend = (status: unknown): Order["status"] => {
 };
 
 const statusToBackend = (status: Order["status"]): string => status.toUpperCase();
+
+// Reemplaza (o agrega) una mesa en la lista local con la versión que acaba de
+// devolver el backend, en vez de volver a pedir /tables completo. La mutación
+// (abrir, agregar tanda, editar/quitar ítem, pre-cuenta) ya devuelve la mesa
+// actualizada — pedirla de nuevo solo duplica el round-trip más lento de la
+// operación (el de red hacia la base de datos) sin ganar nada.
+const upsertMesa = (mesas: Mesa[], mesa: Mesa): Mesa[] => {
+  const exists = mesas.some((m) => m.id === mesa.id);
+  return exists ? mesas.map((m) => (m.id === mesa.id ? mesa : m)) : [...mesas, mesa];
+};
 
 // 🔧 Mismo problema que con el status: el backend guarda/devuelve el método de pago
 // en MAYÚSCULAS con guion bajo (EFECTIVO, YAPE_PLIN, MIXTO), pero toda la UI (boletas,
@@ -298,7 +315,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
         return null;
       }
       const mesa = await res.json();
-      await get().fetchMesas();
+      set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
       return mesa;
     } catch (error) {
       console.error("Error al abrir mesa:", error);
@@ -331,10 +348,57 @@ export const usePosStore = create<PosStore>((set, get) => ({
         return null;
       }
       const mesa = await res.json();
-      await Promise.all([get().fetchMesas(), get().fetchInsumos()]);
+      set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
+      // El stock ya se descontó en el backend; refrescarlo no bloquea la UI de la mesa.
+      get().fetchInsumos();
       return mesa;
     } catch (error) {
       console.error("Error al agregar ítems a la mesa:", error);
+      return null;
+    }
+  },
+
+  updateMesaItem: async (tableId, itemId, dto) => {
+    try {
+      const res = await fetch(`${API_URL}/tables/${tableId}/items/${itemId}`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(dto),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo editar el ítem";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return null;
+      }
+      const mesa = await res.json();
+      set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
+      get().fetchInsumos();
+      return mesa;
+    } catch (error) {
+      console.error("Error al editar ítem de la mesa:", error);
+      return null;
+    }
+  },
+
+  removeMesaItem: async (tableId, itemId) => {
+    try {
+      const res = await fetch(`${API_URL}/tables/${tableId}/items/${itemId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo quitar el ítem";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return null;
+      }
+      const mesa = await res.json();
+      set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
+      get().fetchInsumos();
+      return mesa;
+    } catch (error) {
+      console.error("Error al quitar ítem de la mesa:", error);
       return null;
     }
   },
@@ -347,7 +411,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
       });
       if (!res.ok) return null;
       const mesa = await res.json();
-      await get().fetchMesas();
+      set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
       return mesa;
     } catch (error) {
       console.error("Error al emitir pre-cuenta:", error);
@@ -375,7 +439,17 @@ export const usePosStore = create<PosStore>((set, get) => ({
         return null;
       }
       const order = await res.json();
-      await Promise.all([get().fetchMesas(), get().fetchPedidos(), get().fetchInsumos()]);
+      // Se sabe exactamente cómo queda la mesa (libre, sin orden) sin tener que
+      // releerla; el historial de pedidos y el stock se refrescan en segundo plano.
+      set((state) => ({
+        mesas: state.mesas.map((m) =>
+          m.id === tableId
+            ? { ...m, status: "AVAILABLE", currentOrderId: null, currentOrder: null }
+            : m
+        ),
+      }));
+      get().fetchPedidos();
+      get().fetchInsumos();
       return {
         ...order,
         status: normalizeStatusFromBackend(order.status),
@@ -557,7 +631,14 @@ export const usePosStore = create<PosStore>((set, get) => ({
         return;
       }
 
-      await Promise.all([get().fetchPedidos(), get().fetchInsumos()]);
+      const createdOrder = await res.json();
+      const normalizado: Order = {
+        ...createdOrder,
+        status: normalizeStatusFromBackend(createdOrder.status),
+        paymentMethod: normalizePaymentMethodFromBackend(createdOrder.paymentMethod),
+      };
+      set((state) => ({ pedidos: [normalizado, ...state.pedidos] }));
+      get().fetchInsumos();
     } catch (error) {
       console.error("Error al crear pedido:", error);
       alert("No se pudo crear el pedido. Revisa tu conexión e intenta de nuevo.");

@@ -18,7 +18,10 @@ import {
   ChevronRight,
   Printer,
   ClipboardList,
-  Ban
+  Ban,
+  UtensilsCrossed,
+  ArrowUpRight,
+  Clock,
 } from "lucide-react";
 
 const CREMAS_DISPONIBLES = [
@@ -55,8 +58,23 @@ const getCategoriaNombre = (prod: Producto): string => {
   return typeof catObj === "object" && catObj !== null ? catObj.nombre : String(catObj || "");
 };
 
-export default function PedidosPage() {
-  const { pedidos, productos, insumos, addOrder, updateOrderStatus, fetchInsumos } = usePosStore();
+function formatElapsed(startIso?: string | null): string {
+  if (!startIso) return "--";
+  const start = new Date(startIso).getTime();
+  if (Number.isNaN(start)) return "--";
+  const diffMs = Date.now() - start;
+  const mins = Math.max(0, Math.floor(diffMs / 60000));
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+type PedidosPageProps = {
+  onGoToMesas: () => void;
+};
+
+export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
+  const { pedidos, productos, insumos, mesas, addOrder, updateOrderStatus, fetchInsumos } = usePosStore();
 
   const [orderFilter, setOrderFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -399,20 +417,28 @@ export default function PedidosPage() {
   const prepCount = dateFilteredOrders.filter((o) => o.status === "preparacion").length;
   const readyCount = dateFilteredOrders.filter((o) => o.status === "listo").length;
 
+  // Cola unificada: las mesas con cuenta abierta se muestran también acá (de solo
+  // lectura) para que cocina/caja no tengan que revisar dos pantallas — la creación
+  // y edición de esos pedidos sigue siendo exclusiva de "Mesas", donde ya se maneja
+  // todo el ciclo (agregar tandas, corregir ítems, pre-cuenta, cobro).
+  const mesasActivas = mesas.filter(
+    (m) => (m.status === "OCCUPIED" || m.status === "BILLING") && (m.currentOrder?.items.length ?? 0) > 0
+  );
+
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Comanda de Pedidos</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Pedidos para Llevar / Delivery</h1>
             <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full flex items-center gap-1">
               <ShoppingBag className="w-3.5 h-3.5" />
-              {pedidos.length} Pedidos Registrados
+              {pedidos.length} Registrados
             </span>
           </div>
           <p className="text-slate-500 text-sm mt-1">
-            Control de comanda en vivo, avance de estados y deducción automática de inventario (BOM).
+            Solo para llevar y delivery. El consumo en salón se abre y gestiona desde <strong>Mesas</strong> — acá se ve también, de solo lectura, para tener una sola cola.
           </p>
         </div>
 
@@ -421,9 +447,60 @@ export default function PedidosPage() {
           className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95 shrink-0"
         >
           <PlusCircle className="w-4 h-4" />
-          Nuevo Pedido POS
+          Nuevo Pedido (Llevar/Delivery)
         </button>
       </div>
+
+      {/* Cola unificada: mesas activas (solo lectura, se gestionan en Mesas) */}
+      {mesasActivas.length > 0 && (
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <UtensilsCrossed className="w-4 h-4 text-amber-500" />
+              Mesas Activas ({mesasActivas.length})
+            </h3>
+            <button
+              onClick={onGoToMesas}
+              className="text-[11px] font-bold text-amber-700 hover:text-amber-800 flex items-center gap-1"
+            >
+              Ir a Mesas <ArrowUpRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {mesasActivas.map((mesa) => (
+              <button
+                key={mesa.id}
+                onClick={onGoToMesas}
+                className={`p-3 rounded-2xl border text-left transition ${
+                  mesa.status === "BILLING"
+                    ? "bg-blue-50 border-blue-200 hover:border-blue-400"
+                    : "bg-amber-50 border-amber-200 hover:border-amber-400"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-black text-slate-900 text-sm">Mesa #{mesa.number}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${
+                      mesa.status === "BILLING" ? "bg-blue-500 text-white" : "bg-amber-500 text-slate-950"
+                    }`}
+                  >
+                    {mesa.status === "BILLING" ? "Pidiendo Cuenta" : "Consumiendo"}
+                  </span>
+                </div>
+                <div className="text-xs font-bold text-slate-700 mt-1">
+                  S/ {(mesa.currentOrder?.total ?? 0).toFixed(2)}
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 font-semibold mt-1">
+                  <span>{mesa.currentOrder?.items.length ?? 0} ítems</span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> {formatElapsed(mesa.currentOrder?.createdAt)}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   UtensilsCrossed,
+  Trash2,
 } from "lucide-react";
 
 const CREMAS_DISPONIBLES = [
@@ -82,6 +83,8 @@ export default function MesasPage() {
     fetchInsumos,
     openMesa,
     addItemsToMesa,
+    updateMesaItem,
+    removeMesaItem,
     preBillMesa,
     checkoutMesa,
     currentUser,
@@ -100,6 +103,7 @@ export default function MesasPage() {
 
   const [printOrder, setPrintOrder] = useState<Order | null>(null);
   const [printMode, setPrintMode] = useState<TicketMode>("boleta");
+  const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMesas();
@@ -241,6 +245,26 @@ export default function MesasPage() {
 
     const result = await addItemsToMesa(targetMesaId, items);
     if (result) setCart({});
+  };
+
+  // Corrige un error en un ítem ya enviado (cantidad mal puesta) sin tener que
+  // anularlo y volver a mandarlo — misma lógica de "editar línea" de Toast/Square.
+  const handleEditItemQty = async (item: OrderItem, delta: number) => {
+    if (!selectedMesa || !item.id) return;
+    const nuevaCantidad = item.cantidad + delta;
+    if (nuevaCantidad <= 0) return; // usar "Quitar" para eliminar del todo
+    setUpdatingItemId(item.id);
+    await updateMesaItem(selectedMesa.id, item.id, { cantidad: nuevaCantidad });
+    setUpdatingItemId(null);
+  };
+
+  const handleRemoveItem = async (item: OrderItem) => {
+    if (!selectedMesa || !item.id) return;
+    const confirmar = window.confirm(`¿Quitar "${item.nombre}" de la cuenta de la mesa?`);
+    if (!confirmar) return;
+    setUpdatingItemId(item.id);
+    await removeMesaItem(selectedMesa.id, item.id);
+    setUpdatingItemId(null);
   };
 
   const handlePreBill = async () => {
@@ -466,15 +490,55 @@ export default function MesasPage() {
                     {rondas.map(([ronda, items]) => (
                       <div key={ronda} className="bg-slate-50 rounded-2xl p-3 border border-slate-200/70">
                         <div className="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Ronda {ronda}</div>
-                        <div className="space-y-1">
-                          {items.map((item, idx) => (
-                            <div key={idx} className="flex justify-between text-xs">
-                              <span className="font-semibold text-slate-700">
-                                {item.cantidad}x {item.nombre}
-                              </span>
-                              <span className="font-bold text-slate-500">S/ {(item.precio * item.cantidad).toFixed(2)}</span>
-                            </div>
-                          ))}
+                        <div className="space-y-1.5">
+                          {items.map((item) => {
+                            const isUpdating = updatingItemId === item.id;
+                            return (
+                              <div key={item.id} className="flex items-center justify-between gap-2 text-xs">
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-semibold text-slate-700 truncate">{item.nombre}</div>
+                                  {item.notas && (
+                                    <div className="text-[10px] text-slate-400 italic truncate">"{item.notas}"</div>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-1 shrink-0 bg-white border border-slate-200 rounded-lg p-0.5">
+                                  <button
+                                    type="button"
+                                    disabled={isUpdating}
+                                    onClick={() => handleEditItemQty(item, -1)}
+                                    title="Corregir: quitar una unidad"
+                                    className="w-5 h-5 rounded flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-rose-100 hover:text-rose-600 disabled:opacity-40 transition"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="text-[11px] font-extrabold px-1 text-slate-900 w-4 text-center">
+                                    {item.cantidad}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    disabled={isUpdating}
+                                    onClick={() => handleEditItemQty(item, 1)}
+                                    title="Corregir: agregar una unidad"
+                                    className="w-5 h-5 rounded flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-emerald-100 hover:text-emerald-600 disabled:opacity-40 transition"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <span className="font-bold text-slate-500 w-16 text-right shrink-0">
+                                  S/ {(item.precio * item.cantidad).toFixed(2)}
+                                </span>
+                                <button
+                                  type="button"
+                                  disabled={isUpdating}
+                                  onClick={() => handleRemoveItem(item)}
+                                  title="Quitar ítem de la cuenta (corrige un error)"
+                                  className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:bg-rose-100 hover:text-rose-600 disabled:opacity-40 transition shrink-0"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     ))}
