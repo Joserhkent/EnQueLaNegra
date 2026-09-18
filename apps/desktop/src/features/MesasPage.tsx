@@ -88,8 +88,6 @@ export default function MesasPage() {
   } = usePosStore();
 
   const [selectedMesaId, setSelectedMesaId] = useState<string | null>(null);
-  const [openingMesaId, setOpeningMesaId] = useState<string | null>(null);
-  const [openCustomerName, setOpenCustomerName] = useState("");
 
   const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
   const [cart, setCart] = useState<Record<string, CartLine>>({});
@@ -195,10 +193,13 @@ export default function MesasPage() {
   const getCartItemTotal = (item: CartLine) => (item.product.precio + getAgregadosUnitPrice(item.agregados)) * item.quantity;
   const calculateCartTotal = () => Object.values(cart).reduce((acc, item) => acc + getCartItemTotal(item), 0);
 
+  // Un clic abre la mesa directo, sin pedir nombre del cliente: en la mayoría de
+  // sistemas de mesas (Toast, Square...) el número de mesa alcanza como identificador
+  // y pedir el nombre solo agrega fricción al mesonero para un caso que casi nunca
+  // llenan. Queda "Mesa N" por defecto (ver mesas.service.ts) y se puede anotar
+  // después si hace falta (ej. una reservación).
   const handleOpenMesa = async (mesaId: string) => {
-    const mesa = await openMesa(mesaId, openCustomerName.trim() || undefined);
-    setOpeningMesaId(null);
-    setOpenCustomerName("");
+    const mesa = await openMesa(mesaId);
     if (mesa) setSelectedMesaId(mesaId);
   };
 
@@ -335,7 +336,7 @@ export default function MesasPage() {
             return (
               <button
                 key={mesa.id}
-                onClick={() => (mesa.status === "AVAILABLE" ? setOpeningMesaId(mesa.id) : setSelectedMesaId(mesa.id))}
+                onClick={() => (mesa.status === "AVAILABLE" ? handleOpenMesa(mesa.id) : setSelectedMesaId(mesa.id))}
                 className={`relative p-4 rounded-3xl border-2 text-left transition shadow-sm ${meta.card}`}
               >
                 <div className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${meta.badge}`}>
@@ -358,38 +359,6 @@ export default function MesasPage() {
           })
         )}
       </div>
-
-      {/* Modal: Abrir mesa */}
-      {openingMesaId && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
-              <h3 className="font-bold text-sm">Abrir Mesa #{mesas.find((m) => m.id === openingMesaId)?.number}</h3>
-              <button onClick={() => setOpeningMesaId(null)} className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 transition">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">Cliente (opcional)</label>
-                <input
-                  type="text"
-                  value={openCustomerName}
-                  onChange={(e) => setOpenCustomerName(e.target.value)}
-                  placeholder="Ej: Familia Pérez"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500"
-                />
-              </div>
-              <button
-                onClick={() => handleOpenMesa(openingMesaId)}
-                className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
-              >
-                Abrir Mesa
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Panel de mesa seleccionada */}
       {selectedMesa && (
