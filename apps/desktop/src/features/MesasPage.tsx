@@ -193,22 +193,22 @@ export default function MesasPage() {
   const getCartItemTotal = (item: CartLine) => (item.product.precio + getAgregadosUnitPrice(item.agregados)) * item.quantity;
   const calculateCartTotal = () => Object.values(cart).reduce((acc, item) => acc + getCartItemTotal(item), 0);
 
-  // Un clic abre la mesa directo, sin pedir nombre del cliente: en la mayoría de
-  // sistemas de mesas (Toast, Square...) el número de mesa alcanza como identificador
-  // y pedir el nombre solo agrega fricción al mesonero para un caso que casi nunca
-  // llenan. Queda "Mesa N" por defecto (ver mesas.service.ts) y se puede anotar
-  // después si hace falta (ej. una reservación).
-  const handleOpenMesa = async (mesaId: string) => {
-    const mesa = await openMesa(mesaId);
-    if (mesa) setSelectedMesaId(mesaId);
-  };
-
+  // Un clic solo abre el panel para ver/armar la comanda — no toca el backend ni
+  // pide nombre del cliente. La mesa recién pasa a "Ocupada" cuando se envía la
+  // primera tanda con productos (más abajo): así nunca queda una mesa "ocupada"
+  // sin ningún pedido real por un clic accidental, y sigue sin fricción para abrir.
   const handleSendTanda = async () => {
     if (!selectedMesa) return;
     const cartList = Object.values(cart);
     if (cartList.length === 0) {
       alert("Agrega al menos un producto para enviar a cocina.");
       return;
+    }
+
+    const targetMesaId = selectedMesa.id;
+    if (selectedMesa.status === "AVAILABLE") {
+      const opened = await openMesa(targetMesaId);
+      if (!opened) return; // openMesa ya muestra la alerta si falla
     }
 
     const items: OrderItem[] = cartList.map((item) => {
@@ -239,7 +239,7 @@ export default function MesasPage() {
       };
     });
 
-    const result = await addItemsToMesa(selectedMesa.id, items);
+    const result = await addItemsToMesa(targetMesaId, items);
     if (result) setCart({});
   };
 
@@ -336,7 +336,7 @@ export default function MesasPage() {
             return (
               <button
                 key={mesa.id}
-                onClick={() => (mesa.status === "AVAILABLE" ? handleOpenMesa(mesa.id) : setSelectedMesaId(mesa.id))}
+                onClick={() => setSelectedMesaId(mesa.id)}
                 className={`relative p-4 rounded-3xl border-2 text-left transition shadow-sm ${meta.card}`}
               >
                 <div className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${meta.badge}`}>
@@ -372,11 +372,13 @@ export default function MesasPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">
-                    Mesa {selectedMesa.number} · {selectedMesa.currentOrder?.customer}
+                    Mesa {selectedMesa.number}
+                    {selectedMesa.currentOrder?.customer ? ` · ${selectedMesa.currentOrder.customer}` : ""}
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    Atendedor: {selectedMesa.currentOrder?.user?.name || currentUser?.name || "—"} · Abierta hace{" "}
-                    {formatElapsed(selectedMesa.currentOrder?.createdAt)}
+                    {selectedMesa.currentOrder
+                      ? `Atendedor: ${selectedMesa.currentOrder.user?.name || currentUser?.name || "—"} · Abierta hace ${formatElapsed(selectedMesa.currentOrder.createdAt)}`
+                      : "Mesa libre — agrega productos para abrir la cuenta"}
                   </p>
                 </div>
               </div>
@@ -604,14 +606,16 @@ export default function MesasPage() {
                       <button
                         type="button"
                         onClick={handlePrintComanda}
-                        className="py-3 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-2xl text-[11px] transition flex items-center justify-center gap-1.5"
+                        disabled={!selectedMesa.currentOrder?.items.length}
+                        className="py-3 bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold rounded-2xl text-[11px] transition flex items-center justify-center gap-1.5"
                       >
                         <Receipt className="w-4 h-4" /> Comanda Cocina
                       </button>
                       <button
                         type="button"
                         onClick={handlePreBill}
-                        className="py-3 bg-white border border-blue-300 hover:bg-blue-50 text-blue-700 font-bold rounded-2xl text-[11px] transition flex items-center justify-center gap-1.5"
+                        disabled={!selectedMesa.currentOrder?.items.length}
+                        className="py-3 bg-white border border-blue-300 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed text-blue-700 font-bold rounded-2xl text-[11px] transition flex items-center justify-center gap-1.5"
                       >
                         <Printer className="w-4 h-4" /> Pre-Cuenta
                       </button>
