@@ -10,12 +10,14 @@ import HistorialPage from "./features/HistorialPage";
 import LoginPage from "./features/LoginPage";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { usePosStore, type UserAccount } from "./store/usePosStore";
+import KitchenPage from "./features/kitchenPage";
 
 const pages = {
   dashboard: DashboardPage,
   mesas: MesasPage,
-  productos: ProductosPage,
   pedidos: PedidosPage,
+  cocina: KitchenPage,
+  productos: ProductosPage,
   pagos: PagosPage,
   inventario: InventarioPage,
   historial: HistorialPage,

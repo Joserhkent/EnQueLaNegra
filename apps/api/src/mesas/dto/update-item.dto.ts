@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min, IsIn } from 'class-validator';
 
 export class UpdateItemDto {
   @IsInt()
@@ -9,4 +9,8 @@ export class UpdateItemDto {
   @IsString()
   @IsOptional()
   notas?: string;
+
+  @IsOptional()
+  @IsIn(['PENDING', 'IN_KITCHEN', 'DELIVERED'])
+  kitchenStatus?: string;
 }

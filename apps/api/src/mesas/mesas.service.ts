@@ -9,6 +9,7 @@ import {
   TableStatus,
   PaymentMethod,
   MovimientoTipo,
+  ItemKitchenStatus,
   Prisma,
 } from '@prisma/client';
 import { OpenTableDto } from './dto/open-table.dto';
@@ -343,6 +344,7 @@ export class MesasService {
                 cantidad: nuevaCantidad,
                 subtotal: nuevoSubtotalItem,
                 notas: dto.notas,
+                kitchenStatus: dto.kitchenStatus as ItemKitchenStatus,
               },
             },
           },

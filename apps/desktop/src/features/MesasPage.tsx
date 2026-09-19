@@ -304,10 +304,10 @@ export default function MesasPage() {
     }
   };
 
-  const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: string }> = {
-    AVAILABLE: { label: "Libre", card: "bg-emerald-50 border-emerald-200 hover:border-emerald-400", badge: "bg-emerald-500 text-white" },
-    OCCUPIED: { label: "Ocupada", card: "bg-amber-50 border-amber-300 hover:border-amber-500", badge: "bg-amber-500 text-slate-950" },
-    BILLING: { label: "Pidiendo Cuenta", card: "bg-blue-50 border-blue-300 hover:border-blue-500", badge: "bg-blue-500 text-white" },
+const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: string }> = {
+    AVAILABLE: { label: "Libre", card: "bg-emerald-50 hover:bg-emerald-100", badge: "bg-emerald-500 text-white" },
+    OCCUPIED: { label: "Ocupada", card: "bg-amber-50 hover:bg-amber-100", badge: "bg-amber-500 text-slate-950" },
+    BILLING: { label: "Pidiendo Cuenta", card: "bg-blue-50 hover:bg-blue-100", badge: "bg-blue-500 text-white" },
   };
 
   const counts = {
@@ -361,12 +361,13 @@ export default function MesasPage() {
               <button
                 key={mesa.id}
                 onClick={() => setSelectedMesaId(mesa.id)}
-                className={`relative p-4 rounded-3xl border-2 text-left transition shadow-sm ${meta.card}`}
+                className={`relative p-4 text-left transition shadow-sm hover:shadow-md ${meta.card}`}
               >
                 <div className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${meta.badge}`}>
                   {meta.label}
                 </div>
-                <div className="text-3xl font-black text-slate-900 mt-2">#{mesa.number}</div>
+                <img src="/mesa.svg" alt="" className="w-8 h-8 opacity-80" />
+                <div className="text-3xl font-black text-slate-900 mt-1">#{mesa.number}</div>
                 <div className="flex items-center gap-1 text-[11px] text-slate-500 font-semibold mt-1">
                   <Users className="w-3.5 h-3.5" /> {mesa.capacity} personas
                 </div>

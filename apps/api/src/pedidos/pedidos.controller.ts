@@ -13,7 +13,7 @@ import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
-
+import { UpdateItemKitchenStatusDto } from './dto/update-item-kitchen-status.dto';
 @Controller('pedidos')
 export class PedidosController {
   constructor(private readonly pedidosService: PedidosService) {}
@@ -46,7 +46,20 @@ export class PedidosController {
     if (!updateStatusDto.status) {
       throw new BadRequestException('El status del pedido es obligatorio');
     }
-
     return this.pedidosService.updateStatus(id, updateStatusDto.status);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/items/:itemId/kitchen-status')
+  updateItemKitchenStatus(
+    @Param('id') id: string,
+    @Param('itemId') itemId: string,
+    @Body() dto: UpdateItemKitchenStatusDto,
+  ) {
+    return this.pedidosService.updateItemKitchenStatus(
+      id,
+      itemId,
+      dto.kitchenStatus,
+    );
   }
 }

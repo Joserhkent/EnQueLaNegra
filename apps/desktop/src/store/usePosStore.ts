@@ -54,7 +54,7 @@ export interface OrderItemExtra {
 }
 
 export interface OrderItem {
-  id?: string; // presente cuando el ítem ya viene guardado desde el backend (no al armar una tanda nueva)
+  id?: string;
   productoId?: string;
   sku: string;
   nombre: string;
@@ -63,6 +63,8 @@ export interface OrderItem {
   receta: string[];
   notas?: string;
   extras?: OrderItemExtra[];
+  ronda?: number;
+  kitchenStatus?: string;
 }
 
 // 👇 Ya no existe "pendiente": todo pedido nuevo entra directo a "preparacion" (En Cocina)
@@ -130,8 +132,13 @@ interface PosStore {
   updateMesaItem: (
     tableId: string,
     itemId: string,
-    dto: { cantidad?: number; notas?: string }
+    dto: { cantidad?: number; notas?: string; kitchenStatus?: string }
   ) => Promise<Mesa | null>;
+  updateOrderItemKitchenStatus: (
+    orderId: string,
+    itemId: string,
+    kitchenStatus: "PENDING" | "IN_KITCHEN" | "DELIVERED"
+  ) => Promise<void>;
   removeMesaItem: (tableId: string, itemId: string) => Promise<Mesa | null>;
   preBillMesa: (tableId: string) => Promise<Mesa | null>;
   checkoutMesa: (
@@ -672,6 +679,31 @@ export const usePosStore = create<PosStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Error al cambiar estado del pedido:", error);
+    }
+  },
+  updateOrderItemKitchenStatus: async (orderId, itemId, kitchenStatus) => {
+    try {
+      const res = await fetch(`${API_URL}/pedidos/${orderId}/items/${itemId}/kitchen-status`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ kitchenStatus }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        alert(err?.message || "No se pudo actualizar el ítem");
+        return;
+      }
+      const updatedOrder = await res.json();
+      const normalizado: Order = {
+        ...updatedOrder,
+        status: normalizeStatusFromBackend(updatedOrder.status),
+        paymentMethod: normalizePaymentMethodFromBackend(updatedOrder.paymentMethod),
+      };
+      set((state) => ({
+        pedidos: state.pedidos.map((o) => (o.id === orderId ? normalizado : o)),
+      }));
+    } catch (error) {
+      console.error("Error al actualizar estado del ítem:", error);
     }
   },
 

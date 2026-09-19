@@ -8,17 +8,17 @@ import {
   History,
   UserCheck,
   Shield,
+  ChefHat,
   LogOut,
   type LucideIcon
 } from "lucide-react";
 import { usePosStore } from "../../store/usePosStore";
 
 type SidebarProps = {
-  activePage: "dashboard" | "mesas" | "productos" | "pedidos" | "pagos" | "inventario" | "historial";
+  activePage: "dashboard" | "mesas" | "pedidos" | "cocina" | "productos" | "pagos" | "inventario" | "historial";
   onChangePage: (page: SidebarProps["activePage"]) => void;
   onLogout: () => void;
 };
-
 interface MenuItem {
   key: SidebarProps["activePage"];
   label: string;
@@ -42,7 +42,15 @@ export default function Sidebar({ activePage, onChangePage, onLogout }: SidebarP
   const activeMesasCount = mesas.filter(
     (m) => m.status === "OCCUPIED" || m.status === "BILLING"
   ).length;
-
+    // Ítems pendientes en cocina: tandas de mesas activas + pedidos para llevar/delivery en preparación
+  const pendingKitchenItems =
+    mesas.reduce((acc, m) => {
+      if (m.status !== "OCCUPIED" && m.status !== "BILLING") return acc;
+      return acc + (m.currentOrder?.items.filter((i) => i.kitchenStatus !== "READY").length ?? 0);
+    }, 0) +
+    pedidos
+      .filter((p) => p.status === "preparacion")
+      .reduce((acc, p) => acc + p.items.filter((i) => i.kitchenStatus !== "READY").length, 0);
   // Alerta en vivo si hay insumos en o por debajo del stock mínimo
   const hasCriticalStock = insumos.some(
     (i) => i.stockActual <= i.stockMinimo
@@ -56,13 +64,19 @@ export default function Sidebar({ activePage, onChangePage, onLogout }: SidebarP
       icon: LayoutGrid,
       badge: activeMesasCount > 0 ? String(activeMesasCount) : undefined,
     },
-    { key: "productos", label: "Productos", icon: UtensilsCrossed },
     {
       key: "pedidos",
       label: "Pedidos",
       icon: ShoppingBag,
       badge: activeOrdersCount > 0 ? String(activeOrdersCount) : undefined,
     },
+    {
+      key: "cocina",
+      label: "Cocina",
+      icon: ChefHat,
+      badge: pendingKitchenItems > 0 ? String(pendingKitchenItems) : undefined,
+    },
+    { key: "productos", label: "Productos", icon: UtensilsCrossed },
     { key: "pagos", label: "Pagos", icon: CreditCard },
     {
       key: "inventario",

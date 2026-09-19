@@ -6,6 +6,7 @@ import {
   OrderType,
   MovimientoTipo,
   PaymentMethod,
+  ItemKitchenStatus,
   Prisma,
 } from '@prisma/client';
 
@@ -185,6 +186,25 @@ export class PedidosService {
       data: { status: newStatus },
       include: ORDER_INCLUDE,
     });
+  }
+  async updateItemKitchenStatus(
+    orderId: string,
+    itemId: string,
+    kitchenStatus: string,
+  ) {
+    const item = await this.prisma.orderItem.findUnique({
+      where: { id: itemId },
+    });
+    if (!item || item.orderId !== orderId) {
+      throw new NotFoundException('Ítem no encontrado en este pedido');
+    }
+
+    await this.prisma.orderItem.update({
+      where: { id: itemId },
+      data: { kitchenStatus: kitchenStatus as ItemKitchenStatus },
+    });
+
+    return this.findOne(orderId);
   }
 
   // Separado en dos pasos (calcular vs. escribir) para poder disparar la escritura
