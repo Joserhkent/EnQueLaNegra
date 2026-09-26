@@ -1,14 +1,11 @@
-import { useState, useEffect, useMemo, useRef } from "react";
-import { usePosStore, type Mesa, type Order, type Producto, type OrderItem } from "../store/usePosStore";
-import TicketReceiptModal, { type TicketMode } from "../components/TicketReceiptModal";
+import { useState, useEffect, useRef } from "react";
+import { usePosStore, type Mesa, type Producto, type OrderItem } from "../store/usePosStore";
 import {
   Users,
   Clock,
   Plus,
   X,
   ShoppingBasket,
-  Printer,
-  Receipt,
   CircleDollarSign,
   ChevronLeft,
   ChevronRight,
@@ -56,8 +53,11 @@ const CATEGORIES = [
 ];
 
 const getCategoriaNombre = (prod: Producto): string => {
-  const catObj = prod.categoria as any;
-  return typeof catObj === "object" && catObj !== null ? catObj.nombre : String(catObj || "");
+  const categoria = prod.categoria as unknown;
+  if (typeof categoria === "object" && categoria !== null && "nombre" in categoria) {
+    return String((categoria as { nombre?: unknown }).nombre || "");
+  }
+  return String(categoria || "");
 };
 
 type CartLine = { product: Producto; quantity: number; notes: string; cremas: string[]; agregados: string[] };
@@ -85,7 +85,7 @@ export default function MesasPage() {
     addItemsToMesa,
     updateMesaItem,
     removeMesaItem,
-    preBillMesa,
+    partialPaymentMesa,
     checkoutMesa,
     currentUser,
   } = usePosStore();
@@ -94,15 +94,21 @@ export default function MesasPage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
   const [cart, setCart] = useState<Record<string, CartLine>>({});
+  const [customizingProduct, setCustomizingProduct] = useState<Producto | null>(null);
+  const [customizingQuantity, setCustomizingQuantity] = useState(1);
+  const [customizingNotes, setCustomizingNotes] = useState("");
+  const [customizingCremas, setCustomizingCremas] = useState<string[]>([]);
+  const [customizingAgregados, setCustomizingAgregados] = useState<string[]>([]);
+  const showInlineCustomization = false;
   const categoryScrollRef = useRef<HTMLDivElement>(null);
 
   const [paymentMethod, setPaymentMethod] = useState<"Efectivo" | "Yape/Plin" | "Mixto">("Efectivo");
   const [montoEfectivo, setMontoEfectivo] = useState("");
   const [montoDigital, setMontoDigital] = useState("");
   const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutIsPartial, setCheckoutIsPartial] = useState(false);
+  const [partialPaymentAmount, setPartialPaymentAmount] = useState("");
 
-  const [printOrder, setPrintOrder] = useState<Order | null>(null);
-  const [printMode, setPrintMode] = useState<TicketMode>("boleta");
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -128,23 +134,31 @@ export default function MesasPage() {
   };
 
   const handleAddToCart = (prod: Producto) => {
-    setCart((prev) => {
-      const emptyLineId = Object.keys(prev).find((lineId) => {
-        const item = prev[lineId];
-        return (
-          item.product.sku === prod.sku &&
-          item.cremas.length === 0 &&
-          item.agregados.length === 0 &&
-          !item.notes.trim()
-        );
-      });
-      if (emptyLineId) {
-        return { ...prev, [emptyLineId]: { ...prev[emptyLineId], quantity: prev[emptyLineId].quantity + 1 } };
-      }
-      const newLineId = `${prod.sku}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      return { ...prev, [newLineId]: { product: prod, quantity: 1, notes: "", cremas: [], agregados: [] } };
-    });
+    setCustomizingProduct(prod);
+    setCustomizingQuantity(1);
+    setCustomizingNotes("");
+    setCustomizingCremas([]);
+    setCustomizingAgregados([]);
   };
+
+  const handleConfirmCustomization = () => {
+    if (!customizingProduct) return;
+    const newLineId = `${customizingProduct.sku}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    setCart((prev) => ({
+      ...prev,
+      [newLineId]: {
+        product: customizingProduct,
+        quantity: Math.max(1, customizingQuantity),
+        notes: customizingNotes.trim(),
+        cremas: customizingCremas,
+        agregados: customizingAgregados,
+      },
+    }));
+    setCustomizingProduct(null);
+  };
+
+  const toggleCustomizationCrema = (crema: string) => setCustomizingCremas((prev) => prev.includes(crema) ? prev.filter((item) => item !== crema) : [...prev, crema]);
+  const toggleCustomizationAgregado = (agregado: string) => setCustomizingAgregados((prev) => prev.includes(agregado) ? prev.filter((item) => item !== agregado) : [...prev, agregado]);
 
   const handleUpdateCartQty = (lineId: string, delta: number) => {
     setCart((prev) => {
@@ -267,23 +281,41 @@ export default function MesasPage() {
     setUpdatingItemId(null);
   };
 
-  const handlePreBill = async () => {
-    if (!selectedMesa) return;
-    const mesa = await preBillMesa(selectedMesa.id);
-    if (mesa?.currentOrder) {
-      setPrintMode("precuenta");
-      setPrintOrder(mesa.currentOrder);
-    }
+  const handleOpenPartialPayment = () => {
+    setCheckoutIsPartial(true);
+    setPartialPaymentAmount("");
+    setShowCheckout(true);
   };
 
-  const handlePrintComanda = () => {
-    if (!selectedMesa?.currentOrder) return;
-    setPrintMode("comanda");
-    setPrintOrder(selectedMesa.currentOrder);
+  const paidAmount = (selectedMesa?.currentOrder?.pagos || []).reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
+  const remainingAmount = Math.max(0, (selectedMesa?.currentOrder?.total || 0) - paidAmount);
+
+  const handlePartialPayment = async () => {
+    if (!selectedMesa) return;
+    const amount = Number.parseFloat(partialPaymentAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      alert("Ingresa un monto válido para registrar el pago.");
+      return;
+    }
+    if (amount > remainingAmount + 0.001) {
+      alert(`El pago no puede superar el saldo pendiente de S/ ${remainingAmount.toFixed(2)}.`);
+      return;
+    }
+    const mesa = await partialPaymentMesa(selectedMesa.id, paymentMethod, amount);
+    if (mesa) {
+      setPartialPaymentAmount("");
+      setShowCheckout(false);
+      setCheckoutIsPartial(false);
+      setPaymentMethod("Efectivo");
+    }
   };
 
   const handleCheckout = async () => {
     if (!selectedMesa) return;
+    if (checkoutIsPartial) {
+      await handlePartialPayment();
+      return;
+    }
     const numEf = parseFloat(montoEfectivo) || 0;
     const numDig = parseFloat(montoDigital) || 0;
     const order = await checkoutMesa(
@@ -293,10 +325,9 @@ export default function MesasPage() {
       paymentMethod === "Mixto" ? numDig : undefined
     );
     if (order) {
-      setPrintMode("boleta");
-      setPrintOrder(order);
       setSelectedMesaId(null);
       setShowCheckout(false);
+      setCheckoutIsPartial(false);
       setCart({});
       setMontoEfectivo("");
       setMontoDigital("");
@@ -304,7 +335,7 @@ export default function MesasPage() {
     }
   };
 
-const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: string }> = {
+  const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: string }> = {
     AVAILABLE: { label: "Libre", card: "bg-emerald-50 hover:bg-emerald-100", badge: "bg-emerald-500 text-white" },
     OCCUPIED: { label: "Ocupada", card: "bg-amber-50 hover:bg-amber-100", badge: "bg-amber-500 text-slate-950" },
     BILLING: { label: "Pidiendo Cuenta", card: "bg-blue-50 hover:bg-blue-100", badge: "bg-blue-500 text-white" },
@@ -316,16 +347,16 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
     cobrando: mesas.filter((m) => m.status === "BILLING").length,
   };
 
-  const rondas = useMemo(() => {
-    if (!selectedMesa?.currentOrder) return [] as [number, OrderItem[]][];
+  const rondas: [number, OrderItem[]][] = (() => {
+    if (!selectedMesa?.currentOrder) return [];
     const map = new Map<number, OrderItem[]>();
     for (const item of selectedMesa.currentOrder.items) {
-      const ronda = (item as any).ronda ?? 1;
+      const ronda = item.ronda ?? 1;
       if (!map.has(ronda)) map.set(ronda, []);
       map.get(ronda)!.push(item);
     }
     return [...map.entries()].sort((a, b) => a[0] - b[0]);
-  }, [selectedMesa]);
+  })();
 
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
@@ -357,6 +388,9 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
         ) : (
           mesas.map((mesa) => {
             const meta = statusMeta[mesa.status];
+            const mesaPaid = (mesa.currentOrder?.pagos || []).reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
+            const mesaRemaining = Math.max(0, (mesa.currentOrder?.total || 0) - mesaPaid);
+            const mesaLabel = mesaPaid > 0 ? "Pagada" : meta.label;
             return (
               <button
                 key={mesa.id}
@@ -364,7 +398,7 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
                 className={`relative p-4 text-left transition shadow-sm hover:shadow-md ${meta.card}`}
               >
                 <div className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${meta.badge}`}>
-                  {meta.label}
+                  {mesaLabel}
                 </div>
                 <img src="/mesa.svg" alt="" className="w-8 h-8 opacity-80" />
                 <div className="text-3xl font-black text-slate-900 mt-1">#{mesa.number}</div>
@@ -373,7 +407,10 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
                 </div>
                 {mesa.currentOrder && (
                   <div className="mt-3 pt-3 border-t border-slate-900/10 space-y-1">
-                    <div className="text-sm font-extrabold text-slate-900">S/ {mesa.currentOrder.total.toFixed(2)}</div>
+                    <div className="text-sm font-extrabold text-slate-900">Total S/ {mesa.currentOrder.total.toFixed(2)}</div>
+                    {mesaPaid > 0 && (
+                      <div className="text-[10px] font-extrabold text-emerald-700">Pagado S/ {mesaPaid.toFixed(2)} · Falta S/ {mesaRemaining.toFixed(2)}</div>
+                    )}
                     <div className="flex items-center gap-1 text-[10px] text-slate-500 font-semibold">
                       <Clock className="w-3 h-3" /> {formatElapsed(mesa.currentOrder.createdAt)}
                     </div>
@@ -412,6 +449,8 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
                   setSelectedMesaId(null);
                   setCart({});
                   setShowCheckout(false);
+                  setCheckoutIsPartial(false);
+                  setPartialPaymentAmount("");
                 }}
                 className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition"
               >
@@ -484,12 +523,12 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
 
                 {/* Consumo acumulado */}
                 {rondas.length > 0 && (
-                  <div className="pt-4 border-t border-slate-100 space-y-3">
+                  <div className="pt-4 border-t border-slate-100 space-y-3 md:hidden">
                     <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wide flex items-center gap-2">
                       <UtensilsCrossed className="w-3.5 h-3.5 text-amber-500" /> Consumo Acumulado
                     </h4>
                     {rondas.map(([ronda, items]) => (
-                      <div key={ronda} className="bg-slate-50 rounded-2xl p-3 border border-slate-200/70">
+                      <div key={ronda} className="bg-slate-50 rounded-2xl p-3 border border border-slate-200/70">
                         <div className="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Ronda {ronda}</div>
                         <div className="space-y-1.5">
                           {items.map((item) => {
@@ -550,6 +589,37 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
               {/* Carrito / Acciones */}
               <div className="md:col-span-2 p-6 bg-slate-50/50 flex flex-col justify-between overflow-y-auto">
                 <div className="space-y-4">
+                  {rondas.length > 0 && (
+                    <div className="pb-4 border-b border-slate-200 space-y-3">
+                      <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wide flex items-center gap-2">
+                        <UtensilsCrossed className="w-3.5 h-3.5 text-amber-500" /> Consumo Acumulado
+                      </h4>
+                      <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                        {rondas.map(([ronda, items]) => (
+                          <div key={ronda} className="bg-white rounded-2xl p-3 border border-slate-200/70 shadow-sm">
+                            <div className="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Ronda {ronda}</div>
+                            <div className="space-y-1.5">
+                              {items.map((item) => {
+                                const isUpdating = updatingItemId === item.id;
+                                return (
+                                  <div key={item.id} className="flex items-center justify-between gap-2 text-xs">
+                                    <div className="flex-1 min-w-0"><div className="font-semibold text-slate-700 truncate">{item.nombre}</div></div>
+                                    <div className="flex items-center gap-1 shrink-0 bg-slate-50 border-slate-200 rounded-lg p-0.5">
+                                      <button type="button" disabled={isUpdating} onClick={() => handleEditItemQty(item, -1)} className="w-5 h-5 rounded flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-rose-100 disabled:opacity-40">-</button>
+                                      <span className="text-[11px] font-extrabold px-1 text-slate-900 w-4 text-center">{item.cantidad}</span>
+                                      <button type="button" disabled={isUpdating} onClick={() => handleEditItemQty(item, 1)} className="w-5 h-5 rounded flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-emerald-100 disabled:opacity-40">+</button>
+                                    </div>
+                                    <span className="font-bold text-slate-500 w-16 text-right shrink-0">S/ {(item.precio * item.cantidad).toFixed(2)}</span>
+                                    <button type="button" disabled={isUpdating} onClick={() => handleRemoveItem(item)} title="Quitar ítem de la cuenta" className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:bg-rose-100 hover:text-rose-600 disabled:opacity-40 shrink-0"><Trash2 className="w-3.5 h-3.5" /></button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                       <ShoppingBasket className="w-4 h-4 text-amber-500" /> Nueva Tanda
@@ -589,7 +659,7 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
                             </div>
                           </div>
 
-                          {CATEGORIAS_CON_PERSONALIZACION.includes(getCategoriaNombre(item.product)) && (
+                          {showInlineCustomization && CATEGORIAS_CON_PERSONALIZACION.includes(getCategoriaNombre(item.product)) && (
                             <>
                               <input
                                 type="text"
@@ -665,36 +735,54 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
                     <span className="text-xs font-bold text-amber-900">Total Acumulado Mesa</span>
                     <span className="text-xl font-extrabold text-amber-900">S/ {(selectedMesa.currentOrder?.total || 0).toFixed(2)}</span>
                   </div>
+                  <div className="flex items-center justify-between text-[11px] font-bold">
+                    <span className="text-emerald-700">Pagado</span>
+                    <span className="text-emerald-700">S/ {paidAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-extrabold border-t border-slate-200 pt-1.5">
+                    <span className="text-blue-800">Saldo pendiente</span>
+                    <span className="text-blue-800">S/ {remainingAmount.toFixed(2)}</span>
+                  </div>
 
                   {!showCheckout ? (
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
-                        onClick={handlePrintComanda}
-                        disabled={!selectedMesa.currentOrder?.items.length}
-                        className="py-3 bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold rounded-2xl text-[11px] transition flex items-center justify-center gap-1.5"
+                        onClick={handleOpenPartialPayment}
+                        disabled={!selectedMesa.currentOrder?.items.length || remainingAmount <= 0}
+                        className="col-span-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md shadow-blue-500/20 transition active:scale-95 flex items-center justify-center gap-2"
                       >
-                        <Receipt className="w-4 h-4" /> Comanda Cocina
+                        <CircleDollarSign className="w-4 h-4" /> Registrar Pago Parcial
                       </button>
                       <button
                         type="button"
-                        onClick={handlePreBill}
-                        disabled={!selectedMesa.currentOrder?.items.length}
-                        className="py-3 bg-white border border-blue-300 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed text-blue-700 font-bold rounded-2xl text-[11px] transition flex items-center justify-center gap-1.5"
-                      >
-                        <Printer className="w-4 h-4" /> Pre-Cuenta
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowCheckout(true)}
+                        onClick={() => { setCheckoutIsPartial(false); setPartialPaymentAmount(""); setShowCheckout(true); }}
                         disabled={!selectedMesa.currentOrder?.items.length}
                         className="col-span-2 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95 flex items-center justify-center gap-2"
                       >
-                        <CircleDollarSign className="w-4 h-4" /> Cobrar y Cerrar Mesa
+                        <CircleDollarSign className="w-4 h-4" /> {remainingAmount <= 0 ? "Cerrar Mesa" : "Cobrar y Cerrar Mesa"}
                       </button>
                     </div>
                   ) : (
                     <div className="space-y-3 animate-in fade-in duration-200">
+                      <div className="rounded-2xl p-3 bg-blue-50 border-blue-200 text-xs font-bold text-blue-900">
+                        {checkoutIsPartial ? `Pago parcial · Saldo pendiente: S/ ${remainingAmount.toFixed(2)}` : `Cobro total · Total de la mesa: S/ ${(selectedMesa.currentOrder?.total || 0).toFixed(2)}`}
+                      </div>
+                      {checkoutIsPartial && (
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Monto del pago parcial</label>
+                          <input
+                            type="number"
+                            min="0.01"
+                            max={remainingAmount}
+                            step="0.01"
+                            value={partialPaymentAmount}
+                            onChange={(event) => setPartialPaymentAmount(event.target.value)}
+                            placeholder={remainingAmount.toFixed(2)}
+                            className="w-full px-3 py-2.5 bg-white border-blue-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                      )}
                       <div className="grid grid-cols-3 gap-1.5">
                         {(["Efectivo", "Yape/Plin", "Mixto"] as const).map((m) => (
                           <button
@@ -712,7 +800,7 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
                         ))}
                       </div>
 
-                      {paymentMethod === "Mixto" && (
+                      {!checkoutIsPartial && paymentMethod === "Mixto" && (
                         <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 space-y-2">
                           <div className="grid grid-cols-2 gap-2">
                             <div>
@@ -754,7 +842,7 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
                       <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
-                          onClick={() => setShowCheckout(false)}
+                          onClick={() => { setShowCheckout(false); setCheckoutIsPartial(false); setPartialPaymentAmount(""); }}
                           className="py-3 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-2xl text-xs transition"
                         >
                           Volver
@@ -764,7 +852,11 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
                           onClick={handleCheckout}
                           className="py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95"
                         >
-                          Confirmar Cobro
+                          {checkoutIsPartial
+                            ? (Number.parseFloat(partialPaymentAmount) >= remainingAmount - 0.001 && remainingAmount > 0
+                                ? "Registrar Pago Total y Cerrar Mesa"
+                                : "Registrar Pago Parcial")
+                            : (remainingAmount <= 0 ? "Cerrar Mesa" : "Confirmar Cobro")}
                         </button>
                       </div>
                     </div>
@@ -776,7 +868,65 @@ const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: s
         </div>
       )}
 
-      {printOrder && <TicketReceiptModal order={printOrder} mode={printMode} onClose={() => setPrintOrder(null)} />}
+      {customizingProduct && (
+        <div className="fixed inset-0 z-[70] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
+              <div>
+                <div className="text-[10px] uppercase tracking-wide text-amber-400 font-extrabold">Personalizar pedido</div>
+                <h3 className="font-bold text-base mt-1">{customizingProduct.iconoEmoji} {customizingProduct.nombre}</h3>
+              </div>
+              <button type="button" onClick={() => setCustomizingProduct(null)} className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+              <div className="flex items-center justify-between bg-slate-50 rounded-2xl p-3 border-slate-200">
+                <span className="text-xs font-bold text-slate-700">Cantidad</span>
+                <div className="flex items-center gap-3 bg-white border-slate-200 rounded-xl p-1">
+                  <button type="button" onClick={() => setCustomizingQuantity((value) => Math.max(1, value - 1))} className="w-7 h-7 rounded-lg font-bold text-slate-700 hover:bg-rose-100">-</button>
+                  <span className="w-5 text-center text-sm font-extrabold text-slate-900">{customizingQuantity}</span>
+                  <button type="button" onClick={() => setCustomizingQuantity((value) => value + 1)} className="w-7 h-7 rounded-lg font-bold text-slate-700 hover:bg-emerald-100">+</button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Descripción / indicaciones</label>
+                <input type="text" value={customizingNotes} onChange={(event) => setCustomizingNotes(event.target.value)} placeholder="Ej: sin cebolla, poco picante..." className="w-full px-3 py-2.5 bg-slate-50 border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500" />
+              </div>
+
+              <div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mb-1.5">Cremas</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {CREMAS_DISPONIBLES.map((crema) => (
+                    <button key={crema} type="button" onClick={() => toggleCustomizationCrema(crema)} className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition ${customizingCremas.includes(crema) ? "bg-amber-500 text-slate-950 border-amber-500" : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>
+                      {crema}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase mb-1.5">Agregados</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {AGREGADOS_DISPONIBLES.map((agregado) => (
+                    <button key={agregado.nombre} type="button" onClick={() => toggleCustomizationAgregado(agregado.nombre)} className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition ${customizingAgregados.includes(agregado.nombre) ? "bg-blue-500 text-white border-blue-500" : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>
+                      {agregado.nombre} +S/{agregado.precio.toFixed(2)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" onClick={() => setCustomizingProduct(null)} className="py-3 bg-white border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-2xl text-xs transition">Cancelar</button>
+                <button type="button" onClick={handleConfirmCustomization} className="py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-2xl text-xs shadow-md transition">Agregar a la tanda</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

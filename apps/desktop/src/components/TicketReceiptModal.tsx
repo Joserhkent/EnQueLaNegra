@@ -184,6 +184,17 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
                 <span className="text-slate-950 text-base font-extrabold">S/ {order.total.toFixed(2)}</span>
               </div>
 
+              {mode === "precuenta" && (order.pagos?.length ?? 0) > 0 && (() => {
+                const pagado = (order.pagos || []).reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
+                const saldo = Math.max(0, order.total - pagado);
+                return (
+                  <div className="bg-blue-50 p-2 rounded-xl text-[10px] space-y-0.5 mt-1 border-blue-200">
+                    <div className="flex justify-between text-emerald-700"><span>• Pagado:</span><span className="font-bold">S/ {pagado.toFixed(2)}</span></div>
+                    <div className="flex justify-between text-blue-800"><span>• Saldo pendiente:</span><span className="font-bold">S/ {saldo.toFixed(2)}</span></div>
+                  </div>
+                );
+              })()}
+
               {mode === "boleta" && (
                 <>
                   <div className="flex justify-between text-[10px] text-slate-700 border-t border-slate-300 pt-2">

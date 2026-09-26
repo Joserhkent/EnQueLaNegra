@@ -13,6 +13,7 @@ import { OpenTableDto } from './dto/open-table.dto';
 import { AddItemsDto } from './dto/add-items.dto';
 import { CheckoutDto } from './dto/checkout.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { PartialPaymentDto } from './dto/partial-payment.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
 
@@ -70,6 +71,16 @@ export class MesasController {
   @Post(':id/pre-bill')
   preBill(@Param('id') id: string) {
     return this.mesasService.preBill(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/partial-payment')
+  partialPayment(
+    @Param('id') id: string,
+    @Body() dto: PartialPaymentDto,
+    @GetUser('id') userId?: string,
+  ) {
+    return this.mesasService.partialPayment(id, dto, userId);
   }
 
   @UseGuards(JwtAuthGuard)

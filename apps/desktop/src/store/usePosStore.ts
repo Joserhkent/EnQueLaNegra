@@ -84,6 +84,7 @@ export interface Order {
   tableId?: string | null;
   table?: { number: number } | null;
   user?: { id: string; name: string; username: string } | null;
+  pagos?: { id: string; metodoPago: string; monto: number; fecha?: string }[];
   createdAt?: string;
 }
 
@@ -141,6 +142,7 @@ interface PosStore {
   ) => Promise<void>;
   removeMesaItem: (tableId: string, itemId: string) => Promise<Mesa | null>;
   preBillMesa: (tableId: string) => Promise<Mesa | null>;
+  partialPaymentMesa: (tableId: string, paymentMethod: Order["paymentMethod"], monto: number) => Promise<Mesa | null>;
   checkoutMesa: (
     tableId: string,
     paymentMethod: Order["paymentMethod"],
@@ -422,6 +424,33 @@ export const usePosStore = create<PosStore>((set, get) => ({
       return mesa;
     } catch (error) {
       console.error("Error al emitir pre-cuenta:", error);
+      return null;
+    }
+  },
+
+  partialPaymentMesa: async (tableId, paymentMethod, monto) => {
+    try {
+      const payload = {
+        paymentMethod: paymentMethod === "Yape/Plin" ? "YAPE_PLIN" : paymentMethod.toUpperCase(),
+        monto,
+      };
+      const res = await fetch(`${API_URL}/tables/${tableId}/partial-payment`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo registrar el pago parcial";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return null;
+      }
+      const mesa = await res.json();
+      set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
+      get().fetchPedidos();
+      return mesa;
+    } catch (error) {
+      console.error("Error al registrar pago parcial:", error);
       return null;
     }
   },

@@ -16,6 +16,7 @@ import { OpenTableDto } from './dto/open-table.dto';
 import { AddItemsDto } from './dto/add-items.dto';
 import { CheckoutDto } from './dto/checkout.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { PartialPaymentDto } from './dto/partial-payment.dto';
 
 const ORDER_INCLUDE = {
   items: {
@@ -217,6 +218,48 @@ export class MesasService {
     return this.getTableDetail(table.id);
   }
 
+  async partialPayment(tableId: string, dto: PartialPaymentDto, userId?: string) {
+    const table = await this.prisma.table.findUnique({
+      where: { id: tableId },
+      include: { currentOrder: { include: ORDER_INCLUDE } },
+    });
+    if (!table) throw new NotFoundException('Mesa no encontrada');
+    if (!table.currentOrderId || !table.currentOrder) {
+      throw new BadRequestException(`La mesa ${table.number} no tiene una cuenta abierta`);
+    }
+
+    const order = table.currentOrder;
+    if (order.items.length === 0) {
+      throw new BadRequestException('No se puede registrar un pago sin ítems');
+    }
+
+    const paymentMethod =
+      PaymentMethod[dto.paymentMethod as unknown as keyof typeof PaymentMethod] ?? PaymentMethod.EFECTIVO;
+    const paid = order.pagos.reduce((sum, pago) => sum + pago.monto, 0);
+    const remaining = Math.max(0, Math.round((order.total - paid) * 100) / 100);
+    const amount = Math.round(dto.monto * 100) / 100;
+
+    if (amount > remaining) {
+      throw new BadRequestException(`El pago no puede superar el saldo pendiente de S/ ${remaining.toFixed(2)}`);
+    }
+
+    const updatedOrder = await this.prisma.order.update({
+      where: { id: order.id },
+      data: {
+        userId: userId ?? order.userId ?? undefined,
+        pagos: { create: { metodoPago: paymentMethod, monto: amount } },
+      },
+      include: ORDER_INCLUDE,
+    });
+
+    return {
+      ...table,
+      currentOrder: updatedOrder,
+      paidAmount: paid + amount,
+      remainingAmount: Math.max(0, Math.round((remaining - amount) * 100) / 100),
+    };
+  }
+
   async checkout(tableId: string, dto: CheckoutDto, userId?: string) {
     const table = await this.prisma.table.findUnique({
       where: { id: tableId },
@@ -242,13 +285,23 @@ export class MesasService {
         dto.paymentMethod as unknown as keyof typeof PaymentMethod
       ] ?? PaymentMethod.EFECTIVO;
     const isMixto = paymentMethod === PaymentMethod.MIXTO;
+    const paidBefore = order.pagos.reduce((sum, pago) => sum + pago.monto, 0);
+    const remainingBefore = Math.max(0, Math.round((order.total - paidBefore) * 100) / 100);
+    const mixedAmount = (dto.montoEfectivo ?? 0) + (dto.montoDigital ?? 0);
 
-    const pagosData: Prisma.PagoCreateWithoutOrderInput[] = isMixto
-      ? [
-          { metodoPago: PaymentMethod.EFECTIVO, monto: dto.montoEfectivo ?? 0 },
-          { metodoPago: PaymentMethod.YAPE_PLIN, monto: dto.montoDigital ?? 0 },
-        ].filter((p) => p.monto > 0)
-      : [{ metodoPago: paymentMethod, monto: order.total }];
+    if (isMixto && remainingBefore > 0 && Math.abs(mixedAmount - remainingBefore) > 0.01) {
+      throw new BadRequestException(`El pago mixto debe sumar exactamente S/ ${remainingBefore.toFixed(2)}`);
+    }
+
+    const pagosData: Prisma.PagoCreateWithoutOrderInput[] =
+      remainingBefore <= 0
+        ? []
+        : isMixto
+          ? [
+              { metodoPago: PaymentMethod.EFECTIVO, monto: dto.montoEfectivo ?? 0 },
+              { metodoPago: PaymentMethod.YAPE_PLIN, monto: dto.montoDigital ?? 0 },
+            ].filter((p) => p.monto > 0)
+          : [{ metodoPago: paymentMethod, monto: remainingBefore }];
 
     const now = new Date();
 
