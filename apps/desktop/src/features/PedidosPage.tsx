@@ -24,15 +24,6 @@ import {
   Clock,
 } from "lucide-react";
 
-const CREMAS_DISPONIBLES = [
-  "Guasacaca",
-  "Salsa de Ajo",
-  "Mayonesa",
-  "Ketchup",
-  "Mostaza",
-  "Picante Casero",
-];
-
 const AGREGADOS_DISPONIBLES = [
   { nombre: "Queso Amarillo", precio: 0.75 },
   { nombre: "Plátano Maduro", precio: 0.75 },
@@ -42,7 +33,7 @@ const AGREGADOS_DISPONIBLES = [
   { nombre: "Chicharrón", precio: 1.00 },
 ];
 
-// Solo estas categorías permiten notas, cremas y agregados extra.
+// Solo estas categorías permiten notas y agregados extra (las cremas van solo en el comentario).
 const CATEGORIAS_CON_PERSONALIZACION = [
   "Arepas Tradicionales",
   "Empanadas",
@@ -153,7 +144,6 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         const item = prev[lineId];
         return (
           item.product.sku === prod.sku &&
-          item.cremas.length === 0 &&
           item.agregados.length === 0 &&
           !item.notes.trim()
         );
@@ -169,7 +159,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       const newLineId = `${prod.sku}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       return {
         ...prev,
-        [newLineId]: { product: prod, quantity: 1, notes: "", cremas: [], agregados: [] },
+        [newLineId]: { product: prod, quantity: 1, notes: "", agregados: [] },
       };
     });
   };
@@ -198,21 +188,6 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       return {
         ...prev,
         [lineId]: { ...item, notes },
-      };
-    });
-  };
-
-  const handleToggleCrema = (lineId: string, crema: string) => {
-    setCart((prev) => {
-      const item = prev[lineId];
-      if (!item) return prev;
-      const yaTiene = item.cremas.includes(crema);
-      const nuevasCremas = yaTiene
-        ? item.cremas.filter((c) => c !== crema)
-        : [...item.cremas, crema];
-      return {
-        ...prev,
-        [lineId]: { ...item, cremas: nuevasCremas },
       };
     });
   };
@@ -271,14 +246,6 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       code: `#ORD-${orderNum}`,
       customer: customerName.trim() || "Cliente Mostrador",
       items: cartList.map((item) => {
-        // Convierte las cremas seleccionadas en "extras" con precio 0 (requiere insumoId real)
-        const extrasFromCremas = item.cremas
-          .map((cremaName) => {
-            const insumoId = findInsumoId(cremaName);
-            return insumoId ? { insumoId, cantidad: 1, precioExtra: 0 } : null;
-          })
-          .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
-
         // Convierte los agregados seleccionados en "extras" con su precio real
         const extrasFromAgregados = item.agregados
           .map((agregadoName) => {
@@ -298,7 +265,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
           cantidad: item.quantity,
           receta: item.product.receta || [],
           notas: item.notes,
-          extras: [...extrasFromCremas, ...extrasFromAgregados],
+          extras: extrasFromAgregados,
         };
       }),
       total: totalAmount,
@@ -898,38 +865,13 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
 
                           {CATEGORIAS_CON_PERSONALIZACION.includes(getCategoriaNombre(item.product)) && (
                             <>
-                              <input
-                                type="text"
+                              <textarea
+                                rows={4}
                                 value={item.notes}
                                 onChange={(e) => handleUpdateCartNotes(lineId, e.target.value)}
-                                placeholder="Ej: sin cebolla, extra bien cocido..."
-                                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-medium text-slate-900 focus:outline-none focus:border-amber-500 placeholder:text-slate-400"
+                                placeholder="Ej: sin cebolla, con mayonesa, ketchup y queso cheddar..."
+                                className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-medium text-slate-900 focus:outline-none focus:border-amber-500 placeholder:text-slate-400 resize-y"
                               />
-
-                              <div>
-                                <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">
-                                  Cremas / Aderezos
-                                </div>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {CREMAS_DISPONIBLES.map((crema) => {
-                                    const activa = item.cremas.includes(crema);
-                                    return (
-                                      <button
-                                        key={crema}
-                                        type="button"
-                                        onClick={() => handleToggleCrema(lineId, crema)}
-                                        className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition ${
-                                          activa
-                                            ? "bg-amber-500 text-slate-950 border-amber-500"
-                                            : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                                        }`}
-                                      >
-                                        {crema}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
 
                               <div>
                                 <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">

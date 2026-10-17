@@ -53,7 +53,7 @@ export default function InventarioPage() {
     "Quesos y Lácteos",
     "Verduras y Legumbres",
     "Papas",
-    "Salsas y Aderezos",
+    "Cremas",
   ];
 
   // Helper status calculator

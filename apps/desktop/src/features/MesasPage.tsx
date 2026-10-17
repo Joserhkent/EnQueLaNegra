@@ -13,15 +13,6 @@ import {
   Trash2,
 } from "lucide-react";
 
-const CREMAS_DISPONIBLES = [
-  "Guasacaca",
-  "Salsa de Ajo",
-  "Mayonesa",
-  "Ketchup",
-  "Mostaza",
-  "Picante Casero",
-];
-
 const AGREGADOS_DISPONIBLES = [
   { nombre: "Queso Amarillo", precio: 0.75 },
   { nombre: "Plátano Maduro", precio: 0.75 },
@@ -60,7 +51,7 @@ const getCategoriaNombre = (prod: Producto): string => {
   return String(categoria || "");
 };
 
-type CartLine = { product: Producto; quantity: number; notes: string; cremas: string[]; agregados: string[] };
+type CartLine = { product: Producto; quantity: number; notes: string; agregados: string[] };
 
 function formatElapsed(startIso?: string | null): string {
   if (!startIso) return "--";
@@ -97,7 +88,6 @@ export default function MesasPage() {
   const [customizingProduct, setCustomizingProduct] = useState<Producto | null>(null);
   const [customizingQuantity, setCustomizingQuantity] = useState(1);
   const [customizingNotes, setCustomizingNotes] = useState("");
-  const [customizingCremas, setCustomizingCremas] = useState<string[]>([]);
   const [customizingAgregados, setCustomizingAgregados] = useState<string[]>([]);
   const showInlineCustomization = false;
   const categoryScrollRef = useRef<HTMLDivElement>(null);
@@ -137,7 +127,6 @@ export default function MesasPage() {
     setCustomizingProduct(prod);
     setCustomizingQuantity(1);
     setCustomizingNotes("");
-    setCustomizingCremas([]);
     setCustomizingAgregados([]);
   };
 
@@ -150,14 +139,12 @@ export default function MesasPage() {
         product: customizingProduct,
         quantity: Math.max(1, customizingQuantity),
         notes: customizingNotes.trim(),
-        cremas: customizingCremas,
         agregados: customizingAgregados,
       },
     }));
     setCustomizingProduct(null);
   };
 
-  const toggleCustomizationCrema = (crema: string) => setCustomizingCremas((prev) => prev.includes(crema) ? prev.filter((item) => item !== crema) : [...prev, crema]);
   const toggleCustomizationAgregado = (agregado: string) => setCustomizingAgregados((prev) => prev.includes(agregado) ? prev.filter((item) => item !== agregado) : [...prev, agregado]);
 
   const handleUpdateCartQty = (lineId: string, delta: number) => {
@@ -176,18 +163,6 @@ export default function MesasPage() {
 
   const handleUpdateCartNotes = (lineId: string, notes: string) => {
     setCart((prev) => (prev[lineId] ? { ...prev, [lineId]: { ...prev[lineId], notes } } : prev));
-  };
-
-  const handleToggleCrema = (lineId: string, crema: string) => {
-    setCart((prev) => {
-      const item = prev[lineId];
-      if (!item) return prev;
-      const has = item.cremas.includes(crema);
-      return {
-        ...prev,
-        [lineId]: { ...item, cremas: has ? item.cremas.filter((c) => c !== crema) : [...item.cremas, crema] },
-      };
-    });
   };
 
   const handleToggleAgregado = (lineId: string, agregado: string) => {
@@ -230,13 +205,6 @@ export default function MesasPage() {
     }
 
     const items: OrderItem[] = cartList.map((item) => {
-      const extrasFromCremas = item.cremas
-        .map((cremaName) => {
-          const insumoId = findInsumoId(cremaName);
-          return insumoId ? { insumoId, cantidad: 1, precioExtra: 0 } : null;
-        })
-        .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
-
       const extrasFromAgregados = item.agregados
         .map((agregadoName) => {
           const insumoId = findInsumoId(agregadoName);
@@ -253,7 +221,7 @@ export default function MesasPage() {
         cantidad: item.quantity,
         receta: item.product.receta || [],
         notas: item.notes,
-        extras: [...extrasFromCremas, ...extrasFromAgregados],
+        extras: extrasFromAgregados,
       };
     });
 
@@ -661,35 +629,13 @@ export default function MesasPage() {
 
                           {showInlineCustomization && CATEGORIAS_CON_PERSONALIZACION.includes(getCategoriaNombre(item.product)) && (
                             <>
-                              <input
-                                type="text"
+                              <textarea
+                                rows={4}
                                 value={item.notes}
                                 onChange={(e) => handleUpdateCartNotes(lineId, e.target.value)}
-                                placeholder="Ej: sin cebolla, poco picante..."
-                                className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-medium text-slate-900 focus:outline-none focus:border-amber-500 placeholder:text-slate-400"
+                                placeholder="Ej: sin cebolla, con mayonesa, ketchup y queso cheddar..."
+                                className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-medium text-slate-900 focus:outline-none focus:border-amber-500 placeholder:text-slate-400 resize-y"
                               />
-                              <div>
-                                <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">Salsas</div>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {CREMAS_DISPONIBLES.map((crema) => {
-                                    const activa = item.cremas.includes(crema);
-                                    return (
-                                      <button
-                                        key={crema}
-                                        type="button"
-                                        onClick={() => handleToggleCrema(lineId, crema)}
-                                        className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition ${
-                                          activa
-                                            ? "bg-amber-500 text-slate-950 border-amber-500"
-                                            : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                                        }`}
-                                      >
-                                        {crema}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
                               <div>
                                 <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">Agregados</div>
                                 <div className="flex flex-wrap gap-1.5">
@@ -892,19 +838,8 @@ export default function MesasPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Descripción / indicaciones</label>
-                <input type="text" value={customizingNotes} onChange={(event) => setCustomizingNotes(event.target.value)} placeholder="Ej: sin cebolla, poco picante..." className="w-full px-3 py-2.5 bg-slate-50 border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500" />
-              </div>
-
-              <div>
-                <div className="text-[10px] font-bold text-slate-500 uppercase mb-1.5">Cremas</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {CREMAS_DISPONIBLES.map((crema) => (
-                    <button key={crema} type="button" onClick={() => toggleCustomizationCrema(crema)} className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition ${customizingCremas.includes(crema) ? "bg-amber-500 text-slate-950 border-amber-500" : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>
-                      {crema}
-                    </button>
-                  ))}
-                </div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">Descripción / indicaciones (incluye las cremas aquí)</label>
+                <textarea rows={4} value={customizingNotes} onChange={(event) => setCustomizingNotes(event.target.value)} placeholder="Ej: sin cebolla, con mayonesa, ketchup y queso cheddar..." className="w-full px-3 py-3 bg-slate-50 border-slate-200 rounded-xl text-base font-medium text-slate-900 focus:outline-none focus:border-amber-500 resize-y" />
               </div>
 
               <div>
