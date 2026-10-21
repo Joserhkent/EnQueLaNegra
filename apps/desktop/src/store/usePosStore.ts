@@ -97,6 +97,8 @@ export interface Mesa {
   status: MesaStatus;
   currentOrderId: string | null;
   currentOrder: Order | null;
+  joinedToId?: string | null;
+  joinedTables?: Mesa[];
 }
 
 export interface CierreCaja {
@@ -128,6 +130,10 @@ interface PosStore {
   fetchPedidos: () => Promise<void>;
   fetchMovimientos: () => Promise<void>;
   fetchMesas: () => Promise<void>;
+  createMesa: (capacity: number) => Promise<Mesa | null>;
+  updateMesa: (tableId: string, changes: { number?: number; capacity?: number }) => Promise<Mesa | null>;
+  deleteMesa: (tableId: string) => Promise<boolean>;
+  joinMesas: (mainTableId: string, tableIds: string[]) => Promise<Mesa | null>;
   openMesa: (tableId: string, customer?: string) => Promise<Mesa | null>;
   addItemsToMesa: (tableId: string, items: OrderItem[]) => Promise<Mesa | null>;
   updateMesaItem: (
@@ -206,7 +212,19 @@ const statusToBackend = (status: Order["status"]): string => status.toUpperCase(
 // operación (el de red hacia la base de datos) sin ganar nada.
 const upsertMesa = (mesas: Mesa[], mesa: Mesa): Mesa[] => {
   const exists = mesas.some((m) => m.id === mesa.id);
-  return exists ? mesas.map((m) => (m.id === mesa.id ? mesa : m)) : [...mesas, mesa];
+  return exists
+    ? mesas.map((current) =>
+        current.id === mesa.id
+          ? {
+              ...current,
+              ...mesa,
+              joinedToId:
+                mesa.joinedToId === undefined ? current.joinedToId : mesa.joinedToId,
+              joinedTables: mesa.joinedTables ?? current.joinedTables,
+            }
+          : current
+      )
+    : [...mesas, mesa];
 };
 
 // 🔧 Mismo problema que con el status: el backend guarda/devuelve el método de pago
@@ -219,6 +237,13 @@ const normalizePaymentMethodFromBackend = (metodo: unknown): Order["paymentMetho
   if (s === "YAPE_PLIN" || s === "YAPE/PLIN") return "Yape/Plin";
   if (s === "MIXTO") return "Mixto";
   return "Efectivo";
+};
+
+const normalizeOrderTypeFromBackend = (type: unknown): Order["type"] => {
+  const normalizedType = String(type || "").toUpperCase();
+  if (normalizedType === "DELIVERY") return "Delivery";
+  if (normalizedType === "LLEVAR") return "Llevar";
+  return "Mesa";
 };
 
 export const usePosStore = create<PosStore>((set, get) => ({
@@ -308,6 +333,96 @@ export const usePosStore = create<PosStore>((set, get) => ({
       set({ mesas: data });
     } catch (error) {
       console.error("Error al obtener mesas:", error);
+    }
+  },
+
+  createMesa: async (capacity) => {
+    try {
+      const res = await fetch(`${API_URL}/tables`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ capacity }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo crear la mesa";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return null;
+      }
+      const mesa: Mesa = await res.json();
+      set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
+      return mesa;
+    } catch (error) {
+      console.error("Error al crear mesa:", error);
+      alert("No se pudo conectar con el servidor para crear la mesa.");
+      return null;
+    }
+  },
+
+  updateMesa: async (tableId, changes) => {
+    try {
+      const res = await fetch(`${API_URL}/tables/${tableId}`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(changes),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo actualizar la mesa";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return null;
+      }
+      const mesa: Mesa = await res.json();
+      set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
+      return mesa;
+    } catch (error) {
+      console.error("Error al editar mesa:", error);
+      alert("No se pudo conectar con el servidor para editar la mesa.");
+      return null;
+    }
+  },
+
+  deleteMesa: async (tableId) => {
+    try {
+      const res = await fetch(`${API_URL}/tables/${tableId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo eliminar la mesa";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return false;
+      }
+      set((state) => ({ mesas: state.mesas.filter((mesa) => mesa.id !== tableId) }));
+      return true;
+    } catch (error) {
+      console.error("Error al eliminar mesa:", error);
+      alert("No se pudo conectar con el servidor para eliminar la mesa.");
+      return false;
+    }
+  },
+
+  joinMesas: async (mainTableId, tableIds) => {
+    try {
+      const res = await fetch(`${API_URL}/tables/${mainTableId}/join`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ tableIds }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudieron unir las mesas";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return null;
+      }
+      const mesa: Mesa = await res.json();
+      await get().fetchMesas();
+      return mesa;
+    } catch (error) {
+      console.error("Error al unir mesas:", error);
+      alert("No se pudo conectar con el servidor para unir las mesas.");
+      return null;
     }
   },
 
@@ -418,7 +533,12 @@ export const usePosStore = create<PosStore>((set, get) => ({
         method: "POST",
         headers: getAuthHeaders(),
       });
-      if (!res.ok) return null;
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo emitir la pre-cuenta";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return null;
+      }
       const mesa = await res.json();
       set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
       return mesa;
@@ -475,15 +595,8 @@ export const usePosStore = create<PosStore>((set, get) => ({
         return null;
       }
       const order = await res.json();
-      // Se sabe exactamente cómo queda la mesa (libre, sin orden) sin tener que
-      // releerla; el historial de pedidos y el stock se refrescan en segundo plano.
-      set((state) => ({
-        mesas: state.mesas.map((m) =>
-          m.id === tableId
-            ? { ...m, status: "AVAILABLE", currentOrderId: null, currentOrder: null }
-            : m
-        ),
-      }));
+      // El cobro también disuelve el grupo, por eso se vuelve a cargar la lista.
+      await get().fetchMesas();
       get().fetchPedidos();
       get().fetchInsumos();
       return {
@@ -512,6 +625,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
         .map((o: any) => ({
           ...o,
           status: normalizeStatusFromBackend(o.status),
+          type: normalizeOrderTypeFromBackend(o.type),
           paymentMethod: normalizePaymentMethodFromBackend(o.paymentMethod),
         }));
       set({ pedidos: normalizados, loading: false });

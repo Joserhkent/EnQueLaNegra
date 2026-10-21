@@ -183,11 +183,16 @@ model Table {
   capacity       Int         @default(4)
   status         TableStatus @default(AVAILABLE)
   currentOrderId String?     @unique
+  joinedToId     String?
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
   currentOrder Order?  @relation("TableCurrentOrder", fields: [currentOrderId], references: [id])
   orders       Order[] @relation("TableOrders")
+  joinedTo     Table?  @relation("JoinedTables", fields: [joinedToId], references: [id], onDelete: SetNull)
+  joinedTables Table[] @relation("JoinedTables")
+
+  @@index([joinedToId])
 }
 
 // ---------- Clientes ----------

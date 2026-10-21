@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { usePosStore, type Mesa, type Producto, type OrderItem } from "../store/usePosStore";
+import { usePosStore, type Mesa, type Producto, type Order, type OrderItem } from "../store/usePosStore";
+import TicketReceiptModal from "../components/TicketReceiptModal";
 import {
   Users,
   Clock,
@@ -11,6 +12,10 @@ import {
   ChevronRight,
   UtensilsCrossed,
   Trash2,
+  Search,
+  GitMerge,
+  Pencil,
+  Printer,
 } from "lucide-react";
 
 const AGREGADOS_DISPONIBLES = [
@@ -76,12 +81,27 @@ export default function MesasPage() {
     addItemsToMesa,
     updateMesaItem,
     removeMesaItem,
+    preBillMesa,
     partialPaymentMesa,
     checkoutMesa,
+    createMesa,
+    updateMesa,
+    deleteMesa,
+    joinMesas,
     currentUser,
   } = usePosStore();
 
   const [selectedMesaId, setSelectedMesaId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | "available" | "occupied" | "billing">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showCreateTable, setShowCreateTable] = useState(false);
+  const [newTableCapacity, setNewTableCapacity] = useState("4");
+  const [editingMesa, setEditingMesa] = useState<Mesa | null>(null);
+  const [editTableNumber, setEditTableNumber] = useState("");
+  const [editTableCapacity, setEditTableCapacity] = useState("");
+  const [showJoinTables, setShowJoinTables] = useState(false);
+  const [joinTableIds, setJoinTableIds] = useState<string[]>([]);
+  const [mainJoinTableId, setMainJoinTableId] = useState<string | null>(null);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
   const [cart, setCart] = useState<Record<string, CartLine>>({});
@@ -96,6 +116,7 @@ export default function MesasPage() {
   const [montoEfectivo, setMontoEfectivo] = useState("");
   const [montoDigital, setMontoDigital] = useState("");
   const [showCheckout, setShowCheckout] = useState(false);
+  const [receiptOrder, setReceiptOrder] = useState<Order | null>(null);
   const [checkoutIsPartial, setCheckoutIsPartial] = useState(false);
   const [partialPaymentAmount, setPartialPaymentAmount] = useState("");
 
@@ -303,6 +324,18 @@ export default function MesasPage() {
     }
   };
 
+  const handlePrintPreBill = async () => {
+    if (!selectedMesa?.currentOrder) return;
+    const mesa = await preBillMesa(selectedMesa.id);
+    if (!mesa?.currentOrder) return;
+    setReceiptOrder({
+      ...mesa.currentOrder,
+      type: "Mesa",
+      tableId: mesa.id,
+      table: { number: mesa.number },
+    });
+  };
+
   const statusMeta: Record<Mesa["status"], { label: string; card: string; badge: string }> = {
     AVAILABLE: { label: "Libre", card: "bg-emerald-50 hover:bg-emerald-100", badge: "bg-emerald-500 text-white" },
     OCCUPIED: { label: "Ocupada", card: "bg-amber-50 hover:bg-amber-100", badge: "bg-amber-500 text-slate-950" },
@@ -310,9 +343,96 @@ export default function MesasPage() {
   };
 
   const counts = {
-    libres: mesas.filter((m) => m.status === "AVAILABLE").length,
-    ocupadas: mesas.filter((m) => m.status === "OCCUPIED").length,
-    cobrando: mesas.filter((m) => m.status === "BILLING").length,
+    libres: mesas.filter((m) => !m.joinedToId && m.status === "AVAILABLE").length,
+    ocupadas: mesas.filter((m) => !m.joinedToId && m.status === "OCCUPIED").length,
+    cobrando: mesas.filter((m) => !m.joinedToId && m.status === "BILLING").length,
+  };
+
+  const visibleMesas = mesas
+    .filter((mesa) => !mesa.joinedToId)
+    .filter((mesa) => {
+      const isAvailable = mesa.status === "AVAILABLE";
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "available" && isAvailable) ||
+        (statusFilter === "occupied" && mesa.status === "OCCUPIED") ||
+        (statusFilter === "billing" && mesa.status === "BILLING");
+      const searchableNumbers = [mesa.number, ...(mesa.joinedTables || []).map((table) => table.number)];
+      const normalizedSearch = searchQuery.trim().toLowerCase();
+      const matchesSearch =
+        normalizedSearch.length === 0 ||
+        searchableNumbers.some((number) => `mesa ${number}`.includes(normalizedSearch) || String(number).includes(normalizedSearch));
+      return matchesStatus && matchesSearch;
+    });
+
+  const availableTables = mesas.filter(
+    (mesa) => !mesa.joinedToId && mesa.status === "AVAILABLE",
+  );
+
+  const handleCreateTable = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const capacity = Number(newTableCapacity);
+    if (!Number.isInteger(capacity) || capacity < 1) {
+      alert("Ingresa una cantidad entera de sillas mayor que cero.");
+      return;
+    }
+    const mesa = await createMesa(capacity);
+    if (mesa) {
+      setShowCreateTable(false);
+      setNewTableCapacity("4");
+    }
+  };
+
+  const handleEditTable = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!editingMesa) return;
+    const number = Number(editTableNumber);
+    const capacity = Number(editTableCapacity);
+    if (!Number.isInteger(number) || number < 1 || !Number.isInteger(capacity) || capacity < 1) {
+      alert("El número de mesa y la cantidad de sillas deben ser enteros mayores que cero.");
+      return;
+    }
+    const updated = await updateMesa(editingMesa.id, { number, capacity });
+    if (updated) setEditingMesa(null);
+  };
+
+  const handleDeleteTable = async (mesa: Mesa) => {
+    if (mesa.status !== "AVAILABLE" || mesa.joinedToId || mesa.joinedTables?.length) {
+      alert("Solo puedes eliminar una mesa disponible y separada de cualquier grupo.");
+      return;
+    }
+    const confirmed = window.confirm(
+      `¿Eliminar la Mesa ${mesa.number}? Los pedidos históricos se conservarán sin vincular a esa mesa.`,
+    );
+    if (!confirmed) return;
+    if (await deleteMesa(mesa.id) && selectedMesaId === mesa.id) {
+      setSelectedMesaId(null);
+    }
+  };
+
+  const handleJoinTables = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!mainJoinTableId || joinTableIds.length < 2) return;
+    const mesa = await joinMesas(
+      mainJoinTableId,
+      joinTableIds.filter((id) => id !== mainJoinTableId),
+    );
+    if (mesa) {
+      setShowJoinTables(false);
+      setJoinTableIds([]);
+      setMainJoinTableId(null);
+    }
+  };
+
+  const toggleJoinTable = (tableId: string) => {
+    if (joinTableIds.includes(tableId)) {
+      const remaining = joinTableIds.filter((id) => id !== tableId);
+      setJoinTableIds(remaining);
+      if (mainJoinTableId === tableId) setMainJoinTableId(remaining[0] ?? null);
+      return;
+    }
+    setJoinTableIds([...joinTableIds, tableId]);
+    if (!mainJoinTableId) setMainJoinTableId(tableId);
   };
 
   const rondas: [number, OrderItem[]][] = (() => {
@@ -334,57 +454,152 @@ export default function MesasPage() {
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Salón / Mesas</h1>
           <p className="text-slate-500 text-sm mt-1">Atención acumulativa por mesa: abre, agrega tandas y cobra al final.</p>
         </div>
-        <div className="flex items-center gap-2 text-xs font-bold">
-          <span className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" /> {counts.libres} Libres
-          </span>
-          <span className="px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500" /> {counts.ocupadas} Ocupadas
-          </span>
-          <span className="px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-500" /> {counts.cobrando} En Cobro
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
+            <span className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" /> {counts.libres} Libres
+            </span>
+            <span className="px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-500" /> {counts.ocupadas} Ocupadas
+            </span>
+            <span className="px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-500" /> {counts.cobrando} En Cobro
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setJoinTableIds([]);
+              setMainJoinTableId(null);
+              setShowJoinTables(true);
+            }}
+            disabled={availableTables.length < 2}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition"
+          >
+            <GitMerge className="w-4 h-4" /> Unir mesas
+          </button>
+          {currentUser?.role === "jefe" && (
+            <button
+              type="button"
+              onClick={() => setShowCreateTable(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold transition"
+            >
+              <Plus className="w-4 h-4" /> Nueva mesa
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+        <label className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Buscar por número de mesa..."
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-amber-500"
+          />
+        </label>
+        <div className="flex gap-2">
+          {([
+            ["all", "Todas"],
+            ["available", "Disponibles"],
+            ["occupied", "Ocupadas"],
+            ["billing", "Pidiendo cuenta"],
+          ] as const).map(([filter, label]) => (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setStatusFilter(filter)}
+              aria-pressed={statusFilter === filter}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
+                statusFilter === filter
+                  ? "bg-amber-500 text-slate-950"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Grid de mesas */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-        {mesas.length === 0 ? (
+        {visibleMesas.length === 0 ? (
           <div className="col-span-full text-center py-12 text-slate-400 text-sm font-medium bg-white rounded-3xl border border-slate-200/80">
-            No hay mesas configuradas todavía.
+            {mesas.length === 0
+              ? "No hay mesas configuradas todavía."
+              : "No hay mesas que coincidan con la búsqueda o el filtro."}
           </div>
         ) : (
-          mesas.map((mesa) => {
+          visibleMesas.map((mesa) => {
             const meta = statusMeta[mesa.status];
             const mesaPaid = (mesa.currentOrder?.pagos || []).reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
             const mesaRemaining = Math.max(0, (mesa.currentOrder?.total || 0) - mesaPaid);
             const mesaLabel = mesaPaid > 0 ? "Pagada" : meta.label;
+            const joinedTables = mesa.joinedTables || [];
+            const totalCapacity = mesa.capacity + joinedTables.reduce((sum, table) => sum + table.capacity, 0);
             return (
-              <button
+              <div
                 key={mesa.id}
-                onClick={() => setSelectedMesaId(mesa.id)}
-                className={`relative p-4 text-left transition shadow-sm hover:shadow-md ${meta.card}`}
+                className={`relative overflow-hidden rounded-2xl transition shadow-sm hover:shadow-md ${meta.card}`}
               >
-                <div className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${meta.badge}`}>
-                  {mesaLabel}
-                </div>
-                <img src="/mesa.svg" alt="" className="w-8 h-8 opacity-80" />
-                <div className="text-3xl font-black text-slate-900 mt-1">#{mesa.number}</div>
-                <div className="flex items-center gap-1 text-[11px] text-slate-500 font-semibold mt-1">
-                  <Users className="w-3.5 h-3.5" /> {mesa.capacity} personas
-                </div>
-                {mesa.currentOrder && (
-                  <div className="mt-3 pt-3 border-t border-slate-900/10 space-y-1">
-                    <div className="text-sm font-extrabold text-slate-900">Total S/ {mesa.currentOrder.total.toFixed(2)}</div>
-                    {mesaPaid > 0 && (
-                      <div className="text-[10px] font-extrabold text-emerald-700">Pagado S/ {mesaPaid.toFixed(2)} · Falta S/ {mesaRemaining.toFixed(2)}</div>
-                    )}
-                    <div className="flex items-center gap-1 text-[10px] text-slate-500 font-semibold">
-                      <Clock className="w-3 h-3" /> {formatElapsed(mesa.currentOrder.createdAt)}
+                <button
+                  type="button"
+                  onClick={() => setSelectedMesaId(mesa.id)}
+                  className="relative w-full p-4 text-left"
+                >
+                  <div className={`absolute top-3 right-3 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${meta.badge}`}>
+                    {mesaLabel}
+                  </div>
+                  <img src="/mesa.svg" alt="" className="w-8 h-8 opacity-80" />
+                  <div className="text-3xl font-black text-slate-900 mt-1">
+                    {joinedTables.length > 0
+                      ? [mesa.number, ...joinedTables.map((table) => table.number)].sort((a, b) => a - b).map((number) => `#${number}`).join(" + ")
+                      : `#${mesa.number}`}
+                  </div>
+                  <div className="flex items-center gap-1 text-[11px] text-slate-500 font-semibold mt-1">
+                    <Users className="w-3.5 h-3.5" /> {totalCapacity} sillas
+                  </div>
+                  {mesa.currentOrder && (
+                    <div className="mt-3 pt-3 border-t border-slate-900/10 space-y-1">
+                      <div className="text-sm font-extrabold text-slate-900">Total S/ {mesa.currentOrder.total.toFixed(2)}</div>
+                      {mesaPaid > 0 && (
+                        <div className="text-[10px] font-extrabold text-emerald-700">Pagado S/ {mesaPaid.toFixed(2)} · Falta S/ {mesaRemaining.toFixed(2)}</div>
+                      )}
+                      <div className="flex items-center gap-1 text-[10px] text-slate-500 font-semibold">
+                        <Clock className="w-3 h-3" /> {formatElapsed(mesa.currentOrder.createdAt)}
+                      </div>
                     </div>
+                  )}
+                </button>
+                {currentUser?.role === "jefe" && (
+                  <div className="flex gap-2 px-3 pb-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingMesa(mesa);
+                        setEditTableNumber(String(mesa.number));
+                        setEditTableCapacity(String(mesa.capacity));
+                      }}
+                      disabled={mesa.status !== "AVAILABLE" || Boolean(mesa.joinedToId) || Boolean(mesa.joinedTables?.length)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-white/80 py-2 text-xs font-bold text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> Editar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleDeleteTable(mesa)}
+                      disabled={mesa.status !== "AVAILABLE" || Boolean(mesa.joinedToId) || Boolean(mesa.joinedTables?.length)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-white/80 py-2 text-xs font-bold text-rose-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Eliminar
+                    </button>
                   </div>
                 )}
-              </button>
+              </div>
             );
           })
         )}
@@ -402,13 +617,17 @@ export default function MesasPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm">
-                    Mesa {selectedMesa.number}
+                    {selectedMesa.joinedTables?.length
+                      ? `Mesas ${[selectedMesa.number, ...selectedMesa.joinedTables.map((table) => table.number)].sort((a, b) => a - b).join(" + ")}`
+                      : `Mesa ${selectedMesa.number}`}
                     {selectedMesa.currentOrder?.customer ? ` · ${selectedMesa.currentOrder.customer}` : ""}
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    {selectedMesa.currentOrder
-                      ? `Atendedor: ${selectedMesa.currentOrder.user?.name || currentUser?.name || "—"} · Abierta hace ${formatElapsed(selectedMesa.currentOrder.createdAt)}`
-                      : "Mesa libre — agrega productos para abrir la cuenta"}
+                    {selectedMesa.joinedTables?.length
+                      ? `${selectedMesa.capacity + selectedMesa.joinedTables.reduce((sum, table) => sum + table.capacity, 0)} sillas · Una cuenta compartida · Se separarán al cobrar`
+                      : selectedMesa.currentOrder
+                        ? `Atendedor: ${selectedMesa.currentOrder.user?.name || currentUser?.name || "—"} · Abierta hace ${formatElapsed(selectedMesa.currentOrder.createdAt)}`
+                        : "Mesa libre — agrega productos para abrir la cuenta"}
                   </p>
                 </div>
               </div>
@@ -694,6 +913,14 @@ export default function MesasPage() {
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
+                        onClick={handlePrintPreBill}
+                        disabled={!selectedMesa.currentOrder?.items.length}
+                        className="col-span-2 py-3 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        <Printer className="w-4 h-4" /> Imprimir Pre-Cuenta
+                      </button>
+                      <button
+                        type="button"
                         onClick={handleOpenPartialPayment}
                         disabled={!selectedMesa.currentOrder?.items.length || remainingAmount <= 0}
                         className="col-span-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md shadow-blue-500/20 transition active:scale-95 flex items-center justify-center gap-2"
@@ -860,6 +1087,183 @@ export default function MesasPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {showCreateTable && (
+        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <form
+            onSubmit={handleCreateTable}
+            className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-5"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-extrabold text-slate-900">Agregar mesa</h2>
+                <p className="text-sm text-slate-500 mt-1">Se asignará el siguiente número disponible.</p>
+              </div>
+              <button type="button" onClick={() => setShowCreateTable(false)} className="p-2 rounded-xl hover:bg-slate-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <label className="block">
+              <span className="block text-xs font-bold text-slate-600 mb-1.5">Cantidad de sillas</span>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                required
+                value={newTableCapacity}
+                onChange={(event) => setNewTableCapacity(event.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-amber-500"
+              />
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" onClick={() => setShowCreateTable(false)} className="py-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-bold">
+                Cancelar
+              </button>
+              <button type="submit" className="py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-sm font-extrabold">
+                Crear mesa
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {editingMesa && (
+        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <form
+            onSubmit={handleEditTable}
+            className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-5"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-extrabold text-slate-900">Editar Mesa {editingMesa.number}</h2>
+                <p className="text-sm text-slate-500 mt-1">Solo se pueden editar mesas libres y separadas.</p>
+              </div>
+              <button type="button" onClick={() => setEditingMesa(null)} className="p-2 rounded-xl hover:bg-slate-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <label className="block">
+              <span className="block text-xs font-bold text-slate-600 mb-1.5">Número de mesa</span>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                required
+                value={editTableNumber}
+                onChange={(event) => setEditTableNumber(event.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-amber-500"
+              />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-bold text-slate-600 mb-1.5">Cantidad de sillas</span>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                required
+                value={editTableCapacity}
+                onChange={(event) => setEditTableCapacity(event.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-amber-500"
+              />
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" onClick={() => setEditingMesa(null)} className="py-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-bold">
+                Cancelar
+              </button>
+              <button type="submit" className="py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-sm font-extrabold">
+                Guardar cambios
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {showJoinTables && (
+        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <form
+            onSubmit={handleJoinTables}
+            className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 space-y-5 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-extrabold text-slate-900">Unir mesas disponibles</h2>
+                <p className="text-sm text-slate-500 mt-1">Compartirán una cuenta. Al cobrar, volverán a separarse.</p>
+              </div>
+              <button type="button" onClick={() => setShowJoinTables(false)} className="p-2 rounded-xl hover:bg-slate-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {availableTables.map((mesa) => {
+                const isSelected = joinTableIds.includes(mesa.id);
+                const isMain = mainJoinTableId === mesa.id;
+                const capacity = mesa.capacity + (mesa.joinedTables || []).reduce((sum, table) => sum + table.capacity, 0);
+                const label = [mesa.number, ...(mesa.joinedTables || []).map((table) => table.number)]
+                  .sort((a, b) => a - b)
+                  .map((number) => `Mesa ${number}`)
+                  .join(" + ");
+                return (
+                  <div key={mesa.id} className={`flex items-center gap-3 p-3 rounded-xl border ${isSelected ? "border-amber-400 bg-amber-50" : "border-slate-200"}`}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleJoinTable(mesa.id)}
+                      aria-label={`Seleccionar ${label}`}
+                      className="w-4 h-4 accent-amber-500"
+                    />
+                    <span className="flex-1 text-sm font-bold text-slate-800">{label} · {capacity} sillas</span>
+                    {isSelected && (
+                      <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                        <input
+                          type="radio"
+                          name="mainTable"
+                          checked={isMain}
+                          onChange={() => setMainJoinTableId(mesa.id)}
+                          className="accent-amber-500"
+                        />
+                        Principal
+                      </label>
+                    )}
+                  </div>
+                );
+              })}
+              {availableTables.length < 2 && (
+                <p className="text-sm text-slate-500 text-center py-5">Necesitas al menos dos mesas disponibles.</p>
+              )}
+            </div>
+
+            {joinTableIds.length >= 2 && (
+              <p className="text-xs text-slate-500">
+                Capacidad total: {availableTables
+                  .filter((mesa) => joinTableIds.includes(mesa.id))
+                  .reduce((sum, mesa) => sum + mesa.capacity + (mesa.joinedTables || []).reduce((groupSum, table) => groupSum + table.capacity, 0), 0)} sillas.
+                La mesa marcada como principal recibirá la cuenta.
+              </p>
+            )}
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" onClick={() => setShowJoinTables(false)} className="py-3 rounded-xl bg-slate-100 text-slate-700 text-sm font-bold">
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={joinTableIds.length < 2 || !mainJoinTableId}
+                className="py-3 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white text-sm font-extrabold"
+              >
+                Unir mesas
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {receiptOrder && (
+        <TicketReceiptModal
+          order={receiptOrder}
+          mode="precuenta"
+          onClose={() => setReceiptOrder(null)}
+        />
       )}
 
     </div>
