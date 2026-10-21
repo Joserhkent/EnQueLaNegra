@@ -17,6 +17,9 @@ import { AddItemsDto } from './dto/add-items.dto';
 import { CheckoutDto } from './dto/checkout.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { PartialPaymentDto } from './dto/partial-payment.dto';
+import { CreateTableDto } from './dto/create-table.dto';
+import { JoinTablesDto } from './dto/join-tables.dto';
+import { UpdateTableDto } from './dto/update-table.dto';
 
 const ORDER_INCLUDE = {
   items: {
@@ -29,6 +32,7 @@ const ORDER_INCLUDE = {
 
 const TABLE_INCLUDE = {
   currentOrder: { include: ORDER_INCLUDE },
+  joinedTables: true,
 } satisfies Prisma.TableInclude;
 
 function formatFecha(d: Date): string {
@@ -50,9 +54,174 @@ export class MesasService {
     });
   }
 
+  async create(dto: CreateTableDto) {
+    const lastTable = await this.prisma.table.findFirst({
+      orderBy: { number: 'desc' },
+      select: { number: true },
+    });
+    const table = await this.prisma.table.create({
+      data: { number: (lastTable?.number ?? 0) + 1, capacity: dto.capacity },
+      include: TABLE_INCLUDE,
+    });
+    return table;
+  }
+
+  async update(tableId: string, dto: UpdateTableDto) {
+    if (dto.number === undefined && dto.capacity === undefined) {
+      throw new BadRequestException(
+        'Indica el número o la cantidad de sillas que deseas cambiar',
+      );
+    }
+    const table = await this.getTableOrThrow(tableId);
+    if (
+      table.status !== TableStatus.AVAILABLE ||
+      table.currentOrderId !== null ||
+      table.joinedToId !== null
+    ) {
+      throw new BadRequestException(
+        'Solo puedes editar una mesa disponible y que no esté unida a otra',
+      );
+    }
+    const hasJoinedTables = await this.prisma.table.count({
+      where: { joinedToId: tableId },
+    });
+    if (hasJoinedTables > 0) {
+      throw new BadRequestException(
+        'Separa el grupo de mesas antes de editar la mesa principal',
+      );
+    }
+
+    return this.prisma.table.update({
+      where: { id: tableId },
+      data: dto,
+      include: TABLE_INCLUDE,
+    });
+  }
+
+  async remove(tableId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const table = await tx.table.findUnique({ where: { id: tableId } });
+      if (!table) throw new NotFoundException('Mesa no encontrada');
+      if (
+        table.status !== TableStatus.AVAILABLE ||
+        table.currentOrderId !== null ||
+        table.joinedToId !== null
+      ) {
+        throw new BadRequestException(
+          'Solo puedes eliminar una mesa disponible y que no esté unida a otra',
+        );
+      }
+      const hasJoinedTables = await tx.table.count({
+        where: { joinedToId: tableId },
+      });
+      if (hasJoinedTables > 0) {
+        throw new BadRequestException(
+          'Separa el grupo de mesas antes de eliminar la mesa principal',
+        );
+      }
+
+      await tx.order.updateMany({
+        where: { tableId },
+        data: { tableId: null },
+      });
+      await tx.table.delete({ where: { id: tableId } });
+      return { id: tableId, deleted: true };
+    });
+  }
+
+  async join(tableId: string, dto: JoinTablesDto) {
+    if (dto.tableIds.includes(tableId)) {
+      throw new BadRequestException(
+        'Selecciona la mesa principal solo una vez',
+      );
+    }
+
+    const tableIds = [tableId, ...dto.tableIds];
+    const joinedTable = await this.prisma.$transaction(
+      async (tx) => {
+        const tables = await tx.table.findMany({
+          where: { id: { in: tableIds } },
+          include: { joinedTables: { select: { id: true } } },
+        });
+        if (tables.length !== tableIds.length) {
+          throw new NotFoundException('Una o más mesas no existen');
+        }
+
+        const mainTable = tables.find((table) => table.id === tableId)!;
+        const tablesToJoin = tables.filter((table) => table.id !== tableId);
+        const unavailable = tables.find(
+          (table) =>
+            table.status !== TableStatus.AVAILABLE ||
+            table.currentOrderId !== null ||
+            table.joinedToId !== null,
+        );
+        if (unavailable) {
+          throw new BadRequestException(
+            `La mesa ${unavailable.number} no está disponible para unirse`,
+          );
+        }
+
+        const existingMembers = tables.flatMap((table) =>
+          table.joinedTables.map((member) => member.id),
+        );
+        const membersToReassign = [
+          ...new Set([
+            ...existingMembers,
+            ...tablesToJoin.map((table) => table.id),
+          ]),
+        ];
+        const groupsToFlatten = tables.map((table) => table.id);
+
+        const claimedMainTable = await tx.table.updateMany({
+          where: {
+            id: mainTable.id,
+            status: TableStatus.AVAILABLE,
+            currentOrderId: null,
+            joinedToId: null,
+          },
+          data: { updatedAt: new Date() },
+        });
+        if (claimedMainTable.count !== 1) {
+          throw new BadRequestException(
+            `La mesa ${mainTable.number} ya no está disponible para unirse`,
+          );
+        }
+
+        const updatedMembers = await tx.table.updateMany({
+          where: {
+            id: { in: membersToReassign },
+            status: TableStatus.AVAILABLE,
+            currentOrderId: null,
+            OR: [
+              { joinedToId: null }, { joinedToId: { in: groupsToFlatten } },
+            ],
+          },
+          data: { joinedToId: mainTable.id },
+        });
+        if (updatedMembers.count !== membersToReassign.length) {
+          throw new BadRequestException(
+            'Una o más mesas ya no están disponibles para unirse',
+          );
+        }
+
+        return tx.table.findUniqueOrThrow({
+          where: { id: mainTable.id },
+          include: TABLE_INCLUDE,
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+    return joinedTable;
+  }
+
   async open(tableId: string, dto: OpenTableDto, userId?: string) {
     const table = await this.getTableOrThrow(tableId);
 
+    if (table.joinedToId) {
+      throw new BadRequestException(
+        'Esta mesa pertenece a un grupo; abre la mesa principal',
+      );
+    }
     if (table.status !== TableStatus.AVAILABLE) {
       throw new BadRequestException(
         `La mesa ${table.number} ya está ocupada o en proceso de cobro`,
@@ -307,8 +476,8 @@ export class MesasService {
 
     // El pedido pasa a ENTREGADO y la mesa vuelve a AVAILABLE en el mismo golpe —
     // son escrituras a tablas distintas sin dependencia entre sí.
-    const [updatedOrder] = await Promise.all([
-      this.prisma.order.update({
+    const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      const updatedOrder = await tx.order.update({
         where: { id: order.id },
         data: {
           status: OrderStatus.ENTREGADO,
@@ -321,12 +490,17 @@ export class MesasService {
           pagos: { create: pagosData },
         },
         include: ORDER_INCLUDE,
-      }),
-      this.prisma.table.update({
+      });
+      await tx.table.update({
         where: { id: table.id },
         data: { status: TableStatus.AVAILABLE, currentOrderId: null },
-      }),
-    ]);
+      });
+      await tx.table.updateMany({
+        where: { joinedToId: table.id },
+        data: { joinedToId: null },
+      });
+      return updatedOrder;
+    });
 
     return updatedOrder;
   }
@@ -448,17 +622,18 @@ export class MesasService {
       // El pedido queda vacío: primero se libera la mesa (la FK de Table
       // apunta a Order) y recién entonces se borra la orden vacía, en cascada
       // con su único ítem — mismo orden usado para limpiar mesas fantasma.
-      await this.prisma.table.update({
-        where: { id: table.id },
-        data: { status: TableStatus.AVAILABLE, currentOrderId: null },
-      });
+      await this.prisma.$transaction([
+        this.prisma.table.update({
+          where: { id: table.id },
+          data: { status: TableStatus.AVAILABLE, currentOrderId: null },
+        }),
+        this.prisma.table.updateMany({
+          where: { joinedToId: table.id },
+          data: { joinedToId: null },
+        }),
+      ]);
       await this.prisma.order.delete({ where: { id: table.currentOrderId } });
-      return {
-        ...table,
-        status: TableStatus.AVAILABLE,
-        currentOrderId: null,
-        currentOrder: null,
-      };
+      return this.getTableDetail(table.id);
     }
 
     const extrasTotalDelItem =

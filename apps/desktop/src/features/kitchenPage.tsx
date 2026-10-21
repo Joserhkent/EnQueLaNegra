@@ -166,7 +166,7 @@ export default function KitchenPage() {
           No hay tandas pendientes en este momento.
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
           {tickets.map((ticket) => {
             const allReady = isAllReady(ticket.items);
             const elapsed = formatElapsed(ticket.createdAt);
@@ -177,7 +177,7 @@ export default function KitchenPage() {
             return (
               <div
                 key={ticket.ticketId}
-                className={`p-4 rounded-3xl border-2 shadow-sm transition ${
+                className={`min-w-0 p-4 rounded-3xl border-2 shadow-sm transition ${
                   allReady
                     ? "bg-emerald-50 border-emerald-300"
                     : isSlow
@@ -185,14 +185,14 @@ export default function KitchenPage() {
                     : "bg-white border-slate-200"
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5 font-black text-slate-900 text-sm">
+                <div className="flex items-start justify-between gap-3 mb-1">
+                  <div className="flex min-w-0 items-center gap-1.5 font-black text-slate-900 text-sm">
                     {ticket.kind === "mesa" ? (
                       <UtensilsCrossed className="w-4 h-4 text-amber-500" />
                     ) : (
                       <ShoppingBag className="w-4 h-4 text-amber-500" />
                     )}
-                    {ticket.title}
+                    <span className="break-words">{ticket.title}</span>
                   </div>
                   <span
                     className={`flex items-center gap-1 text-[10px] font-bold ${
@@ -202,7 +202,7 @@ export default function KitchenPage() {
                     <Clock className="w-3 h-3" /> {elapsed}
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-500 font-semibold mb-3">{ticket.subtitle}</div>
+                <div className="mb-3 break-words text-[11px] font-semibold text-slate-500">{ticket.subtitle}</div>
 
                 <div className="space-y-1.5">
                   {ticket.items.map((item) => {
@@ -214,7 +214,7 @@ export default function KitchenPage() {
                         key={item.id}
                         type="button"
                         onClick={() => toggleItem(ticket, item)}
-                        className={`w-full flex items-start gap-2 p-2 rounded-xl text-left transition ${
+                        className={`flex w-full min-w-0 items-start gap-2 rounded-xl p-2 text-left transition ${
                           ready ? "bg-emerald-100/60" : cooking ? "bg-amber-100/60" : "bg-slate-50 hover:bg-slate-100"
                         }`}
                       >
@@ -225,19 +225,21 @@ export default function KitchenPage() {
                         ) : (
                           <Circle className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" />
                         )}
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div
-                            className={`text-xs font-bold ${
+                            className={`break-words whitespace-normal text-xs font-bold ${
                               ready ? "text-emerald-700 line-through" : cooking ? "text-amber-700" : "text-slate-800"
                             }`}
                           >
                             {item.cantidad}x {item.nombre}
                           </div>
                           {item.notas && (
-                            <div className="text-[10px] text-slate-400 italic truncate">"{item.notas}"</div>
+                            <div className="mt-1 break-words whitespace-pre-wrap text-[11px] leading-relaxed text-slate-600 italic">
+                              "{item.notas}"
+                            </div>
                           )}
                           {item.extras && item.extras.length > 0 && (
-                            <div className="text-[10px] text-slate-400 truncate">
+                            <div className="mt-1 break-words whitespace-normal text-[11px] leading-relaxed text-slate-500">
                               + {item.extras.map((e) => e.insumo?.nombre).filter(Boolean).join(", ")}
                             </div>
                           )}

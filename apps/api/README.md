@@ -31,6 +31,14 @@
 $ npm install
 ```
 
+## Gestión de mesas
+
+El seed configura las mesas 1 a 9 con sus capacidades iniciales. En una base existente administrada con `db:push`, ejecuta `npm run db:push` desde `apps/api` y después aplica `prisma/migrations/20261021160000_joined_tables/migration.sql` con `psql` para actualizar las capacidades y retirar las mesas mayores a 9. Sus pedidos históricos se conservan, pero quedan sin vínculo a una mesa; si alguna mesa adicional sigue ocupada, tiene una cuenta abierta o está unida a otra mesa, el SQL se detiene y pide liberarla antes de reintentarlo. Si el entorno ya se administra con Prisma Migrate, aplica los cambios con `npx prisma migrate deploy`. Las mesas unidas comparten una cuenta y se separan al cobrar o al quitar el último producto.
+
+El rol Jefe/Admin puede editar el número y la capacidad de una mesa o eliminarla desde la vista de mesas. Por seguridad, la API solo permite estas acciones sobre mesas disponibles y separadas; al eliminar una mesa, los pedidos históricos se mantienen sin vínculo a ella.
+
+`npm run db:seed` reinicia y vuelve a crear todos los datos, por lo que no debe usarse para actualizar una base con información que se quiera conservar.
+
 ## Compile and run the project
 
 ```bash
