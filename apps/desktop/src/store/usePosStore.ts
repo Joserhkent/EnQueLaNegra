@@ -78,6 +78,8 @@ export interface Order {
   paymentMethod: "Efectivo" | "Yape/Plin" | "Mixto";
   montoEfectivo?: number;
   montoDigital?: number;
+  montoRecibido?: number;
+  vuelto?: number;
   status: "preparacion" | "listo" | "entregado" | "cancelado";
   fecha: string;
   hora: string;
@@ -114,6 +116,44 @@ export interface CierreCaja {
   notas?: string;
 }
 
+export interface CajaSesion {
+  id: string;
+  estado: "ABIERTA" | "CERRADA";
+  montoInicial: number;
+  fechaApertura: string;
+  usuarioAperturaId?: string | null;
+  usuarioApertura: string;
+  notasApertura?: string | null;
+  fechaCierre?: string | null;
+  usuarioCierreId?: string | null;
+  usuarioCierre?: string | null;
+  totalVendido?: number | null;
+  efectivoVentas?: number | null;
+  yapePlin?: number | null;
+  tarjeta?: number | null;
+  cantidadPedidos?: number | null;
+  efectivoEsperado?: number | null;
+  efectivoReal?: number | null;
+  diferencia?: number | null;
+  notasCierre?: string | null;
+  createdAt: string;
+}
+
+export interface CajaEstadoResponse {
+  isOpen: boolean;
+  sesion: CajaSesion | null;
+  lastSession?: CajaSesion | null;
+  resumenActual?: {
+    montoInicial: number;
+    totalVendido: number;
+    efectivoVentas: number;
+    yapePlin: number;
+    tarjeta: number;
+    efectivoEsperado: number;
+    cantidadPedidos: number;
+  };
+}
+
 interface PosStore {
   currentUser: UserAccount | null;
   users: UserAccount[];
@@ -122,6 +162,8 @@ interface PosStore {
   movimientos: MovimientoStock[];
   pedidos: Order[];
   cierresCaja: CierreCaja[];
+  cajaEstado: CajaEstadoResponse | null;
+  cajaSesiones: CajaSesion[];
   mesas: Mesa[];
   loading: boolean;
 
@@ -130,10 +172,15 @@ interface PosStore {
   fetchPedidos: () => Promise<void>;
   fetchMovimientos: () => Promise<void>;
   fetchMesas: () => Promise<void>;
+  fetchCajaEstado: () => Promise<CajaEstadoResponse | null>;
+  fetchCajaSesiones: () => Promise<void>;
+  abrirCaja: (montoInicial: number, notas?: string) => Promise<boolean>;
+  cerrarCajaSesion: (efectivoReal?: number, notas?: string) => Promise<boolean>;
   createMesa: (capacity: number) => Promise<Mesa | null>;
   updateMesa: (tableId: string, changes: { number?: number; capacity?: number }) => Promise<Mesa | null>;
   deleteMesa: (tableId: string) => Promise<boolean>;
   joinMesas: (mainTableId: string, tableIds: string[]) => Promise<Mesa | null>;
+  unjoinMesas: (tableId: string) => Promise<boolean>;
   openMesa: (tableId: string, customer?: string) => Promise<Mesa | null>;
   addItemsToMesa: (tableId: string, items: OrderItem[]) => Promise<Mesa | null>;
   updateMesaItem: (
@@ -254,6 +301,8 @@ export const usePosStore = create<PosStore>((set, get) => ({
   movimientos: [],
   pedidos: [],
   cierresCaja: [],
+  cajaEstado: null,
+  cajaSesiones: [],
   mesas: [],
   loading: false,
 
@@ -423,6 +472,27 @@ export const usePosStore = create<PosStore>((set, get) => ({
       console.error("Error al unir mesas:", error);
       alert("No se pudo conectar con el servidor para unir las mesas.");
       return null;
+    }
+  },
+
+  unjoinMesas: async (tableId) => {
+    try {
+      const res = await fetch(`${API_URL}/tables/${tableId}/unjoin`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudieron desagrupar las mesas";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return false;
+      }
+      await get().fetchMesas();
+      return true;
+    } catch (error) {
+      console.error("Error al desagrupar mesas:", error);
+      alert("No se pudo conectar con el servidor para desagrupar las mesas.");
+      return false;
     }
   },
 
@@ -860,6 +930,83 @@ export const usePosStore = create<PosStore>((set, get) => ({
       set({ cierresCaja: data });
     } catch (error) {
       console.error("Error al obtener cierres:", error);
+    }
+  },
+
+  fetchCajaEstado: async () => {
+    try {
+      const res = await fetch(`${API_URL}/caja/estado`, {
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) return null;
+      const data: CajaEstadoResponse = await res.json();
+      set({ cajaEstado: data });
+      return data;
+    } catch (error) {
+      console.error("Error al obtener estado de caja:", error);
+      return null;
+    }
+  },
+
+  fetchCajaSesiones: async () => {
+    try {
+      const res = await fetch(`${API_URL}/caja/sesiones`, {
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      set({ cajaSesiones: data });
+    } catch (error) {
+      console.error("Error al obtener sesiones de caja:", error);
+    }
+  },
+
+  abrirCaja: async (montoInicial: number, notas?: string) => {
+    try {
+      const res = await fetch(`${API_URL}/caja/abrir`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ montoInicial, notas }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo abrir la caja";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return false;
+      }
+      await Promise.all([get().fetchCajaEstado(), get().fetchCajaSesiones()]);
+      return true;
+    } catch (error) {
+      console.error("Error al abrir caja:", error);
+      alert("Error de conexión al abrir caja.");
+      return false;
+    }
+  },
+
+  cerrarCajaSesion: async (efectivoReal?: number, notas?: string) => {
+    try {
+      const res = await fetch(`${API_URL}/caja/cerrar`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ efectivoReal, notas }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        const msg = err?.message || "No se pudo cerrar la caja";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return false;
+      }
+      await Promise.all([
+        get().fetchCajaEstado(),
+        get().fetchCajaSesiones(),
+        get().fetchCierres(),
+        get().fetchPedidos(),
+      ]);
+      return true;
+    } catch (error) {
+      console.error("Error al cerrar caja:", error);
+      alert("Error de conexión al cerrar caja.");
+      return false;
     }
   },
 

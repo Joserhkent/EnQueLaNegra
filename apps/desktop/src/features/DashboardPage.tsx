@@ -19,7 +19,11 @@ import {
 type TimeRange = "today" | "week" | "month";
 
 export default function DashboardPage() {
-  const { pedidos, insumos, updateOrderStatus } = usePosStore();
+  const { pedidos, insumos, updateOrderStatus, cajaEstado, fetchCajaEstado } = usePosStore();
+
+  useEffect(() => {
+    fetchCajaEstado();
+  }, [fetchCajaEstado]);
 
   const [timeRange, setTimeRange] = useState<TimeRange>("today");
   const [orderFilter, setOrderFilter] = useState<string>("all");
@@ -202,10 +206,17 @@ export default function DashboardPage() {
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
               Dashboard de Operaciones POS
             </h1>
-            <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              Caja Abierta
-            </span>
+            {cajaEstado?.isOpen ? (
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                Caja Abierta (Base: S/ {(cajaEstado.sesion?.montoInicial ?? 0).toFixed(2)})
+              </span>
+            ) : (
+              <span className="px-3 py-1 bg-rose-100 text-rose-800 text-xs font-semibold rounded-full flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                Caja Cerrada
+              </span>
+            )}
             <span className="px-3 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-full border border-amber-200">
               ☀️ Lun - Dom (Turno Completo)
             </span>

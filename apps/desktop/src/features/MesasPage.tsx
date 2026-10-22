@@ -16,6 +16,7 @@ import {
   GitMerge,
   Pencil,
   Printer,
+  AlertCircle,
 } from "lucide-react";
 
 const AGREGADOS_DISPONIBLES = [
@@ -88,6 +89,9 @@ export default function MesasPage() {
     updateMesa,
     deleteMesa,
     joinMesas,
+    unjoinMesas,
+    cajaEstado,
+    fetchCajaEstado,
     currentUser,
   } = usePosStore();
 
@@ -124,6 +128,7 @@ export default function MesasPage() {
 
   useEffect(() => {
     fetchMesas();
+    fetchCajaEstado();
     if (productos.length === 0) fetchProductos();
     if (insumos.length === 0) fetchInsumos();
     const interval = setInterval(fetchMesas, 20000);
@@ -213,6 +218,10 @@ export default function MesasPage() {
   // sin ningún pedido real por un clic accidental, y sigue sin fricción para abrir.
   const handleSendTanda = async () => {
     if (!selectedMesa) return;
+    if (!cajaEstado?.isOpen) {
+      alert("La caja está cerrada. Debes abrir un turno de caja en Pagos antes de atender mesas o mandar pedidos.");
+      return;
+    }
     const cartList = Object.values(cart);
     if (cartList.length === 0) {
       alert("Agrega al menos un producto para enviar a cocina.");
@@ -271,6 +280,10 @@ export default function MesasPage() {
   };
 
   const handleOpenPartialPayment = () => {
+    if (!cajaEstado?.isOpen) {
+      alert("La caja está cerrada. Debes abrir un turno de caja en Pagos antes de registrar cobros.");
+      return;
+    }
     setCheckoutIsPartial(true);
     setPartialPaymentAmount("");
     setShowCheckout(true);
@@ -301,6 +314,10 @@ export default function MesasPage() {
 
   const handleCheckout = async () => {
     if (!selectedMesa) return;
+    if (!cajaEstado?.isOpen) {
+      alert("La caja está cerrada. Debes abrir un turno de caja en Pagos antes de registrar cobros.");
+      return;
+    }
     if (checkoutIsPartial) {
       await handlePartialPayment();
       return;
@@ -424,6 +441,19 @@ export default function MesasPage() {
     }
   };
 
+  const handleUnjoinMesas = async (tableId: string) => {
+    if (!window.confirm("¿Deseas desagrupar las mesas? Volverán a estar disponibles por separado.")) {
+      return;
+    }
+    const ok = await unjoinMesas(tableId);
+    if (ok) {
+      if (selectedMesaId === tableId) {
+        setSelectedMesaId(null);
+        setCart({});
+      }
+    }
+  };
+
   const toggleJoinTable = (tableId: string) => {
     if (joinTableIds.includes(tableId)) {
       const remaining = joinTableIds.filter((id) => id !== tableId);
@@ -489,6 +519,18 @@ export default function MesasPage() {
           )}
         </div>
       </div>
+
+      {/* Alerta de caja cerrada */}
+      {!cajaEstado?.isOpen && (
+        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4 flex items-center justify-between gap-3 text-amber-950 text-xs font-semibold">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+            <span>
+              Caja cerrada actualmente: No se pueden abrir mesas, mandar pedidos a cocina ni cobrar hasta abrir la caja en el módulo de Pagos.
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
         <label className="relative flex-1">
@@ -575,6 +617,21 @@ export default function MesasPage() {
                     </div>
                   )}
                 </button>
+                {joinedTables.length > 0 && (
+                  <div className="px-3 pb-3">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleUnjoinMesas(mesa.id);
+                      }}
+                      className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 py-1.5 text-xs font-bold border border-rose-200 transition"
+                      title="Desagrupar estas mesas"
+                    >
+                      <GitMerge className="w-3.5 h-3.5 rotate-180" /> Desagrupar mesas
+                    </button>
+                  </div>
+                )}
                 {currentUser?.role === "jefe" && (
                   <div className="flex gap-2 px-3 pb-3">
                     <button
@@ -624,25 +681,37 @@ export default function MesasPage() {
                   </h3>
                   <p className="text-[11px] text-slate-400">
                     {selectedMesa.joinedTables?.length
-                      ? `${selectedMesa.capacity + selectedMesa.joinedTables.reduce((sum, table) => sum + table.capacity, 0)} sillas · Una cuenta compartida · Se separarán al cobrar`
+                      ? `${selectedMesa.capacity + selectedMesa.joinedTables.reduce((sum, table) => sum + table.capacity, 0)} sillas · Cuenta compartida`
                       : selectedMesa.currentOrder
                         ? `Atendedor: ${selectedMesa.currentOrder.user?.name || currentUser?.name || "—"} · Abierta hace ${formatElapsed(selectedMesa.currentOrder.createdAt)}`
                         : "Mesa libre — agrega productos para abrir la cuenta"}
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  setSelectedMesaId(null);
-                  setCart({});
-                  setShowCheckout(false);
-                  setCheckoutIsPartial(false);
-                  setPartialPaymentAmount("");
-                }}
-                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                {Boolean(selectedMesa.joinedTables?.length) && (
+                  <button
+                    type="button"
+                    onClick={() => void handleUnjoinMesas(selectedMesa.id)}
+                    className="px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold transition flex items-center gap-1.5"
+                    title="Desagrupar y separar estas mesas"
+                  >
+                    <GitMerge className="w-3.5 h-3.5 rotate-180" /> Desagrupar Mesas
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setSelectedMesaId(null);
+                    setCart({});
+                    setShowCheckout(false);
+                    setCheckoutIsPartial(false);
+                    setPartialPaymentAmount("");
+                  }}
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-5 flex-1 overflow-hidden">
@@ -888,9 +957,11 @@ export default function MesasPage() {
                     <button
                       type="button"
                       onClick={handleSendTanda}
-                      className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+                      disabled={!cajaEstado?.isOpen}
+                      className="w-full py-3 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+                      title={!cajaEstado?.isOpen ? "La caja está cerrada. Abre la caja en Pagos." : undefined}
                     >
-                      <UtensilsCrossed className="w-4 h-4 text-amber-400" /> Enviar Tanda a Cocina (S/ {calculateCartTotal().toFixed(2)})
+                      <UtensilsCrossed className="w-4 h-4 text-amber-400" /> {!cajaEstado?.isOpen ? "Caja Cerrada (Abrir turno)" : `Enviar Tanda a Cocina (S/ ${calculateCartTotal().toFixed(2)})`}
                     </button>
                   )}
                 </div>
@@ -914,7 +985,7 @@ export default function MesasPage() {
                       <button
                         type="button"
                         onClick={handlePrintPreBill}
-                        disabled={!selectedMesa.currentOrder?.items.length}
+                        disabled={!cajaEstado?.isOpen || !selectedMesa.currentOrder?.items.length}
                         className="col-span-2 py-3 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
                       >
                         <Printer className="w-4 h-4" /> Imprimir Pre-Cuenta
@@ -922,7 +993,7 @@ export default function MesasPage() {
                       <button
                         type="button"
                         onClick={handleOpenPartialPayment}
-                        disabled={!selectedMesa.currentOrder?.items.length || remainingAmount <= 0}
+                        disabled={!cajaEstado?.isOpen || !selectedMesa.currentOrder?.items.length || remainingAmount <= 0}
                         className="col-span-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md shadow-blue-500/20 transition active:scale-95 flex items-center justify-center gap-2"
                       >
                         <CircleDollarSign className="w-4 h-4" /> Registrar Pago Parcial
@@ -930,10 +1001,10 @@ export default function MesasPage() {
                       <button
                         type="button"
                         onClick={() => { setCheckoutIsPartial(false); setPartialPaymentAmount(""); setShowCheckout(true); }}
-                        disabled={!selectedMesa.currentOrder?.items.length}
+                        disabled={!cajaEstado?.isOpen || !selectedMesa.currentOrder?.items.length}
                         className="col-span-2 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95 flex items-center justify-center gap-2"
                       >
-                        <CircleDollarSign className="w-4 h-4" /> {remainingAmount <= 0 ? "Cerrar Mesa" : "Cobrar y Cerrar Mesa"}
+                        <CircleDollarSign className="w-4 h-4" /> {!cajaEstado?.isOpen ? "Caja Cerrada (Abre caja)" : remainingAmount <= 0 ? "Cerrar Mesa" : "Cobrar y Cerrar Mesa"}
                       </button>
                     </div>
                   ) : (

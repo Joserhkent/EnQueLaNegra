@@ -214,7 +214,47 @@ export class MesasService {
     return joinedTable;
   }
 
+  async unjoin(tableId: string) {
+    const table = await this.getTableOrThrow(tableId);
+
+    if (table.joinedToId) {
+      const parentId = table.joinedToId;
+      await this.prisma.table.update({
+        where: { id: table.id },
+        data: { joinedToId: null },
+      });
+      return this.getTableDetail(parentId);
+    }
+
+    const count = await this.prisma.table.count({
+      where: { joinedToId: table.id },
+    });
+
+    if (count === 0) {
+      throw new BadRequestException('Esta mesa no tiene mesas unidas');
+    }
+
+    await this.prisma.table.updateMany({
+      where: { joinedToId: table.id },
+      data: { joinedToId: null },
+    });
+
+    return this.getTableDetail(table.id);
+  }
+
+  private async assertCajaAbierta(accion = 'realizar esta acción') {
+    const activeCaja = await this.prisma.cajaSesion.findFirst({
+      where: { estado: 'ABIERTA' },
+    });
+    if (!activeCaja) {
+      throw new BadRequestException(
+        `La caja está cerrada. Debe abrir un turno de caja antes de ${accion}.`,
+      );
+    }
+  }
+
   async open(tableId: string, dto: OpenTableDto, userId?: string) {
+    await this.assertCajaAbierta('abrir mesas');
     const table = await this.getTableOrThrow(tableId);
 
     if (table.joinedToId) {
@@ -263,6 +303,7 @@ export class MesasService {
   }
 
   async addItems(tableId: string, dto: AddItemsDto, userId?: string) {
+    await this.assertCajaAbierta('enviar pedidos a cocina');
     // Todo lo que no depende de un resultado previo se dispara junto: traer la
     // mesa (con su orden actual y el último ítem, para calcular la ronda) y
     // resolver los sku->productoId que falten (caso raro; el frontend ya manda
@@ -388,6 +429,7 @@ export class MesasService {
   }
 
   async partialPayment(tableId: string, dto: PartialPaymentDto, userId?: string) {
+    await this.assertCajaAbierta('registrar pagos');
     const table = await this.prisma.table.findUnique({
       where: { id: tableId },
       include: { currentOrder: { include: ORDER_INCLUDE } },
@@ -430,6 +472,7 @@ export class MesasService {
   }
 
   async checkout(tableId: string, dto: CheckoutDto, userId?: string) {
+    await this.assertCajaAbierta('cobrar y cerrar mesas');
     const table = await this.prisma.table.findUnique({
       where: { id: tableId },
       include: { currentOrder: { include: ORDER_INCLUDE } },

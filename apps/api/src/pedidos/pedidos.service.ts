@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import {
@@ -44,7 +44,19 @@ export class PedidosService {
     return order;
   }
 
+  private async assertCajaAbierta() {
+    const activeCaja = await this.prisma.cajaSesion.findFirst({
+      where: { estado: 'ABIERTA' },
+    });
+    if (!activeCaja) {
+      throw new BadRequestException(
+        'La caja está cerrada. Debe abrir un turno de caja antes de realizar pedidos.',
+      );
+    }
+  }
+
   async create(dto: CreatePedidoDto, userId?: string) {
+    await this.assertCajaAbierta();
     const now = new Date();
     // Usa fecha/hora LOCAL del servidor, no UTC (toISOString desplaza el día en las noches, ya que Perú es UTC-5)
     const fecha = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;

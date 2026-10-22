@@ -63,6 +63,12 @@ export class MesasController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post(':id/unjoin')
+  unjoin(@Param('id') id: string) {
+    return this.mesasService.unjoin(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post(':id/open')
   open(
     @Param('id') id: string,

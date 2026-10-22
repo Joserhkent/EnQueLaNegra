@@ -48,6 +48,7 @@ describe('MesasService', () => {
         findUnique: jest.fn().mockResolvedValue(mainTable),
         count: jest.fn().mockResolvedValue(0),
         update: jest.fn().mockResolvedValue(mainTable),
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
         create: jest.fn().mockResolvedValue({
           id: 'table-10',
           number: 10,
@@ -56,6 +57,9 @@ describe('MesasService', () => {
           currentOrderId: null,
           joinedTables: [],
         }),
+      },
+      cajaSesion: {
+        findFirst: jest.fn().mockResolvedValue({ id: 'sesion-1', estado: 'ABIERTA' }),
       },
       $transaction: jest
         .fn()
@@ -100,6 +104,22 @@ describe('MesasService', () => {
     expect(result.joinedTables).toHaveLength(1);
   });
 
+  it('unjoins tables linked to a main table', async () => {
+    const { service, prisma } = await makeService();
+    prisma.table.findUnique.mockResolvedValue({
+      ...mainTable,
+      joinedTables: [otherTable],
+    });
+    prisma.table.count.mockResolvedValue(1);
+
+    await service.unjoin('table-1');
+
+    expect(prisma.table.updateMany).toHaveBeenCalledWith({
+      where: { joinedToId: 'table-1' },
+      data: { joinedToId: null },
+    });
+  });
+
   it('rejects joining a table that is already occupied', async () => {
     const occupiedTable = { ...otherTable, status: TableStatus.OCCUPIED };
     const { service, transactionClient } = await makeService([
@@ -138,5 +158,14 @@ describe('MesasService', () => {
     expect(transactionClient.table.delete).toHaveBeenCalledWith({
       where: { id: 'table-1' },
     });
+  });
+
+  it('rechaza abrir mesa si la caja está cerrada', async () => {
+    const { service, prisma } = await makeService();
+    prisma.cajaSesion.findFirst.mockResolvedValue(null);
+
+    await expect(service.open('table-1', {})).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });

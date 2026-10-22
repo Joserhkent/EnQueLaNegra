@@ -66,6 +66,7 @@ export default function App() {
     fetchInsumos,
     fetchPedidos,
     fetchMesas,
+    fetchCajaEstado,
   } = usePosStore();
 
   const [activePage, setActivePage] = useState<PageKey>("dashboard");
@@ -81,6 +82,7 @@ export default function App() {
         fetchInsumos(),
         fetchPedidos(),
         fetchMesas(),
+        fetchCajaEstado(),
       ]);
       console.log("✅ Toda la base de datos cargada con éxito");
     } catch (error) {

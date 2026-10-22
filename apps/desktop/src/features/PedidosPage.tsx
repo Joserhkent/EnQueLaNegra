@@ -22,6 +22,7 @@ import {
   UtensilsCrossed,
   ArrowUpRight,
   Clock,
+  AlertCircle,
 } from "lucide-react";
 
 const AGREGADOS_DISPONIBLES = [
@@ -65,7 +66,11 @@ type PedidosPageProps = {
 };
 
 export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
-  const { pedidos, productos, insumos, mesas, addOrder, updateOrderStatus, fetchInsumos } = usePosStore();
+  const { pedidos, productos, insumos, mesas, addOrder, updateOrderStatus, fetchInsumos, cajaEstado, fetchCajaEstado } = usePosStore();
+
+  useEffect(() => {
+    fetchCajaEstado();
+  }, [fetchCajaEstado]);
 
   const [orderFilter, setOrderFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -115,9 +120,9 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   };
 
   // Cart items inside Modal: lineId (no el sku, para permitir 2 líneas del mismo producto
-  // con personalización distinta) -> { product, quantity, notes, cremas, agregados }
+  // con personalización distinta) -> { product, quantity, notes, agregados }
   const [cart, setCart] = useState<
-    Record<string, { product: Producto; quantity: number; notes: string; cremas: string[]; agregados: string[] }>
+    Record<string, { product: Producto; quantity: number; notes: string; cremas?: string[]; agregados: string[] }>
   >({});
 
   // `value` filtra contra la categoría real en BD ("Agregados", igual que el seed);
@@ -229,6 +234,11 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
     const cartList = Object.values(cart);
     if (cartList.length === 0) {
       alert("Por favor selecciona al menos un producto para la comanda.");
+      return;
+    }
+
+    if (!cajaEstado?.isOpen) {
+      alert("La caja está cerrada. Debes abrir un turno de caja en Pagos antes de registrar pedidos.");
       return;
     }
 
@@ -410,13 +420,34 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95 shrink-0"
+          onClick={() => {
+            if (!cajaEstado?.isOpen) {
+              alert("La caja está cerrada. Debes abrir un turno de caja en Pagos antes de registrar pedidos.");
+              return;
+            }
+            setIsModalOpen(true);
+          }}
+          className={`flex items-center gap-2 font-bold px-5 py-3 rounded-2xl text-xs shadow-md transition active:scale-95 shrink-0 ${
+            cajaEstado?.isOpen
+              ? "bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-amber-500/20"
+              : "bg-slate-200 text-slate-500 cursor-not-allowed"
+          }`}
+          title={!cajaEstado?.isOpen ? "La caja está cerrada" : undefined}
         >
           <PlusCircle className="w-4 h-4" />
           Nuevo Pedido (Llevar/Delivery)
         </button>
       </div>
+
+      {/* Alerta de caja cerrada */}
+      {!cajaEstado?.isOpen && (
+        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4 flex items-center justify-between gap-3 text-amber-950 text-xs font-semibold">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+            <span>Caja cerrada actualmente: No se pueden registrar pedidos para llevar ni delivery hasta abrir la caja en el módulo de Pagos.</span>
+          </div>
+        </div>
+      )}
 
       {/* Cola unificada: mesas activas (solo lectura, se gestionan en Mesas) */}
       {mesasActivas.length > 0 && (
@@ -987,9 +1018,10 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                   <button
                     type="button"
                     onClick={handleCreateOrder}
-                    className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
+                    disabled={!cajaEstado?.isOpen}
+                    className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
                   >
-                    Confirmar Comanda & Enviar a Cocina
+                    {!cajaEstado?.isOpen ? "Caja Cerrada (Abre caja primero)" : "Confirmar Comanda & Enviar a Cocina"}
                   </button>
                 </div>
               </div>

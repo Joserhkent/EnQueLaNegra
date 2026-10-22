@@ -111,9 +111,11 @@ model User {
   updatedAt DateTime @updatedAt
 
   rol         Rol               @relation(fields: [rolId], references: [id])
-  orders      Order[]
-  movimientos MovimientoStock[]
-  cierres     CierreCaja[]
+  orders           Order[]
+  movimientos      MovimientoStock[]
+  cierres          CierreCaja[]
+  cajasAperturadas CajaSesion[]      @relation("CajaAperturaUser")
+  cajasCerradas    CajaSesion[]      @relation("CajaCierreUser")
 }
 
 // ---------- Catálogo ----------
@@ -292,6 +294,43 @@ model MovimientoStock {
 }
 
 // ---------- Caja ----------
+enum EstadoCaja {
+  ABIERTA
+  CERRADA
+}
+
+model CajaSesion {
+  id                String      @id @default(uuid())
+  estado            EstadoCaja  @default(ABIERTA)
+
+  // Apertura
+  montoInicial      Float       @default(0) // Fondo de caja / sencillo inicial
+  fechaApertura     DateTime    @default(now())
+  usuarioAperturaId String?
+  usuarioApertura   String      @default("Cajero")
+  notasApertura     String?
+
+  // Cierre
+  fechaCierre       DateTime?
+  usuarioCierreId   String?
+  usuarioCierre     String?
+  totalVendido      Float?      @default(0)
+  efectivoVentas    Float?      @default(0)
+  yapePlin          Float?      @default(0)
+  tarjeta           Float?      @default(0)
+  cantidadPedidos   Int?        @default(0)
+  efectivoEsperado  Float?      @default(0) // montoInicial + efectivoVentas
+  efectivoReal      Float?                  // Conteo físico ingresado por el cajero
+  diferencia        Float?                  // efectivoReal - efectivoEsperado (+ sobrante, - faltante)
+  notasCierre       String?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  userApertura      User?       @relation("CajaAperturaUser", fields: [usuarioAperturaId], references: [id])
+  userCierre        User?       @relation("CajaCierreUser", fields: [usuarioCierreId], references: [id])
+}
+
 model CierreCaja {
   id              String   @id @default(uuid())
   fecha           String   // YYYY-MM-DD
