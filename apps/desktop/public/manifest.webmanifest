@@ -1,13 +1,14 @@
 {
   "name": "En que la Negra - Sistema POS",
   "short_name": "La Negra POS",
-  "description": "Sistema POS y Punto de Venta para En que la Negra",
+  "description": "Gestiona tu restaurante: mesas, comandas, inventario, cocina y caja en tiempo real",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#09090b",
   "orientation": "any",
+  "categories": ["food", "business", "point-of-sale"],
   "icons": [
     {
       "src": "/pwa-192x192.png",
@@ -30,6 +31,15 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "1280x640",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "En que la Negra POS - Sistema Gastronómico"
     }
   ]
 }

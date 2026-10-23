@@ -1,5 +1,19 @@
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import {
+  Loader2,
+  UtensilsCrossed,
+  ChefHat,
+  Boxes,
+  CreditCard,
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  UserCheck,
+} from "lucide-react";
 
 type LoginPageProps = {
   onLogin: (username: string, password: string) => Promise<boolean>;
@@ -9,7 +23,21 @@ type LoginPageProps = {
 export default function LoginPage({ onLogin, authError }: LoginPageProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberUser, setRememberUser] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fecha en vivo en español, ej: "VIERNES, 23 DE OCTUBRE"
+  const formattedDate = useMemo(() => {
+    const now = new Date();
+    return now
+      .toLocaleDateString("es-PE", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      })
+      .toUpperCase();
+  }, []);
 
   const handleSubmit = async (event?: React.FormEvent) => {
     if (event) {
@@ -23,87 +51,303 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
     const startTime = Date.now();
     await onLogin(username.trim(), password);
     const elapsedTime = Date.now() - startTime;
-    const minLoadingTime = 600; // 600ms para asegurar la visualización fluida de la animación
+    const minLoadingTime = 500;
 
     if (elapsedTime < minLoadingTime) {
-      await new Promise((resolve) => setTimeout(resolve, minLoadingTime - elapsedTime));
+      await new Promise((resolve) =>
+        setTimeout(resolve, minLoadingTime - elapsedTime)
+      );
     }
 
     setIsSubmitting(false);
   };
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-[#E6E6E6] px-4 py-8">
-      <div className="flex w-full max-w-5xl overflow-hidden rounded-[32px] shadow-[0_40px_120px_rgba(15,23,42,0.12)]">
-        <div className="w-full bg-white p-10 sm:w-1/2 sm:p-16">
-          <div className="mx-auto max-w-sm">
-            <p className="mb-10 text-4xl font-black uppercase tracking-[0.18em] text-slate-900">Iniciar sesión</p>
+  const handleSelectDemo = (u: string, p: string) => {
+    setUsername(u);
+    setPassword(p);
+  };
 
-            <form onSubmit={handleSubmit} className="space-y-7">
+  return (
+    <div className="min-h-screen w-full bg-zinc-950 text-zinc-100 flex flex-col lg:flex-row antialiased selection:bg-amber-500 selection:text-zinc-950">
+      {/* Columna Izquierda: Información del Restaurante & Módulos */}
+      <section 
+        aria-label="Información del restaurante y módulos"
+        className="w-full lg:w-7/12 xl:w-8/12 p-6 sm:p-10 lg:p-14 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-zinc-800/80 bg-gradient-to-br from-zinc-900/90 via-zinc-950 to-black relative overflow-hidden"
+      >
+        {/* Glow de fondo */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 space-y-8 max-w-2xl">
+          {/* Header Marca */}
+          <div className="flex items-center gap-3">
+            <img
+              src="/pwa-192x192.png"
+              alt="Logo"
+              className="w-11 h-11 rounded-2xl bg-black border border-zinc-800 object-contain shadow-lg"
+            />
+            <div>
+              <h2 className="font-extrabold text-base text-white tracking-tight flex items-center gap-2">
+                En que la Negra
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-black uppercase">
+                  POS
+                </span>
+              </h2>
+              <p className="text-xs text-zinc-400">Espacio de trabajo gastronómico</p>
+            </div>
+          </div>
+
+          {/* Banner Fotográfico con Overlay */}
+          <div className="relative rounded-3xl overflow-hidden border border-zinc-800/80 shadow-2xl group max-h-56 sm:max-h-64 bg-black">
+            <img
+              src="/logo.jpg"
+              alt="En que la Negra Especialidades"
+              className="w-full h-full object-cover opacity-90 group-hover:scale-102 transition duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+            <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between text-xs text-zinc-300">
+              <span className="flex items-center gap-1.5 font-bold text-amber-400 bg-black/60 px-3 py-1 rounded-full backdrop-blur-md border border-amber-500/20">
+                <Sparkles className="w-3.5 h-3.5" />
+                Arepas, Cachapas & Comida Venezolana
+              </span>
+              <span className="hidden sm:inline-block text-[11px] text-zinc-400 bg-black/40 px-2.5 py-1 rounded-full backdrop-blur-sm">
+                Lima, Perú
+              </span>
+            </div>
+          </div>
+
+          {/* Mensaje de Bienvenida */}
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-black tracking-wider uppercase">
+              <span>{formattedDate}</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+              Todo listo para abrir el turno
+            </h1>
+            <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">
+              Salón, mesas, cocina (KDS), caja e inventario conectados en tiempo real. Inicia sesión y continúa justo donde lo dejaste.
+            </p>
+          </div>
+
+          {/* Tarjetas de Funcionalidades en 2x2 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+                <UtensilsCrossed className="w-5 h-5" />
+              </div>
               <div>
-                <label htmlFor="username" className="mb-2 block text-sm font-bold uppercase tracking-[0.12em] text-slate-900">
-                  Usuario
-                </label>
+                <h4 className="text-sm font-bold text-white">Punto de venta</h4>
+                <p className="text-xs text-zinc-400 mt-0.5">Mesas, comandas y cobros rápidos</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0 border border-orange-500/20">
+                <ChefHat className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white">Cocina (KDS)</h4>
+                <p className="text-xs text-zinc-400 mt-0.5">Tandas y pedidos en tiempo real</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                <Boxes className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white">Inventario</h4>
+                <p className="text-xs text-zinc-400 mt-0.5">Descuento automático de stock (BOM)</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white">Caja & Turnos</h4>
+                <p className="text-xs text-zinc-400 mt-0.5">Apertura, arqueo y cierre seguro</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Izquierdo */}
+        <div className="pt-8 text-xs text-zinc-500 flex items-center justify-between border-t border-zinc-900 mt-8">
+          <span>Powered by <strong>En que la Negra POS</strong></span>
+          <span className="hidden sm:inline">Sistema de Gestión para Restaurantes</span>
+        </div>
+      </section>
+
+      {/* Columna Derecha: Formulario de Login */}
+      <section 
+        aria-label="Formulario de inicio de sesión"
+        className="w-full lg:w-5/12 xl:w-4/12 p-6 sm:p-10 lg:p-12 flex flex-col justify-center bg-zinc-950 relative"
+      >
+        <div className="w-full max-w-sm mx-auto space-y-6">
+          <header className="space-y-1.5">
+            <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">
+              ACCESO AL SISTEMA
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Inicia sesión
+            </h2>
+            <p className="text-xs text-zinc-400">
+              Entra con tus credenciales de usuario o selecciona un perfil demo.
+            </p>
+          </header>
+
+          {/* Botones de Acceso Rápido para Demostración */}
+          <div className="space-y-2 bg-zinc-900/60 p-3 rounded-2xl border border-zinc-800/80">
+            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider px-1">
+              Seleccionar cuenta rápida:
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => handleSelectDemo("admin", "123456")}
+                className={`p-2.5 rounded-xl border text-left transition flex items-center gap-2 ${
+                  username === "admin"
+                    ? "bg-amber-500/20 border-amber-500 text-amber-300 font-bold"
+                    : "bg-zinc-800/60 border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs"
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
+                <div className="truncate">
+                  <div className="text-[11px] font-bold leading-tight">Jefe / Admin</div>
+                  <div className="text-[9px] text-zinc-400">admin</div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectDemo("empleado", "123456")}
+                className={`p-2.5 rounded-xl border text-left transition flex items-center gap-2 ${
+                  username === "empleado"
+                    ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold"
+                    : "bg-zinc-800/60 border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs"
+                }`}
+              >
+                <UserCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="truncate">
+                  <div className="text-[11px] font-bold leading-tight">Mesonero</div>
+                  <div className="text-[9px] text-zinc-400">empleado</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Campo Usuario */}
+            <div className="space-y-1.5">
+              <label
+                htmlFor="username"
+                className="text-xs font-bold text-zinc-300 flex items-center justify-between"
+              >
+                <span>Usuario o Documento</span>
+                <span className="text-[10px] text-amber-500/80 font-medium">*Requerido</span>
+              </label>
+              <div className="relative">
+                <User className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="username"
                   name="username"
                   type="text"
+                  placeholder="admin o empleado"
                   value={username}
-                  onChange={(event) => setUsername(event.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="password" className="mb-2 block text-sm font-bold uppercase tracking-[0.12em] text-slate-900">
-                  Contraseña
-                </label>
+            {/* Campo Contraseña */}
+            <div className="space-y-1.5">
+              <label
+                htmlFor="password"
+                className="text-xs font-bold text-zinc-300 flex items-center justify-between"
+              >
+                <span>Contraseña</span>
+                <span className="text-[10px] text-amber-500/80 font-medium">*Requerido</span>
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-11 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
+            </div>
 
-              {authError ? (
-                <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-                  <p>{authError}</p>
-                </div>
-              ) : null}
+            {/* Checkbox Recordar */}
+            <div className="flex items-center justify-between text-xs pt-1">
+              <label className="flex items-center gap-2 cursor-pointer text-zinc-400 hover:text-zinc-300">
+                <input
+                  type="checkbox"
+                  checked={rememberUser}
+                  onChange={(e) => setRememberUser(e.target.checked)}
+                  className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-950 w-4 h-4"
+                />
+                <span>Recordar usuario en este equipo</span>
+              </label>
+            </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting || !username.trim() || !password.trim()}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-950 bg-white px-4 py-3 text-sm font-bold uppercase tracking-[0.12em] text-slate-950 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin text-slate-950" />
-                    <span>Iniciando...</span>
-                  </>
-                ) : (
-                  "iniciar sesión"
-                )}
-              </button>
-
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
-                <p className="font-bold text-slate-800">Cuentas demo de acceso:</p>
-                <p className="mt-0.5">• <span className="font-semibold">Empleado:</span> <code className="bg-slate-200 px-1 py-0.5 rounded text-slate-900 font-mono">empleado</code> (clave: 123456)</p>
-                <p className="mt-0.5">• <span className="font-semibold">Jefe:</span> <code className="bg-slate-200 px-1 py-0.5 rounded text-slate-900 font-mono">admin</code> (clave: 123456)</p>
+            {/* Alerta de Error si ocurre */}
+            {authError && (
+              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+                {authError}
               </div>
-            </form>
+            )}
+
+            {/* Botón de Enviar */}
+            <button
+              type="submit"
+              disabled={isSubmitting || !username.trim() || !password.trim()}
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-950 font-black text-sm shadow-lg shadow-amber-500/20 active:scale-98 transition transform cursor-pointer"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-zinc-950" />
+                  <span>Entrando al sistema...</span>
+                </>
+              ) : (
+                <>
+                  <span>Entrar a En que la Negra</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Soporte Footer */}
+          <div className="text-center pt-2">
+            <p className="text-[11px] text-zinc-500">
+              ¿Problemas para acceder?{" "}
+              <span className="text-amber-400/90 font-semibold cursor-pointer hover:underline">
+                Contacta al supervisor de turno
+              </span>
+            </p>
           </div>
         </div>
-
-        <div className="hidden w-1/2 bg-black sm:flex">
-          <div className="relative flex h-full w-full flex-col items-center justify-center gap-6 p-10 text-center">
-            <img src="/logo.jpg" alt="En que la Negra" className="w-full max-w-sm object-contain" />
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
