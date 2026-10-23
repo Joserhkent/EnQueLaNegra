@@ -27,8 +27,9 @@ type PageKey = keyof typeof pages;
 
 async function loginWithApi(username: string, password: string) {
   let response: Response;
+  const apiBase = import.meta.env.VITE_API_URL || "";
   try {
-    response = await fetch("http://localhost:3000/api/auth/login", {
+    response = await fetch(`${apiBase}/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

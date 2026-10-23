@@ -228,7 +228,7 @@ interface PosStore {
   cerrarCaja: (usuario?: string, notas?: string) => Promise<void>;
 }
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("eqln_token");
