@@ -321,22 +321,22 @@ export default function Sidebar({
               alt="Logo"
               className="w-8 h-8 rounded-lg object-contain bg-black"
             />
-            <span className="font-bold text-white text-sm">En que la Negra</span>
+            <span className="font-bold text-white text-sm truncate max-w-[120px] sm:max-w-none">En que la Negra</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           {installPrompt && (
             <button
               onClick={handleInstallClick}
-              className="p-2 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1"
+              className="p-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1"
               title="Instalar App"
             >
               <Download className="w-4 h-4" />
             </button>
           )}
           <span
-            className={`px-2 py-1 rounded text-[10px] font-bold ${
+            className={`px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${
               cajaEstado?.isOpen
                 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                 : "bg-rose-500/20 text-rose-400 border border-rose-500/30"

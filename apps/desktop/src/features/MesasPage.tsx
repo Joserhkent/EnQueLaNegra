@@ -477,52 +477,54 @@ export default function MesasPage() {
   })();
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
+    <div className="space-y-6 sm:space-y-8 max-w-[1600px] mx-auto pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-6 rounded-3xl border border-slate-200/80 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Salón / Mesas</h1>
-          <p className="text-slate-500 text-sm mt-1">Atención acumulativa por mesa: abre, agrega tandas y cobra al final.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Salón / Mesas</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Atención acumulativa por mesa: abre, agrega tandas y cobra al final.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
-            <span className="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" /> {counts.libres} Libres
+          <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
+            <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1.5 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {counts.libres} Libres
             </span>
-            <span className="px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-amber-500" /> {counts.ocupadas} Ocupadas
+            <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 flex items-center gap-1.5 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> {counts.ocupadas} Ocupadas
             </span>
-            <span className="px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-500" /> {counts.cobrando} En Cobro
+            <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 flex items-center gap-1.5 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> {counts.cobrando} En Cobro
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setJoinTableIds([]);
-              setMainJoinTableId(null);
-              setShowJoinTables(true);
-            }}
-            disabled={availableTables.length < 2}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition"
-          >
-            <GitMerge className="w-4 h-4" /> Unir mesas
-          </button>
-          {currentUser?.role === "jefe" && (
+          <div className="flex items-center gap-2 w-full sm:w-auto pt-1 sm:pt-0">
             <button
               type="button"
-              onClick={() => setShowCreateTable(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold transition"
+              onClick={() => {
+                setJoinTableIds([]);
+                setMainJoinTableId(null);
+                setShowJoinTables(true);
+              }}
+              disabled={availableTables.length < 2}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold transition"
             >
-              <Plus className="w-4 h-4" /> Nueva mesa
+              <GitMerge className="w-3.5 h-3.5" /> Unir mesas
             </button>
-          )}
+            {currentUser?.role === "jefe" && (
+              <button
+                type="button"
+                onClick={() => setShowCreateTable(true)}
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold transition"
+              >
+                <Plus className="w-3.5 h-3.5" /> Nueva mesa
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Alerta de caja cerrada */}
       {!cajaEstado?.isOpen && (
-        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4 flex items-center justify-between gap-3 text-amber-950 text-xs font-semibold">
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 text-amber-950 text-xs font-semibold">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
             <span>
@@ -532,7 +534,7 @@ export default function MesasPage() {
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-3 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm">
         <label className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -540,24 +542,24 @@ export default function MesasPage() {
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Buscar por número de mesa..."
-            className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-amber-500"
+            className="w-full pl-10 pr-3 py-2 sm:py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-amber-500"
           />
         </label>
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-1 max-w-full scrollbar-none flex-nowrap shrink-0">
           {([
             ["all", "Todas"],
             ["available", "Disponibles"],
             ["occupied", "Ocupadas"],
-            ["billing", "Pidiendo cuenta"],
+            ["billing", "En Cobro"],
           ] as const).map(([filter, label]) => (
             <button
               key={filter}
               type="button"
               onClick={() => setStatusFilter(filter)}
               aria-pressed={statusFilter === filter}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap shrink-0 ${
                 statusFilter === filter
-                  ? "bg-amber-500 text-slate-950"
+                  ? "bg-amber-500 text-slate-950 shadow-sm"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >

@@ -69,10 +69,10 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
 
   return (
     <div className="min-h-screen w-full bg-zinc-950 text-zinc-100 flex flex-col lg:flex-row antialiased selection:bg-amber-500 selection:text-zinc-950">
-      {/* Columna Izquierda: Información del Restaurante & Módulos */}
+      {/* Columna Izquierda: Información del Restaurante & Módulos (Desktop: Visible en pantalla grande; Móvil: Oculto para que el Login esté arriba sin scroll) */}
       <section 
         aria-label="Información del restaurante y módulos"
-        className="w-full lg:w-7/12 xl:w-8/12 p-6 sm:p-10 lg:p-14 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-zinc-800/80 bg-gradient-to-br from-zinc-900/90 via-zinc-950 to-black relative overflow-hidden"
+        className="hidden lg:flex lg:w-7/12 xl:w-8/12 p-8 lg:p-14 flex-col justify-between border-r border-zinc-800/80 bg-gradient-to-br from-zinc-900/90 via-zinc-950 to-black relative overflow-hidden"
       >
         {/* Glow de fondo */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -110,7 +110,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                 <Sparkles className="w-3.5 h-3.5" />
                 Arepas, Cachapas & Comida Venezolana
               </span>
-              <span className="hidden sm:inline-block text-[11px] text-zinc-400 bg-black/40 px-2.5 py-1 rounded-full backdrop-blur-sm">
+              <span className="text-[11px] text-zinc-400 bg-black/40 px-2.5 py-1 rounded-full backdrop-blur-sm">
                 Lima, Perú
               </span>
             </div>
@@ -130,7 +130,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
           </div>
 
           {/* Tarjetas de Funcionalidades en 2x2 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div className="grid grid-cols-2 gap-3 pt-2">
             <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
                 <UtensilsCrossed className="w-5 h-5" />
@@ -176,17 +176,35 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
         {/* Footer Izquierdo */}
         <div className="pt-8 text-xs text-zinc-500 flex items-center justify-between border-t border-zinc-900 mt-8">
           <span>Powered by <strong>En que la Negra POS</strong></span>
-          <span className="hidden sm:inline">Sistema de Gestión para Restaurantes</span>
+          <span>Sistema Gastronómico</span>
         </div>
       </section>
 
-      {/* Columna Derecha: Formulario de Login */}
+      {/* Columna Derecha: Formulario de Login (En móvil: Ocupa toda la pantalla centrada y visible al instante) */}
       <section 
         aria-label="Formulario de inicio de sesión"
-        className="w-full lg:w-5/12 xl:w-4/12 p-6 sm:p-10 lg:p-12 flex flex-col justify-center bg-zinc-950 relative"
+        className="w-full lg:w-5/12 xl:w-4/12 min-h-screen lg:min-h-0 p-5 sm:p-8 lg:p-12 flex flex-col justify-center bg-zinc-950 relative"
       >
-        <div className="w-full max-w-sm mx-auto space-y-6">
-          <header className="space-y-1.5">
+        <div className="w-full max-w-sm mx-auto space-y-5 my-auto">
+          {/* Header Móvil con Logo */}
+          <div className="lg:hidden flex items-center gap-3 pb-3 border-b border-zinc-800/80">
+            <img
+              src="/pwa-192x192.png"
+              alt="Logo"
+              className="w-10 h-10 rounded-2xl bg-black border border-zinc-800 object-contain shadow-md shrink-0"
+            />
+            <div>
+              <h2 className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                En que la Negra
+                <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 text-[9px] font-black uppercase">
+                  POS
+                </span>
+              </h2>
+              <p className="text-[11px] text-zinc-400">Espacio de trabajo gastronómico</p>
+            </div>
+          </div>
+
+          <header className="space-y-1">
             <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">
               ACCESO AL SISTEMA
             </span>
@@ -194,20 +212,20 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               Inicia sesión
             </h2>
             <p className="text-xs text-zinc-400">
-              Entra con tus credenciales de usuario o selecciona un perfil demo.
+              Entra con tu usuario de turno o selecciona un perfil demo.
             </p>
           </header>
 
           {/* Botones de Acceso Rápido para Demostración */}
-          <div className="space-y-2 bg-zinc-900/60 p-3 rounded-2xl border border-zinc-800/80">
-            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider px-1">
-              Seleccionar cuenta rápida:
+          <div className="space-y-1.5 bg-zinc-900/60 p-2.5 rounded-2xl border border-zinc-800/80">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider px-1">
+              Perfil rápido con 1 clic:
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => handleSelectDemo("admin", "123456")}
-                className={`p-2.5 rounded-xl border text-left transition flex items-center gap-2 ${
+                className={`p-2 rounded-xl border text-left transition flex items-center gap-2 ${
                   username === "admin"
                     ? "bg-amber-500/20 border-amber-500 text-amber-300 font-bold"
                     : "bg-zinc-800/60 border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs"
@@ -215,7 +233,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               >
                 <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
                 <div className="truncate">
-                  <div className="text-[11px] font-bold leading-tight">Jefe / Admin</div>
+                  <div className="text-[11px] font-bold leading-tight">Jefa / Admin</div>
                   <div className="text-[9px] text-zinc-400">admin</div>
                 </div>
               </button>
@@ -223,7 +241,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               <button
                 type="button"
                 onClick={() => handleSelectDemo("empleado", "123456")}
-                className={`p-2.5 rounded-xl border text-left transition flex items-center gap-2 ${
+                className={`p-2 rounded-xl border text-left transition flex items-center gap-2 ${
                   username === "empleado"
                     ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold"
                     : "bg-zinc-800/60 border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs"
@@ -238,9 +256,9 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {/* Campo Usuario */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <label
                 htmlFor="username"
                 className="text-xs font-bold text-zinc-300 flex items-center justify-between"
@@ -257,13 +275,13 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                   placeholder="admin o empleado"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 />
               </div>
             </div>
 
             {/* Campo Contraseña */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <label
                 htmlFor="password"
                 className="text-xs font-bold text-zinc-300 flex items-center justify-between"
@@ -280,7 +298,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-11 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-11 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 />
                 <button
                   type="button"
@@ -298,7 +316,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             </div>
 
             {/* Checkbox Recordar */}
-            <div className="flex items-center justify-between text-xs pt-1">
+            <div className="flex items-center justify-between text-xs pt-0.5">
               <label className="flex items-center gap-2 cursor-pointer text-zinc-400 hover:text-zinc-300">
                 <input
                   type="checkbox"
@@ -306,7 +324,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                   onChange={(e) => setRememberUser(e.target.checked)}
                   className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-950 w-4 h-4"
                 />
-                <span>Recordar usuario en este equipo</span>
+                <span>Recordar sesión en este equipo</span>
               </label>
             </div>
 
@@ -321,7 +339,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             <button
               type="submit"
               disabled={isSubmitting || !username.trim() || !password.trim()}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-950 font-black text-sm shadow-lg shadow-amber-500/20 active:scale-98 transition transform cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-950 font-black text-sm shadow-lg shadow-amber-500/20 active:scale-98 transition transform cursor-pointer"
             >
               {isSubmitting ? (
                 <>
@@ -338,11 +356,11 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
           </form>
 
           {/* Soporte Footer */}
-          <div className="text-center pt-2">
+          <div className="text-center pt-1">
             <p className="text-[11px] text-zinc-500">
               ¿Problemas para acceder?{" "}
               <span className="text-amber-400/90 font-semibold cursor-pointer hover:underline">
-                Contacta al supervisor de turno
+                Contacta al administrador
               </span>
             </p>
           </div>
