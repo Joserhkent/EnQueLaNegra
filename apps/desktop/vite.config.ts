@@ -34,11 +34,8 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths({ projects: ["./tsconfig.app.json"] }),
     VitePWA({
-      registerType: "autoUpdate",
-      injectRegister: "auto",
-      devOptions: {
-        enabled: true,
-      },
+      registerType: "prompt",
+      injectRegister: null,
       includeAssets: [
         "favicon.svg",
         "favicon-64x64.png",
