@@ -26,6 +26,18 @@ export default function PwaInstallBanner() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
+    // 0. Si ya se capturó anticipadamente en index.html
+    const existingPrompt = (window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent }).deferredPwaPrompt;
+    if (existingPrompt) {
+      setDeferredPrompt(existingPrompt);
+    }
+
+    const onPromptReady = () => {
+      const p = (window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent }).deferredPwaPrompt;
+      if (p) setDeferredPrompt(p);
+    };
+    window.addEventListener("pwa-prompt-ready", onPromptReady);
+
     // 1. Detectar si ya está corriendo como app instalada (standalone)
     const checkStandalone = () => {
       const isStandaloneMode =
@@ -70,6 +82,7 @@ export default function PwaInstallBanner() {
     window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
+      window.removeEventListener("pwa-prompt-ready", onPromptReady);
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
@@ -81,14 +94,22 @@ export default function PwaInstallBanner() {
   }
 
   const handleInstallClick = async () => {
-    if (deferredPrompt) {
+    const promptToUse =
+      deferredPrompt ||
+      (window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent })
+        .deferredPwaPrompt;
+
+    if (promptToUse) {
       // Navegadores compatibles (Chrome en Android/PC, Edge, etc.)
       try {
-        await deferredPrompt.prompt();
-        const choice = await deferredPrompt.userChoice;
+        await promptToUse.prompt();
+        const choice = await promptToUse.userChoice;
         if (choice.outcome === "accepted") {
           setIsInstalled(true);
           setDeferredPrompt(null);
+          (
+            window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent | null }
+          ).deferredPwaPrompt = null;
         }
       } catch (err) {
         console.error("Error al disparar instalación PWA:", err);
