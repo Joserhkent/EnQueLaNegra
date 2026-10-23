@@ -9,6 +9,7 @@ import InventarioPage from "./features/InventarioPage";
 import HistorialPage from "./features/HistorialPage";
 import LoginPage from "./features/LoginPage";
 import ErrorBoundary from "./components/ErrorBoundary";
+import PwaInstallBanner from "./components/PwaInstallBanner";
 import { usePosStore, type UserAccount } from "./store/usePosStore";
 import KitchenPage from "./features/kitchenPage";
 
@@ -183,7 +184,12 @@ export default function App() {
   };
 
   if (!isLoggedIn) {
-    return <LoginPage onLogin={handleLogin} authError={authError} />;
+    return (
+      <>
+        <LoginPage onLogin={handleLogin} authError={authError} />
+        <PwaInstallBanner />
+      </>
+    );
   }
 
   const isJefe = currentUser?.role === "jefe";
@@ -204,6 +210,7 @@ export default function App() {
           )}
         </ErrorBoundary>
       </main>
+      <PwaInstallBanner />
     </div>
   );
 }
