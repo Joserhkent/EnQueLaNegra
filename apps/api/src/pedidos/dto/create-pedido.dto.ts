@@ -38,8 +38,8 @@ export class PedidoItemExtraDto {
 
 export class PedidoItemDto {
   @IsString()
-  @IsNotEmpty()
-  productoId = '';
+  @IsOptional()
+  productoId?: string;
 
   @IsString()
   @IsNotEmpty()

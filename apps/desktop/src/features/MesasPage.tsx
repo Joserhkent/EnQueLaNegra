@@ -17,6 +17,7 @@ import {
   Pencil,
   Printer,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 
 const AGREGADOS_DISPONIBLES = [
@@ -123,6 +124,8 @@ export default function MesasPage() {
   const [receiptOrder, setReceiptOrder] = useState<Order | null>(null);
   const [checkoutIsPartial, setCheckoutIsPartial] = useState(false);
   const [partialPaymentAmount, setPartialPaymentAmount] = useState("");
+  const [isSubmittingTanda, setIsSubmittingTanda] = useState(false);
+  const [isSubmittingCheckout, setIsSubmittingCheckout] = useState(false);
 
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
 
@@ -217,7 +220,7 @@ export default function MesasPage() {
   // primera tanda con productos (más abajo): así nunca queda una mesa "ocupada"
   // sin ningún pedido real por un clic accidental, y sigue sin fricción para abrir.
   const handleSendTanda = async () => {
-    if (!selectedMesa) return;
+    if (!selectedMesa || isSubmittingTanda) return;
     if (!cajaEstado?.isOpen) {
       alert("La caja está cerrada. Debes abrir un turno de caja en Pagos antes de atender mesas o mandar pedidos.");
       return;
@@ -228,35 +231,40 @@ export default function MesasPage() {
       return;
     }
 
-    const targetMesaId = selectedMesa.id;
-    if (selectedMesa.status === "AVAILABLE") {
-      const opened = await openMesa(targetMesaId);
-      if (!opened) return; // openMesa ya muestra la alerta si falla
+    setIsSubmittingTanda(true);
+    try {
+      const targetMesaId = selectedMesa.id;
+      if (selectedMesa.status === "AVAILABLE") {
+        const opened = await openMesa(targetMesaId);
+        if (!opened) return; // openMesa ya muestra la alerta si falla
+      }
+
+      const items: OrderItem[] = cartList.map((item) => {
+        const extrasFromAgregados = item.agregados
+          .map((agregadoName) => {
+            const insumoId = findInsumoId(agregadoName);
+            const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === agregadoName);
+            return insumoId ? { insumoId, cantidad: 1, precioExtra: found ? found.precio : 0 } : null;
+          })
+          .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
+
+        return {
+          productoId: item.product.id,
+          sku: item.product.sku,
+          nombre: item.product.nombre,
+          precio: item.product.precio,
+          cantidad: item.quantity,
+          receta: item.product.receta || [],
+          notas: item.notes,
+          extras: extrasFromAgregados,
+        };
+      });
+
+      const result = await addItemsToMesa(targetMesaId, items);
+      if (result) setCart({});
+    } finally {
+      setIsSubmittingTanda(false);
     }
-
-    const items: OrderItem[] = cartList.map((item) => {
-      const extrasFromAgregados = item.agregados
-        .map((agregadoName) => {
-          const insumoId = findInsumoId(agregadoName);
-          const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === agregadoName);
-          return insumoId ? { insumoId, cantidad: 1, precioExtra: found ? found.precio : 0 } : null;
-        })
-        .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
-
-      return {
-        productoId: item.product.id,
-        sku: item.product.sku,
-        nombre: item.product.nombre,
-        precio: item.product.precio,
-        cantidad: item.quantity,
-        receta: item.product.receta || [],
-        notas: item.notes,
-        extras: extrasFromAgregados,
-      };
-    });
-
-    const result = await addItemsToMesa(targetMesaId, items);
-    if (result) setCart({});
   };
 
   // Corrige un error en un ítem ya enviado (cantidad mal puesta) sin tener que
@@ -313,31 +321,36 @@ export default function MesasPage() {
   };
 
   const handleCheckout = async () => {
-    if (!selectedMesa) return;
+    if (!selectedMesa || isSubmittingCheckout) return;
     if (!cajaEstado?.isOpen) {
       alert("La caja está cerrada. Debes abrir un turno de caja en Pagos antes de registrar cobros.");
       return;
     }
-    if (checkoutIsPartial) {
-      await handlePartialPayment();
-      return;
-    }
-    const numEf = parseFloat(montoEfectivo) || 0;
-    const numDig = parseFloat(montoDigital) || 0;
-    const order = await checkoutMesa(
-      selectedMesa.id,
-      paymentMethod,
-      paymentMethod === "Mixto" ? numEf : undefined,
-      paymentMethod === "Mixto" ? numDig : undefined
-    );
-    if (order) {
-      setSelectedMesaId(null);
-      setShowCheckout(false);
-      setCheckoutIsPartial(false);
-      setCart({});
-      setMontoEfectivo("");
-      setMontoDigital("");
-      setPaymentMethod("Efectivo");
+    setIsSubmittingCheckout(true);
+    try {
+      if (checkoutIsPartial) {
+        await handlePartialPayment();
+        return;
+      }
+      const numEf = parseFloat(montoEfectivo) || 0;
+      const numDig = parseFloat(montoDigital) || 0;
+      const order = await checkoutMesa(
+        selectedMesa.id,
+        paymentMethod,
+        paymentMethod === "Mixto" ? numEf : undefined,
+        paymentMethod === "Mixto" ? numDig : undefined
+      );
+      if (order) {
+        setSelectedMesaId(null);
+        setShowCheckout(false);
+        setCheckoutIsPartial(false);
+        setCart({});
+        setMontoEfectivo("");
+        setMontoDigital("");
+        setPaymentMethod("Efectivo");
+      }
+    } finally {
+      setIsSubmittingCheckout(false);
     }
   };
 
@@ -959,11 +972,21 @@ export default function MesasPage() {
                     <button
                       type="button"
                       onClick={handleSendTanda}
-                      disabled={!cajaEstado?.isOpen}
+                      disabled={!cajaEstado?.isOpen || isSubmittingTanda}
                       className="w-full py-3 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
                       title={!cajaEstado?.isOpen ? "La caja está cerrada. Abre la caja en Pagos." : undefined}
                     >
-                      <UtensilsCrossed className="w-4 h-4 text-amber-400" /> {!cajaEstado?.isOpen ? "Caja Cerrada (Abrir turno)" : `Enviar Tanda a Cocina (S/ ${calculateCartTotal().toFixed(2)})`}
+                      {isSubmittingTanda ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                          <span>Enviando tanda a cocina...</span>
+                        </>
+                      ) : (
+                        <>
+                          <UtensilsCrossed className="w-4 h-4 text-amber-400" />
+                          {!cajaEstado?.isOpen ? "Caja Cerrada (Abrir turno)" : `Enviar Tanda a Cocina (S/ ${calculateCartTotal().toFixed(2)})`}
+                        </>
+                      )}
                     </button>
                   )}
                 </div>
@@ -1096,9 +1119,15 @@ export default function MesasPage() {
                         <button
                           type="button"
                           onClick={handleCheckout}
-                          className="py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95"
+                          disabled={isSubmittingCheckout}
+                          className="py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
                         >
-                          {checkoutIsPartial
+                          {isSubmittingCheckout ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span>Procesando...</span>
+                            </>
+                          ) : checkoutIsPartial
                             ? (Number.parseFloat(partialPaymentAmount) >= remainingAmount - 0.001 && remainingAmount > 0
                                 ? "Registrar Pago Total y Cerrar Mesa"
                                 : "Registrar Pago Parcial")
