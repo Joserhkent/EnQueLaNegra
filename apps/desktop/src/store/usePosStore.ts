@@ -855,6 +855,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
       const normalizado: Order = {
         ...createdOrder,
         status: normalizeStatusFromBackend(createdOrder.status),
+        type: normalizeOrderTypeFromBackend(createdOrder.type),
         paymentMethod: normalizePaymentMethodFromBackend(createdOrder.paymentMethod),
       };
       set((state) => ({ pedidos: [normalizado, ...state.pedidos] }));
@@ -910,6 +911,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
       const normalizado: Order = {
         ...updatedOrder,
         status: normalizeStatusFromBackend(updatedOrder.status),
+        type: normalizeOrderTypeFromBackend(updatedOrder.type),
         paymentMethod: normalizePaymentMethodFromBackend(updatedOrder.paymentMethod),
       };
       set((state) => ({

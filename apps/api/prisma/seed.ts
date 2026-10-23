@@ -18,6 +18,7 @@ async function main() {
   await prisma.cliente.deleteMany();
   await prisma.movimientoStock.deleteMany();
   await prisma.cierreCaja.deleteMany();
+  await prisma.cajaSesion.deleteMany();
   await prisma.recetaItem.deleteMany();
   await prisma.producto.deleteMany();
   await prisma.insumo.deleteMany();
@@ -317,6 +318,18 @@ async function main() {
   }
 
   console.log(`🍽️  ${productosData.length} Productos y Recetas (BOM) creados.`);
+
+  // 10. Turno de caja inicial abierto para que el sistema esté listo para demostración
+  await prisma.cajaSesion.create({
+    data: {
+      estado: 'ABIERTA',
+      montoInicial: 150.00,
+      usuarioAperturaId: jefeUser.id,
+      usuarioApertura: 'La Negra (Jefa)',
+      notasApertura: 'Fondo de sencillo inicial para apertura de turno',
+    },
+  });
+  console.log('💵 Caja inicial abierta con fondo de S/ 150.00.');
 
   console.log('✅ Carga de datos de la base de datos completada exitosamente.');
 }

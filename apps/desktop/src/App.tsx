@@ -192,9 +192,9 @@ export default function App() {
   const ActivePageComponent = pages[pageToRender] as ComponentType<object>;
 
   return (
-    <div className="flex min-h-screen bg-[#F4F5F7]">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#F4F5F7]">
       <Sidebar activePage={pageToRender} onChangePage={setActivePage} onLogout={handleLogout} />
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
         <ErrorBoundary key={pageToRender} fallbackTitle="Error al cargar esta sección">
           {pageToRender === "pedidos" ? (
             <PedidosPage onGoToMesas={() => setActivePage("mesas")} />

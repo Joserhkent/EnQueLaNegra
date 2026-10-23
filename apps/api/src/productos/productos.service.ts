@@ -116,7 +116,21 @@ export class ProductosService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    const prod = await this.findOne(id);
+    const orderItemsCount = await this.prisma.orderItem.count({
+      where: { productoId: id },
+    });
+
+    if (orderItemsCount > 0) {
+      // Si el producto ya se ha vendido en comandas históricas, no podemos borrarlo de la BD
+      // porque rompería la integridad de los reportes y comandas previas.
+      // En su lugar, lo marcamos como no disponible (isAvailable: false).
+      return this.prisma.producto.update({
+        where: { id },
+        data: { isAvailable: false },
+      });
+    }
+
     return this.prisma.producto.delete({ where: { id } });
   }
 }
