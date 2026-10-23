@@ -480,16 +480,53 @@ export class MesasService {
     if (!table) throw new NotFoundException('Mesa no encontrada');
 
     if (!table.currentOrderId || !table.currentOrder) {
-      throw new BadRequestException(
-        `La mesa ${table.number} no tiene una cuenta abierta`,
-      );
+      // Si la mesa no tiene una orden asociada pero estaba marcada como ocupada, se libera limpiamente
+      await this.prisma.$transaction([
+        this.prisma.table.update({
+          where: { id: table.id },
+          data: { status: TableStatus.AVAILABLE, currentOrderId: null },
+        }),
+        this.prisma.table.updateMany({
+          where: { joinedToId: table.id },
+          data: { joinedToId: null },
+        }),
+      ]);
+      return {
+        id: table.id,
+        code: `#MESA-${table.number}`,
+        customer: `Mesa ${table.number}`,
+        type: 'MESA',
+        status: OrderStatus.CANCELADO,
+        subtotal: 0,
+        igv: 0,
+        total: 0,
+        items: [],
+        pagos: [],
+      } as any;
     }
 
     const order = table.currentOrder;
     if (order.items.length === 0) {
-      throw new BadRequestException(
-        'No se puede cobrar una mesa sin ítems registrados',
-      );
+      // Si la mesa no tiene ítems registrados (se abrió por error o el cliente se retiró sin consumir),
+      // se desvinculan las mesas agrupadas, se libera la mesa y se elimina la orden vacía de la BD.
+      await this.prisma.$transaction([
+        this.prisma.table.update({
+          where: { id: table.id },
+          data: { status: TableStatus.AVAILABLE, currentOrderId: null },
+        }),
+        this.prisma.table.updateMany({
+          where: { joinedToId: table.id },
+          data: { joinedToId: null },
+        }),
+      ]);
+      await this.prisma.order.delete({ where: { id: order.id } });
+
+      return {
+        ...order,
+        status: OrderStatus.CANCELADO,
+        items: [],
+        pagos: [],
+      };
     }
 
     const paymentMethod =

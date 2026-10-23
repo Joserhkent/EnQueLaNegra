@@ -1023,14 +1023,39 @@ export default function MesasPage() {
                       >
                         <CircleDollarSign className="w-4 h-4" /> Registrar Pago Parcial
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => { setCheckoutIsPartial(false); setPartialPaymentAmount(""); setShowCheckout(true); }}
-                        disabled={!cajaEstado?.isOpen || !selectedMesa.currentOrder?.items.length}
-                        className="col-span-2 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95 flex items-center justify-center gap-2"
-                      >
-                        <CircleDollarSign className="w-4 h-4" /> {!cajaEstado?.isOpen ? "Caja Cerrada (Abre caja)" : remainingAmount <= 0 ? "Cerrar Mesa" : "Cobrar y Cerrar Mesa"}
-                      </button>
+                      {!selectedMesa.currentOrder?.items?.length ? (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!window.confirm(`¿Liberar Mesa ${selectedMesa.number} sin consumo? La mesa quedará disponible para nuevos clientes.`)) return;
+                            await checkoutMesa(selectedMesa.id, "Efectivo");
+                            setSelectedMesaId(null);
+                          }}
+                          disabled={!cajaEstado?.isOpen || isSubmittingCheckout}
+                          className="col-span-2 py-3 bg-rose-600 hover:bg-rose-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md shadow-rose-500/20 transition active:scale-95 flex items-center justify-center gap-2"
+                        >
+                          {isSubmittingCheckout ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span>Liberando mesa...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Trash2 className="w-4 h-4" />
+                              <span>Liberar Mesa (Sin consumo)</span>
+                            </>
+                          )}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => { setCheckoutIsPartial(false); setPartialPaymentAmount(""); setShowCheckout(true); }}
+                          disabled={!cajaEstado?.isOpen}
+                          className="col-span-2 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95 flex items-center justify-center gap-2"
+                        >
+                          <CircleDollarSign className="w-4 h-4" /> {!cajaEstado?.isOpen ? "Caja Cerrada (Abre caja)" : remainingAmount <= 0 ? "Cerrar Mesa" : "Cobrar y Cerrar Mesa"}
+                        </button>
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-3 animate-in fade-in duration-200">
