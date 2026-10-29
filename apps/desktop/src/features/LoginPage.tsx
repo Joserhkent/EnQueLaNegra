@@ -212,11 +212,15 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               Inicia sesión
             </h2>
             <p className="text-xs text-zinc-400">
-              Entra con tu usuario de turno o selecciona un perfil demo.
+              {import.meta.env.DEV
+                ? "Entra con tu usuario de turno o selecciona un perfil demo."
+                : "Entra con tu usuario de turno."}
             </p>
           </header>
 
-          {/* Botones de Acceso Rápido para Demostración */}
+          {/* Acceso rápido SOLO en desarrollo (npm run dev): en el build de producción
+              Vite reemplaza import.meta.env.DEV por false y este bloque no existe */}
+          {import.meta.env.DEV && (
           <div className="space-y-1.5 bg-zinc-900/60 p-2.5 rounded-2xl border border-zinc-800/80">
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider px-1">
               Perfil rápido con 1 clic:
@@ -255,6 +259,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               </button>
             </div>
           </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
             {/* Campo Usuario */}

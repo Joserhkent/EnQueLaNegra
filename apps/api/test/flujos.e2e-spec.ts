@@ -429,4 +429,42 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     }).expect(201);
     expect(c.body.diferencia).toBe(0);
   });
+
+  it('contraseñas: cada uno cambia la suya y el Jefe restablece', async () => {
+    const login = (password: string) =>
+      api('post', '/auth/login', undefined, { username: 'empleado', password });
+
+    await api('patch', '/auth/password', empleado, {
+      actual: 'equivocada',
+      nueva: 'mesonero2026',
+    }).expect(400);
+    await api('patch', '/auth/password', empleado, {
+      actual: '123456',
+      nueva: 'corta',
+    }).expect(400);
+    await api('patch', '/auth/password', empleado, {
+      actual: '123456',
+      nueva: 'mesonero2026',
+    }).expect(200);
+    await login('123456').expect(401);
+    await login('mesonero2026').expect(201);
+
+    // Solo el Jefe ve la lista y restablece; nunca se devuelve el hash
+    await api('get', '/auth/usuarios', empleado).expect(403);
+    const { body: usuarios } = await api('get', '/auth/usuarios', jefe).expect(
+      200,
+    );
+    expect(JSON.stringify(usuarios)).not.toMatch(/password|\$2[aby]\$/);
+    const id = usuarios.find(
+      (u: { username: string }) => u.username === 'empleado',
+    ).id;
+    await api('patch', `/auth/usuarios/${id}/password`, empleado, {
+      nueva: 'intento2026',
+    }).expect(403);
+    await api('patch', `/auth/usuarios/${id}/password`, jefe, {
+      nueva: 'restablecida2026',
+    }).expect(200);
+    await login('mesonero2026').expect(401);
+    await login('restablecida2026').expect(201);
+  });
 });

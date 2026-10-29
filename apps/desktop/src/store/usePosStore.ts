@@ -224,6 +224,10 @@ interface PosStore {
   login: (username: string, password?: string) => Promise<UserAccount | null>;
   setCurrentUser: (user: UserAccount | null) => void;
   logout: () => void;
+  // Contraseñas: devuelven null si salió bien o el mensaje de error para mostrarlo
+  cambiarPassword: (actual: string, nueva: string) => Promise<string | null>;
+  listarUsuarios: () => Promise<UsuarioSistema[]>;
+  restablecerPassword: (userId: string, nueva: string) => Promise<string | null>;
 
   addStockMovement: (
     insumoId: string,
@@ -289,13 +293,26 @@ const authFetch = async (input: string, init?: RequestInit): Promise<Response> =
   return res;
 };
 
-// Muestra el mensaje de error de la API (string o lista de validaciones).
-const alertarError = async (res: Response, porDefecto: string) => {
-  if (res.status === 401) return; // authFetch ya avisó y cerró la sesión
+// Mensaje de error de la API (string o lista de validaciones) en un solo texto.
+const mensajeError = async (res: Response, porDefecto: string): Promise<string> => {
   const err = await res.json().catch(() => null);
   const msg = err?.message || porDefecto;
-  alert(Array.isArray(msg) ? msg.join(", ") : msg);
+  return Array.isArray(msg) ? msg.join(", ") : msg;
 };
+
+// Muestra el mensaje de error de la API.
+const alertarError = async (res: Response, porDefecto: string) => {
+  if (res.status === 401) return; // authFetch ya avisó y cerró la sesión
+  alert(await mensajeError(res, porDefecto));
+};
+
+export interface UsuarioSistema {
+  id: string;
+  name: string;
+  username: string;
+  active: boolean;
+  role: string;
+}
 
 // 🔧 El backend (Prisma) guarda el status en MAYÚSCULAS (PREPARACION, LISTO, ENTREGADO, CANCELADO).
 // El frontend trabaja en minúsculas. Estas dos funciones traducen en cada dirección.
@@ -808,6 +825,41 @@ export const usePosStore = create<PosStore>((set, get) => ({
     set({ currentUser: user });
   },
   logout: () => set({ currentUser: null }),
+
+  cambiarPassword: async (actual, nueva) => {
+    try {
+      const res = await authFetch(`${API_URL}/auth/password`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ actual, nueva }),
+      });
+      return res.ok ? null : await mensajeError(res, "No se pudo cambiar la contraseña");
+    } catch {
+      return "No se pudo conectar con el servidor";
+    }
+  },
+
+  listarUsuarios: async () => {
+    try {
+      const res = await authFetch(`${API_URL}/auth/usuarios`, { headers: getAuthHeaders() });
+      return res.ok ? await res.json() : [];
+    } catch {
+      return [];
+    }
+  },
+
+  restablecerPassword: async (userId, nueva) => {
+    try {
+      const res = await authFetch(`${API_URL}/auth/usuarios/${userId}/password`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ nueva }),
+      });
+      return res.ok ? null : await mensajeError(res, "No se pudo restablecer la contraseña");
+    } catch {
+      return "No se pudo conectar con el servidor";
+    }
+  },
 
   addStockMovement: async (insumoId, cantidad, tipo, motivo, _usuario = "Administrador") => {
     try {

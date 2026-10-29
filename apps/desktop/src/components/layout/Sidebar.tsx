@@ -14,9 +14,11 @@ import {
   Menu,
   X,
   Download,
+  KeyRound,
   type LucideIcon,
 } from "lucide-react";
 import { usePosStore } from "../../store/usePosStore";
+import CuentaModal from "../CuentaModal";
 
 type SidebarProps = {
   activePage:
@@ -53,6 +55,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const { currentUser, pedidos = [], insumos = [], mesas = [], cajaEstado } = usePosStore();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isCuentaOpen, setIsCuentaOpen] = useState(false);
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
 
@@ -173,8 +176,16 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* User Card with Role Badge */}
-        <div className="bg-slate-800/60 border border-slate-700/50 p-3.5 rounded-2xl flex items-center gap-3">
+        {/* User Card with Role Badge: abre "Mi cuenta" (cambiar contraseña) */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsMobileOpen(false);
+            setIsCuentaOpen(true);
+          }}
+          title="Mi cuenta: cambiar contraseña"
+          className="w-full text-left bg-slate-800/60 border border-slate-700/50 hover:border-amber-500/60 hover:bg-slate-800 p-3.5 rounded-2xl flex items-center gap-3 transition"
+        >
           <div
             className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm ${
               isJefe
@@ -207,7 +218,8 @@ export default function Sidebar({
               {currentUser?.turn || "Lun - Dom"}
             </p>
           </div>
-        </div>
+          <KeyRound className="w-4 h-4 text-slate-500 shrink-0" />
+        </button>
 
         {/* Navigation Menu */}
         <nav className="space-y-1.5">
@@ -364,6 +376,8 @@ export default function Sidebar({
       <aside className="hidden lg:flex h-screen w-[280px] bg-slate-900 text-white flex-col justify-between p-5 border-r border-slate-800 shrink-0 sticky top-0">
         {renderNavContent(false)}
       </aside>
+
+      {isCuentaOpen && <CuentaModal onClose={() => setIsCuentaOpen(false)} />}
     </>
   );
 }

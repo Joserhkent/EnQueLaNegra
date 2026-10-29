@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument -- mocks de Prisma tipados como any */
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
@@ -44,6 +44,7 @@ describe('AuthService (White-box & Integration Tests)', () => {
           useValue: {
             user: {
               findUnique: jest.fn(),
+              update: jest.fn(),
             },
           },
         },
@@ -138,6 +139,68 @@ describe('AuthService (White-box & Integration Tests)', () => {
       await expect(
         authService.login({ username: 'empleado', password: '123456' }),
       ).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('Cambio de contraseña', () => {
+    it('cambia la contraseña y guarda solo el hash de la nueva', async () => {
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUserEmpleado as any);
+      const update = jest.spyOn(prismaService.user, 'update');
+
+      await authService.cambiarPassword('u-2', {
+        actual: '123456',
+        nueva: 'nuevaClave2026',
+      });
+
+      const guardada = (
+        update.mock.calls[0][0] as { data: { password: string } }
+      ).data.password;
+      expect(guardada).not.toBe('nuevaClave2026');
+      expect(await bcrypt.compare('nuevaClave2026', guardada)).toBe(true);
+    });
+
+    it('rechaza si la contraseña actual no es correcta', async () => {
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUserEmpleado as any);
+      const update = jest.spyOn(prismaService.user, 'update');
+
+      await expect(
+        authService.cambiarPassword('u-2', {
+          actual: 'equivocada',
+          nueva: 'nuevaClave2026',
+        }),
+      ).rejects.toThrow(BadRequestException);
+      expect(update).not.toHaveBeenCalled();
+    });
+
+    it('rechaza repetir la misma contraseña', async () => {
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUserEmpleado as any);
+
+      await expect(
+        authService.cambiarPassword('u-2', {
+          actual: '123456',
+          nueva: '123456',
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('el Jefe restablece la de otro usuario sin conocer la anterior', async () => {
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(mockUserEmpleado as any);
+      const update = jest.spyOn(prismaService.user, 'update');
+
+      await authService.restablecerPassword('u-2', { nueva: 'otraClave2026' });
+
+      const guardada = (
+        update.mock.calls[0][0] as { data: { password: string } }
+      ).data.password;
+      expect(await bcrypt.compare('otraClave2026', guardada)).toBe(true);
     });
   });
 });
