@@ -45,9 +45,15 @@ export interface Categoria {
   orden?: number;
 }
 
+// Lo que se envía al crear/editar un producto: la receta va con su cantidad por insumo.
+export type ProductoPayload = Omit<Producto, "receta" | "recetaCantidades"> & {
+  receta: { insumoId: string; cantidad: number }[];
+};
+
 export interface MovimientoStock {
   id: string;
   insumoId: string;
+  insumo?: { nombre: string };
   tipo: "entrada" | "salida" | "ajuste";
   cantidad: number;
   motivo: string;
@@ -228,8 +234,8 @@ interface PosStore {
   ) => Promise<void>;
   updateInsumoMinimo: (insumoId: string, stockMinimo: number) => Promise<void>;
 
-  addProduct: (producto: Producto) => Promise<void>;
-  updateProduct: (producto: Producto) => Promise<void>;
+  addProduct: (producto: ProductoPayload) => Promise<void>;
+  updateProduct: (producto: ProductoPayload) => Promise<void>;
   toggleProductAvailability: (id: string) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
 
@@ -346,8 +352,20 @@ const normalizeOrderTypeFromBackend = (type: unknown): Order["type"] => {
   return "Mesa";
 };
 
+// Sesión guardada del último login (si el JSON está dañado, se descarta).
+const leerUsuarioGuardado = (): UserAccount | null => {
+  try {
+    const guardado = localStorage.getItem("eqln_user");
+    return guardado ? (JSON.parse(guardado) as UserAccount) : null;
+  } catch {
+    localStorage.removeItem("eqln_user");
+    localStorage.removeItem("eqln_token");
+    return null;
+  }
+};
+
 export const usePosStore = create<PosStore>((set, get) => ({
-  currentUser: null,
+  currentUser: leerUsuarioGuardado(),
   users: [],
   insumos: [],
   productos: [],

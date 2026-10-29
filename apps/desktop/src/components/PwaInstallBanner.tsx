@@ -18,24 +18,40 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export default function PwaInstallBanner() {
+  // Si index.html ya capturó el evento antes de montar React, se usa desde el inicio.
   const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [isStandalone, setIsStandalone] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
+    useState<BeforeInstallPromptEvent | null>(
+      () =>
+        (window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent })
+          .deferredPwaPrompt ?? null,
+    );
+  // Estos datos del navegador no cambian mientras la página está abierta: se leen
+  // una vez al montar, como estado inicial, en vez de fijarlos dentro de un efecto.
+  // 1. ¿Ya está corriendo como app instalada (standalone)?
+  const [isStandalone] = useState(
+    () =>
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as unknown as { standalone?: boolean }).standalone ===
+        true ||
+      document.referrer.includes("android-app://"),
+  );
+  // 3. ¿El usuario lo descartó previamente en esta sesión?
+  const [isDismissed, setIsDismissed] = useState(
+    () => sessionStorage.getItem("pwa_banner_dismissed") === "true",
+  );
   const [showGuideModal, setShowGuideModal] = useState(false);
-  const [isIos, setIsIos] = useState(false);
+  // 2. ¿Está en iOS (iPhone / iPad)?
+  const [isIos] = useState(() => {
+    const ua = window.navigator.userAgent.toLowerCase();
+    return (
+      /iphone|ipad|ipod/.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+    );
+  });
   const [isInstalled, setIsInstalled] = useState(false);
   const [isPrompting, setIsPrompting] = useState(false);
 
   useEffect(() => {
-    // 0. Si ya se capturó anticipadamente en index.html
-    const existingPrompt = (
-      window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent }
-    ).deferredPwaPrompt;
-    if (existingPrompt) {
-      setDeferredPrompt(existingPrompt);
-    }
-
     const onPromptReady = () => {
       const p = (
         window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent }
@@ -43,31 +59,6 @@ export default function PwaInstallBanner() {
       if (p) setDeferredPrompt(p);
     };
     window.addEventListener("pwa-prompt-ready", onPromptReady);
-
-    // 1. Detectar si ya está corriendo como app instalada (standalone)
-    const checkStandalone = () => {
-      const isStandaloneMode =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as unknown as { standalone?: boolean }).standalone ===
-          true ||
-        document.referrer.includes("android-app://");
-      setIsStandalone(isStandaloneMode);
-    };
-
-    checkStandalone();
-
-    // 2. Detectar si el usuario está en iOS (iPhone / iPad)
-    const ua = window.navigator.userAgent.toLowerCase();
-    const isAppleDevice =
-      /iphone|ipad|ipod/.test(ua) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    setIsIos(isAppleDevice);
-
-    // 3. Revisar si el usuario lo descartó previamente en esta sesión
-    const dismissedSession = sessionStorage.getItem("pwa_banner_dismissed");
-    if (dismissedSession === "true") {
-      setIsDismissed(true);
-    }
 
     // 4. Capturar el evento estándar de instalación del navegador
     const handleBeforeInstall = (e: Event) => {

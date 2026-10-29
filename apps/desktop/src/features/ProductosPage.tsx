@@ -11,7 +11,7 @@ import {
   Tags
 } from "lucide-react";
 
-import { usePosStore } from "../store/usePosStore";
+import { usePosStore, type ProductoPayload } from "../store/usePosStore";
 import ErrorBoundary from "../components/ErrorBoundary";
 
 // Tipos adaptados para tolerar objeto o string en categoría
@@ -57,7 +57,7 @@ interface ProductosPageProps {
   isJefe?: boolean;
   toggleProductAvailability?: (id: string) => void;
   deleteProduct?: (id: string) => void;
-  saveProduct?: (productData: any) => void;
+  saveProduct?: (productData: ProductoPayload) => void;
 }
 
 export function ProductosPageContent(props?: ProductosPageProps) {
@@ -67,13 +67,13 @@ export function ProductosPageContent(props?: ProductosPageProps) {
   const categoriasStore = store.categorias;
   const fetchCategorias = store.fetchCategorias;
   const addCategoria = store.addCategoria;
-  const products = Array.isArray(rawProducts) ? rawProducts : [];
-  const insumos = Array.isArray(rawInsumos) ? rawInsumos : [];
+  const products = useMemo(() => (Array.isArray(rawProducts) ? rawProducts : []), [rawProducts]);
+  const insumos = useMemo(() => (Array.isArray(rawInsumos) ? rawInsumos : []), [rawInsumos]);
 
   const isJefe = props?.isJefe ?? (store.currentUser?.role === "jefe");
   const toggleProductAvailability = props?.toggleProductAvailability ?? store.toggleProductAvailability;
   const deleteProduct = props?.deleteProduct ?? store.deleteProduct;
-  const saveProduct = props?.saveProduct ?? (async (productData: any) => {
+  const saveProduct = props?.saveProduct ?? (async (productData: ProductoPayload) => {
     if (productData.id && products.some((p) => p.id === productData.id)) {
       await store.updateProduct(productData);
     } else {

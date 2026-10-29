@@ -72,58 +72,31 @@ export default function App() {
     fetchCajaEstado,
   } = usePosStore();
 
-  const [activePage, setActivePage] = useState<PageKey>("dashboard");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // La sesión guardada (localStorage) ya la carga el store al iniciar, así que la
+  // primera pantalla sale correcta sin pasar por el login ni por un efecto.
+  const [activePage, setActivePage] = useState<PageKey>(() =>
+    usePosStore.getState().currentUser?.role === "empleado" ? "mesas" : "dashboard"
+  );
   const [authError, setAuthError] = useState("");
 
-  // Carga masiva de la base de datos desde NestJS
-  const cargarTodaLaBaseDeDatos = async () => {
-    try {
-      console.log("⚡ Cargando base de datos inicial...");
-      await Promise.all([
-        fetchProductos(),
-        fetchInsumos(),
-        fetchPedidos(),
-        fetchMesas(),
-        fetchCajaEstado(),
-      ]);
-      console.log("✅ Toda la base de datos cargada con éxito");
-    } catch (error) {
-      console.error("❌ Error al cargar la base de datos:", error);
-    }
-  };
+  // Si la sesión expira, authFetch (store) limpia currentUser y se vuelve al login;
+  // al entrar de nuevo se recarga todo.
+  const sesionActiva = !!currentUser;
 
-  // 1. Restaurar sesión al abrir la página
+  // 🔥 Apenas la sesión quede activa, cargamos TODOS los datos inmediatamente
   useEffect(() => {
-    const savedUserStr = localStorage.getItem("eqln_user");
-    if (savedUserStr) {
-      try {
-        const user = JSON.parse(savedUserStr) as UserAccount;
-        setCurrentUser(user);
-        setIsLoggedIn(true);
-        setActivePage(user.role === "empleado" ? "mesas" : "dashboard");
-      } catch {
-        localStorage.removeItem("eqln_user");
-        localStorage.removeItem("eqln_token");
-        setCurrentUser(null);
-        setIsLoggedIn(false);
-      }
-    } else {
-      setCurrentUser(null);
-      setIsLoggedIn(false);
-    }
-  }, []);
-
-  // Si la sesión expira, authFetch (store) limpia currentUser: sin usuario se vuelve
-  // al login aunque isLoggedIn siga en true, y al entrar de nuevo se recarga todo.
-  const sesionActiva = isLoggedIn && !!currentUser;
-
-  // 2. 🔥 EFECTO CLAVE: Apenas la sesión quede activa, cargamos TODOS los datos inmediatamente
-  useEffect(() => {
-    if (sesionActiva) {
-      cargarTodaLaBaseDeDatos();
-    }
-  }, [sesionActiva]);
+    if (!sesionActiva) return;
+    console.log("⚡ Cargando base de datos inicial...");
+    Promise.all([
+      fetchProductos(),
+      fetchInsumos(),
+      fetchPedidos(),
+      fetchMesas(),
+      fetchCajaEstado(),
+    ])
+      .then(() => console.log("✅ Toda la base de datos cargada con éxito"))
+      .catch((error) => console.error("❌ Error al cargar la base de datos:", error));
+  }, [sesionActiva, fetchProductos, fetchInsumos, fetchPedidos, fetchMesas, fetchCajaEstado]);
 
   const handleLogin = async (username: string, password: string): Promise<boolean> => {
     setAuthError("");
@@ -155,7 +128,6 @@ export default function App() {
       localStorage.setItem("eqln_token", token);
       localStorage.setItem("eqln_user", JSON.stringify(user));
       setCurrentUser(user);
-      setIsLoggedIn(true);
       setActivePage(user.role === "empleado" ? "mesas" : "dashboard");
 
       return true;
@@ -183,7 +155,6 @@ export default function App() {
     localStorage.removeItem("eqln_token");
     localStorage.removeItem("eqln_user");
     storeLogout();
-    setIsLoggedIn(false);
     setAuthError("");
     setActivePage("dashboard");
   };

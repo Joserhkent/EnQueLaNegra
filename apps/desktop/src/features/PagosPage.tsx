@@ -331,7 +331,7 @@ export default function PagosPage() {
                 <button
                   key={tab.key}
                   onClick={() => {
-                    setDateFilter(tab.key as any);
+                    setDateFilter(tab.key as typeof dateFilter);
                     setCustomDate("");
                   }}
                   className={`px-3 py-1.5 rounded-xl transition ${

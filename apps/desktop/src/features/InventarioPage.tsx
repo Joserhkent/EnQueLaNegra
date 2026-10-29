@@ -16,10 +16,11 @@ import {
 } from "lucide-react";
 
 // Helper de seguridad para extraer texto si viene como objeto o string
-const getNombreTexto = (campo: any): string => {
+const getNombreTexto = (campo: unknown): string => {
   if (!campo) return "";
   if (typeof campo === "object") {
-    return campo.nombre || campo.name || campo.title || "";
+    const obj = campo as { nombre?: string; name?: string; title?: string };
+    return obj.nombre || obj.name || obj.title || "";
   }
   return String(campo);
 };
@@ -183,7 +184,7 @@ export default function InventarioPage() {
   };
 
   // Filtered insumos
-  const filteredInsumos = insumos.filter((item: any) => {
+  const filteredInsumos = insumos.filter((item) => {
     const status = getInsumoStatus(item);
     const catNombre = getNombreTexto(item.categoria);
     
@@ -404,7 +405,7 @@ export default function InventarioPage() {
                       </td>
                     </tr>
                   ) : (
-                    filteredInsumos.map((item: any) => {
+                    filteredInsumos.map((item) => {
                       const status = getInsumoStatus(item);
                       const isLow = status !== "optimo";
                       const categoriaNombre = getNombreTexto(item.categoria);
@@ -489,7 +490,7 @@ export default function InventarioPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                  {movimientos.map((mov: any) => {
+                  {movimientos.map((mov) => {
                     const insumoObj = insumos.find((i) => i.id === mov.insumoId);
 
                     // 🛠️ FIX 2 y 3: Sanitización de Insumo y Usuario en movimientos

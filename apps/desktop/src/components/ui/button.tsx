@@ -64,4 +64,6 @@ function Button({
   )
 }
 
+// buttonVariants se comparte con otros componentes (patrón de shadcn/ui)
+// eslint-disable-next-line react-refresh/only-export-components
 export { Button, buttonVariants }
