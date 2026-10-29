@@ -1,14 +1,14 @@
-import React, { useState, useMemo } from "react";
-import { 
-  Flame, 
-  Edit2, 
-  Trash2, 
-  X, 
-  CheckCircle2, 
-  Search, 
-  Plus, 
-  LayoutGrid, 
-  List 
+import React, { useState, useMemo, useEffect } from "react";
+import {
+  Flame,
+  Edit2,
+  Trash2,
+  X,
+  Search,
+  Plus,
+  LayoutGrid,
+  List ,
+  Tags
 } from "lucide-react";
 
 import { usePosStore } from "../store/usePosStore";
@@ -20,17 +20,29 @@ export interface CategoriaObj {
   nombre: string;
 }
 
+/** Acepta formas distintas que devuelven el store/API para la categoría. */
+type CategoriaProducto = CategoriaObj | string | null | undefined;
+
+const getCatName = (categoria: CategoriaProducto): string => {
+  if (typeof categoria === "string") return categoria.trim();
+  if (categoria && typeof categoria === "object") {
+    return typeof categoria.nombre === "string" ? categoria.nombre.trim() : "";
+  }
+  return "";
+};
+
 export interface Producto {
   id: string;
   sku: string;
   nombre: string;
   descripcion: string;
   precio: number;
-  categoria?: CategoriaObj | string;
+  categoria?: CategoriaProducto;
   iconoEmoji: string;
   isAvailable: boolean;
   isPopular?: boolean;
   receta?: string[];
+  recetaCantidades?: Record<string, number>;
 }
 
 export interface Insumo {
@@ -52,6 +64,9 @@ export function ProductosPageContent(props?: ProductosPageProps) {
   const store = usePosStore();
   const rawProducts = props?.products ?? store.productos;
   const rawInsumos = props?.insumos ?? store.insumos;
+  const categoriasStore = store.categorias;
+  const fetchCategorias = store.fetchCategorias;
+  const addCategoria = store.addCategoria;
   const products = Array.isArray(rawProducts) ? rawProducts : [];
   const insumos = Array.isArray(rawInsumos) ? rawInsumos : [];
 
@@ -84,28 +99,61 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     isAvailable: true,
     isPopular: false,
     selectedReceta: [] as string[],
+    selectedRecetaCantidades: {} as Record<string, number>,
   });
 
-  // Categorías fijas de navegación
-  const categories = [
-    "Todas",
-    "Arepas Tradicionales",
-    "Empanadas",
-    "Cachapas",
-    "Patacones",
-    "Comida Rápida",
-    "Horneados",
-    "Especiales de Fin de Semana",
-    "Agregados",
-  ];
+  // Categorías dinámicas desde el backend (+ fallback con las clásicas)
+  useEffect(() => {
+    fetchCategorias();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Helper para extraer nombre de la categoría de forma segura
-  const getCatName = (cat?: CategoriaObj | string): string => {
-    if (typeof cat === "object" && cat !== null) {
-      return cat.nombre || "";
+  const categoriasProducto = useMemo(() => {
+    const delBackend = categoriasStore
+      .filter((c) => c.tipo === "PRODUCTO")
+      .map((c) => c.nombre);
+    if (delBackend.length === 0) {
+      return [
+        "Arepas Tradicionales",
+        "Empanadas",
+        "Cachapas",
+        "Patacones",
+        "Comida Rápida",
+        "Horneados",
+        "Especiales de Fin de Semana",
+        "Agregados",
+      ];
     }
-    return typeof cat === "string" ? cat : "";
+    return delBackend;
+  }, [categoriasStore]);
+
+  // También incluye categorías que solo aparecen en productos existentes
+  const categories = useMemo(() => {
+    const set = new Set<string>(categoriasProducto);
+    products.forEach((p) => {
+      const name = getCatName(p.categoria);
+      if (name) set.add(name);
+    });
+    return ["Todas", ...Array.from(set)];
+  }, [categoriasProducto, products]);
+
+  // Modal nueva categoría
+  const [isCategoriaModalOpen, setIsCategoriaModalOpen] = useState(false);
+  const [nuevaCategoria, setNuevaCategoria] = useState("");
+
+  const handleCreateCategoria = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const nombre = nuevaCategoria.trim();
+    if (!nombre) return;
+    const ok = await addCategoria(nombre, "PRODUCTO");
+    if (ok) {
+      setNuevaCategoria("");
+      setIsCategoriaModalOpen(false);
+      setSelectedCategory(nombre);
+    }
   };
+
+
 
   // Filtrado de productos
   const filteredProducts = useMemo(() => {
@@ -131,11 +179,12 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           nombre: prod.nombre || "",
           descripcion: prod.descripcion || "",
           precio: typeof prod.precio === "number" ? prod.precio : (parseFloat(String(prod.precio)) || 0),
-          categoria: getCatName(prod.categoria) || "Arepas Tradicionales",
+          categoria: getCatName(prod.categoria) || categoriasProducto[0] || "General",
           iconoEmoji: prod.iconoEmoji || "🌽",
           isAvailable: prod.isAvailable !== false,
           isPopular: !!prod.isPopular,
           selectedReceta: Array.isArray(prod.receta) ? [...prod.receta] : [],
+          selectedRecetaCantidades: { ...(prod.recetaCantidades || {}) },
         });
       } else {
         setEditingProduct(null);
@@ -145,11 +194,12 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           nombre: "",
           descripcion: "",
           precio: 0,
-          categoria: "Arepas Tradicionales",
+          categoria: categoriasProducto[0] || "General",
           iconoEmoji: "🌽",
           isAvailable: true,
           isPopular: false,
           selectedReceta: [],
+          selectedRecetaCantidades: {},
         });
       }
       setIsEmojiPickerOpen(false);
@@ -164,13 +214,30 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     setFormData((prev) => {
       const curReceta = Array.isArray(prev?.selectedReceta) ? prev.selectedReceta : [];
       const exists = curReceta.includes(insumoId);
+      const curCants = { ...(prev?.selectedRecetaCantidades || {}) };
+      if (exists) {
+        delete curCants[insumoId];
+      } else {
+        curCants[insumoId] = 1; // cantidad aproximada por defecto, el dueño la ajusta
+      }
       return {
         ...prev,
         selectedReceta: exists
           ? curReceta.filter((id) => id !== insumoId)
           : [...curReceta, insumoId],
+        selectedRecetaCantidades: curCants,
       };
     });
+  };
+
+  const handleChangeCantidadInsumo = (insumoId: string, cantidad: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedRecetaCantidades: {
+        ...(prev?.selectedRecetaCantidades || {}),
+        [insumoId]: cantidad > 0 ? cantidad : 1,
+      },
+    }));
   };
 
   const handleSaveProduct = async (e: React.FormEvent) => {
@@ -182,11 +249,17 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         nombre: formData.nombre?.trim() || "Nuevo Producto",
         descripcion: formData.descripcion?.trim() || "",
         precio: Number(formData.precio) || 0,
-        categoria: formData.categoria || "Arepas Tradicionales",
+        categoria: formData.categoria || categoriasProducto[0] || "General",
         iconoEmoji: formData.iconoEmoji || "🌽",
         isAvailable: formData.isAvailable !== false,
         isPopular: Boolean(formData.isPopular),
-        receta: Array.isArray(formData.selectedReceta) ? formData.selectedReceta : [],
+        receta: (Array.isArray(formData.selectedReceta) ? formData.selectedReceta : []).map(
+          (insumoId) => ({
+            insumoId,
+            cantidad:
+              Number(formData.selectedRecetaCantidades?.[insumoId]) || 1,
+          }),
+        ),
       };
 
       if (typeof saveProduct === "function") {
@@ -275,20 +348,32 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         </div>
 
         {/* Categorías Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          {categories.map((cat) => (
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none flex-1">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition shrink-0 ${
+                  selectedCategory === cat
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/60"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          {isJefe && (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition shrink-0 ${
-                selectedCategory === cat
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/60"
-              }`}
+              onClick={() => setIsCategoriaModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20 hover:bg-amber-500/20 transition shrink-0"
+              title="Crear nueva categoría"
             >
-              {cat}
+              <Tags className="w-3.5 h-3.5" />
+              Nueva Categoría
             </button>
-          ))}
+          )}
         </div>
       </div>
 
@@ -578,15 +663,21 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                     }
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   >
-                    <option value="Arepas Tradicionales">Arepas Tradicionales</option>
-                    <option value="Empanadas">Empanadas</option>
-                    <option value="Cachapas">Cachapas</option>
-                    <option value="Patacones">Patacones</option>
-                    <option value="Comida Rápida">Comida Rápida</option>
-                    <option value="Horneados">Horneados</option>
-                    <option value="Especiales de Fin de Semana">Especiales de Fin de Semana</option>
-                    <option value="Agregados">Agregados</option>
+                    {(categoriasProducto.includes(formData.categoria) || formData.categoria === "General"
+                      ? categoriasProducto
+                      : [...categoriasProducto, formData.categoria]
+                    ).map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                   </select>
+                  <button
+                    type="button"
+                    onClick={() => setIsCategoriaModalOpen(true)}
+                    className="mt-2 flex items-center gap-1.5 text-[11px] font-bold text-amber-600 hover:text-amber-700 transition"
+                  >
+                    <Tags className="w-3.5 h-3.5" />
+                    + Nueva categoría
+                  </button>
                 </div>
               </div>
 
@@ -751,21 +842,42 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                                 formData.selectedReceta.includes(ins.id)
                               );
                               return (
-                                <button
+                                <div
                                   key={ins.id}
-                                  type="button"
-                                  onClick={() => handleToggleRecetaInsumo(ins.id)}
-                                  className={`px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-left transition flex items-center justify-between border ${
+                                  className={`flex items-center gap-1.5 rounded-xl border px-1.5 py-1 transition ${
                                     isChecked
-                                      ? "bg-amber-500/10 border-amber-500 text-amber-900 font-bold"
-                                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100"
+                                      ? "bg-amber-500/10 border-amber-500"
+                                      : "bg-white border-slate-200"
                                   }`}
                                 >
-                                  <span className="truncate">{ins.nombre || ins.id}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleRecetaInsumo(ins.id)}
+                                    className={`flex-1 min-w-0 px-1 py-0.5 rounded-lg text-[11px] font-semibold text-left truncate ${
+                                      isChecked
+                                        ? "text-amber-900 font-bold"
+                                        : "text-slate-600 hover:bg-slate-100"
+                                    }`}
+                                    title={ins.nombre || ins.id}
+                                  >
+                                    {ins.nombre || ins.id}
+                                  </button>
                                   {isChecked && (
-                                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 shrink-0 ml-1" />
+                                    <input
+                                      type="number"
+                                      min={0.1}
+                                      step={0.1}
+                                      value={
+                                        Number(formData.selectedRecetaCantidades?.[ins.id]) || 1
+                                      }
+                                      onChange={(e) =>
+                                        handleChangeCantidadInsumo(ins.id, Number(e.target.value))
+                                      }
+                                      className="w-14 shrink-0 rounded-lg border border-amber-300 bg-white px-1 py-0.5 text-[11px] font-bold text-amber-900 text-center focus:outline-none focus:ring-1 focus:ring-amber-500"
+                                      title="Cantidad que se descuenta del inventario por unidad vendida"
+                                    />
                                   )}
-                                </button>
+                                </div>
                               );
                             })}
                           </div>
@@ -790,6 +902,56 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                   className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
                 >
                   {editingProduct ? "Guardar Cambios" : "Crear Producto"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* NUEVA CATEGORIA MODAL */}
+      {isCategoriaModalOpen && (
+        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+                  <Tags className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base">Nueva Categoría</h3>
+                  <p className="text-xs text-slate-400">Para organizar tus productos</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsCategoriaModalOpen(false)}
+                className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCategoria} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Nombre de la categoría
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={nuevaCategoria}
+                  onChange={(e) => setNuevaCategoria(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  placeholder="Ej: Bebidas"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setIsCategoriaModalOpen(false)} className="px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                  Cancelar
+                </button>
+                <button type="submit" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition">
+                  Crear Categoría
                 </button>
               </div>
             </form>

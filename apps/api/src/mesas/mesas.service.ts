@@ -192,9 +192,7 @@ export class MesasService {
             id: { in: membersToReassign },
             status: TableStatus.AVAILABLE,
             currentOrderId: null,
-            OR: [
-              { joinedToId: null }, { joinedToId: { in: groupsToFlatten } },
-            ],
+            OR: [{ joinedToId: null }, { joinedToId: { in: groupsToFlatten } }],
           },
           data: { joinedToId: mainTable.id },
         });
@@ -428,7 +426,11 @@ export class MesasService {
     return this.getTableDetail(table.id);
   }
 
-  async partialPayment(tableId: string, dto: PartialPaymentDto, userId?: string) {
+  async partialPayment(
+    tableId: string,
+    dto: PartialPaymentDto,
+    userId?: string,
+  ) {
     await this.assertCajaAbierta('registrar pagos');
     const table = await this.prisma.table.findUnique({
       where: { id: tableId },
@@ -436,7 +438,9 @@ export class MesasService {
     });
     if (!table) throw new NotFoundException('Mesa no encontrada');
     if (!table.currentOrderId || !table.currentOrder) {
-      throw new BadRequestException(`La mesa ${table.number} no tiene una cuenta abierta`);
+      throw new BadRequestException(
+        `La mesa ${table.number} no tiene una cuenta abierta`,
+      );
     }
 
     const order = table.currentOrder;
@@ -445,13 +449,17 @@ export class MesasService {
     }
 
     const paymentMethod =
-      PaymentMethod[dto.paymentMethod as unknown as keyof typeof PaymentMethod] ?? PaymentMethod.EFECTIVO;
+      PaymentMethod[
+        dto.paymentMethod as unknown as keyof typeof PaymentMethod
+      ] ?? PaymentMethod.EFECTIVO;
     const paid = order.pagos.reduce((sum, pago) => sum + pago.monto, 0);
     const remaining = Math.max(0, Math.round((order.total - paid) * 100) / 100);
     const amount = Math.round(dto.monto * 100) / 100;
 
     if (amount > remaining) {
-      throw new BadRequestException(`El pago no puede superar el saldo pendiente de S/ ${remaining.toFixed(2)}`);
+      throw new BadRequestException(
+        `El pago no puede superar el saldo pendiente de S/ ${remaining.toFixed(2)}`,
+      );
     }
 
     const updatedOrder = await this.prisma.order.update({
@@ -467,7 +475,10 @@ export class MesasService {
       ...table,
       currentOrder: updatedOrder,
       paidAmount: paid + amount,
-      remainingAmount: Math.max(0, Math.round((remaining - amount) * 100) / 100),
+      remainingAmount: Math.max(
+        0,
+        Math.round((remaining - amount) * 100) / 100,
+      ),
     };
   }
 
@@ -535,11 +546,20 @@ export class MesasService {
       ] ?? PaymentMethod.EFECTIVO;
     const isMixto = paymentMethod === PaymentMethod.MIXTO;
     const paidBefore = order.pagos.reduce((sum, pago) => sum + pago.monto, 0);
-    const remainingBefore = Math.max(0, Math.round((order.total - paidBefore) * 100) / 100);
+    const remainingBefore = Math.max(
+      0,
+      Math.round((order.total - paidBefore) * 100) / 100,
+    );
     const mixedAmount = (dto.montoEfectivo ?? 0) + (dto.montoDigital ?? 0);
 
-    if (isMixto && remainingBefore > 0 && Math.abs(mixedAmount - remainingBefore) > 0.01) {
-      throw new BadRequestException(`El pago mixto debe sumar exactamente S/ ${remainingBefore.toFixed(2)}`);
+    if (
+      isMixto &&
+      remainingBefore > 0 &&
+      Math.abs(mixedAmount - remainingBefore) > 0.01
+    ) {
+      throw new BadRequestException(
+        `El pago mixto debe sumar exactamente S/ ${remainingBefore.toFixed(2)}`,
+      );
     }
 
     const pagosData: Prisma.PagoCreateWithoutOrderInput[] =
@@ -547,8 +567,14 @@ export class MesasService {
         ? []
         : isMixto
           ? [
-              { metodoPago: PaymentMethod.EFECTIVO, monto: dto.montoEfectivo ?? 0 },
-              { metodoPago: PaymentMethod.YAPE_PLIN, monto: dto.montoDigital ?? 0 },
+              {
+                metodoPago: PaymentMethod.EFECTIVO,
+                monto: dto.montoEfectivo ?? 0,
+              },
+              {
+                metodoPago: PaymentMethod.YAPE_PLIN,
+                monto: dto.montoDigital ?? 0,
+              },
             ].filter((p) => p.monto > 0)
           : [{ metodoPago: paymentMethod, monto: remainingBefore }];
 

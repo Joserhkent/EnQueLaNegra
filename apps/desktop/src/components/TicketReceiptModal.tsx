@@ -1,11 +1,17 @@
 import { X, Printer } from "lucide-react";
-import { type Order } from "../store/usePosStore";
+import { type Order, usePosStore } from "../store/usePosStore";
 
 export type TicketMode = "boleta" | "precuenta" | "comanda";
 
 interface TicketReceiptModalProps {
   order: Order | null;
   mode?: TicketMode;
+  /** Número de mesa opcional: fuerza mostrar "MESA N° X" aunque el pedido
+   *  venga sin la relación `table` resuelta desde el backend. */
+  mesaNumero?: number | null;
+  /** Si se indica, la comanda de cocina imprime SOLO los ítems de esa ronda
+   *  (tanda), no toda la cuenta acumulada de la mesa. */
+  soloRonda?: number | null;
   onClose: () => void;
 }
 
@@ -15,12 +21,38 @@ const MODE_META: Record<TicketMode, { title: string; screenLabel: string; printL
   comanda: { title: "COMANDA DE COCINA", screenLabel: "Comanda de Cocina", printLabel: "Imprimir Comanda" },
 };
 
-export default function TicketReceiptModal({ order, mode = "boleta", onClose }: TicketReceiptModalProps) {
+export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero, soloRonda, onClose }: TicketReceiptModalProps) {
+  // La descripción del producto no viaja en el OrderItem; se resuelve contra el
+  // catálogo por SKU. Solo importa para la comanda de cocina (el detalle de
+  // preparación), en la boleta se imprime igual que siempre.
+  // El hook va antes de cualquier return para respetar las reglas de React.
+  const productos = usePosStore((s) => s.productos);
+  const mesas = usePosStore((s) => s.mesas);
+
   if (!order) return null;
 
   const meta = MODE_META[mode];
   const isComanda = mode === "comanda";
   const isMesa = order.type === "Mesa" || !!order.tableId || !!order.table;
+
+  // Número de mesa: prioridad al prop explícito, luego a la relación del pedido
+  // y como última opción se busca la mesa en el store por su tableId (cubre los
+  // casos donde el backend no anida `table` dentro del pedido).
+  const numeroMesa =
+    mesaNumero ??
+    order.table?.number ??
+    (order.tableId ? mesas.find((m) => m.id === order.tableId)?.number : undefined);
+
+  const descripcionDe = (sku: string) =>
+    productos.find((p) => p.sku === sku)?.descripcion?.trim() || "";
+
+  // La mesa es acumulativa (cada tanda suma una ronda). Cuando cocina pide el
+  // ticket de una tanda puntual, se filtran solo los ítems de esa ronda: lo que
+  // ya se envió antes no se vuelve a imprimir.
+  const itemsAImprimir =
+    isComanda && soloRonda != null
+      ? order.items.filter((i) => (i.ronda ?? 1) === soloRonda)
+      : order.items;
 
   const handlePrint = () => {
     window.print();
@@ -96,16 +128,31 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
               <span>FECHA / HORA:</span>
               <span>{order.fecha} {order.hora}</span>
             </div>
-            {isMesa && order.table?.number && (
+            {/* Número de mesa GRANDE y destacado: es lo primero que cocina debe ver */}
+            {isComanda && numeroMesa ? (
+              <div className="text-center py-2 bg-slate-900 text-white rounded-lg -mx-1">
+                <div className="text-[9px] uppercase tracking-widest text-amber-400 font-bold">MESA</div>
+                <div className="text-2xl font-black leading-none">N° {numeroMesa}</div>
+                {soloRonda != null && (
+                  <div className="text-[9px] uppercase tracking-widest text-amber-300 font-bold mt-0.5">
+                    TANDA {soloRonda} · SOLO ESTOS ÍTEMS
+                  </div>
+                )}
+              </div>
+            ) : (
+              isMesa && numeroMesa && (
+                <div className="flex justify-between">
+                  <span>MESA:</span>
+                  <span className="font-bold">N° {numeroMesa}</span>
+                </div>
+              )
+            )}
+            {!isComanda && (
               <div className="flex justify-between">
-                <span>MESA:</span>
-                <span className="font-bold">N° {order.table.number}</span>
+                <span>CLIENTE:</span>
+                <span className="font-bold">{order.customer}</span>
               </div>
             )}
-            <div className="flex justify-between">
-              <span>CLIENTE:</span>
-              <span className="font-bold">{order.customer}</span>
-            </div>
             <div className="flex justify-between">
               <span>SERVICIO:</span>
               <span>{order.type}</span>
@@ -121,11 +168,11 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
           {/* Items Breakdown Table */}
           <div className="space-y-2 pb-3 border-b border-dashed border-slate-400">
             <div className="flex justify-between font-bold text-[10px] uppercase text-slate-500 pb-1">
-              <span>CANT / PRODUCTO</span>
+              <span>{isComanda ? "PEDIDO (COCINA)" : "CANT / PRODUCTO"}</span>
               {!isComanda && <span>TOTAL</span>}
             </div>
 
-            {order.items.map((item, idx) => {
+            {itemsAImprimir.map((item, idx) => {
               const extrasTotal = (item.extras || []).reduce(
                 (sum, e) => sum + e.precioExtra * e.cantidad,
                 0
@@ -153,21 +200,35 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
                     )}
                   </div>
 
-                  {item.notas && item.notas.trim() !== "" && (
-                    <div className="text-[9px] text-slate-600 italic pl-2">
-                      • Nota: {item.notas}
+                  {isComanda && descripcionDe(item.sku) && (
+                    <div className="text-[10px] text-slate-800 pl-2 leading-snug">
+                      • {descripcionDe(item.sku)}
                     </div>
                   )}
 
+                  {/* Nota del mesero: aquí escriben las cremas/salsas a mano
+                      ("con mayonesa, ketchup y sin cebolla"), se imprime tal cual */}
+                  {item.notas && item.notas.trim() !== "" && (
+                    <div className="text-[10px] font-bold text-slate-900 italic pl-2">
+                      • {item.notas.trim()}
+                    </div>
+                  )}
+
+                  {cremasDelItem.length > 0 && (
+                    <div className="text-[9px] text-slate-500 uppercase font-bold pl-2 pt-0.5">Cremas / Salsas:</div>
+                  )}
                   {cremasDelItem.map((crema, i) => (
-                    <div key={`crema-${i}`} className="text-[9px] text-slate-600 pl-2">
-                      • {crema.insumo?.nombre || "Salsa/Aderezo"}
+                    <div key={`crema-${i}`} className="text-[10px] font-semibold text-slate-800 pl-3">
+                      + {crema.insumo?.nombre || "Salsa/Aderezo"}{crema.cantidad > 1 ? ` x${crema.cantidad}` : ""}
                     </div>
                   ))}
 
+                  {agregadosDelItem.length > 0 && (
+                    <div className="text-[9px] text-slate-500 uppercase font-bold pl-2 pt-0.5">Agregados:</div>
+                  )}
                   {agregadosDelItem.map((agregado, i) => (
-                    <div key={`agregado-${i}`} className="flex justify-between text-[9px] text-slate-600 pl-2">
-                      <span>+ {agregado.insumo?.nombre || "Agregado"}</span>
+                    <div key={`agregado-${i}`} className="flex justify-between text-[10px] font-semibold text-slate-800 pl-3">
+                      <span>+ {agregado.insumo?.nombre || "Agregado"}{agregado.cantidad > 1 ? ` x${agregado.cantidad}` : ""}</span>
                       {!isComanda && <span>S/ {agregado.precioExtra.toFixed(2)}</span>}
                     </div>
                   ))}
@@ -228,7 +289,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", onClose }: 
           {/* Footer Message */}
           <div className="text-center pt-3 border-t border-dashed border-slate-400 space-y-1 text-[10px] text-slate-600">
             {isComanda ? (
-              <p className="font-bold text-slate-900">🔥 Enviar a cocina</p>
+              <p className="font-bold text-slate-900">🔥 COMANDA DE COCINA — PREPARAR PEDIDO</p>
             ) : (
               <>
                 <p className="font-bold text-slate-900">¡Gracias por su preferencia! 🌽</p>

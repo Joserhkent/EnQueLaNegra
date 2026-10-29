@@ -88,6 +88,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [montoDigital, setMontoDigital] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
   const [selectedPrintOrder, setSelectedPrintOrder] = useState<Order | null>(null);
+  const [selectedKitchenOrder, setSelectedKitchenOrder] = useState<Order | null>(null);
   const [selectedDetailOrder, setSelectedDetailOrder] = useState<Order | null>(null);
 
   const categoryScrollRef = useRef<HTMLDivElement>(null);
@@ -166,7 +167,13 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       const newLineId = `${prod.sku}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       return {
         ...prev,
-        [newLineId]: { product: prod, quantity: 1, notes: "", agregados: [] },
+        [newLineId]: {
+          product: prod,
+          quantity: 1,
+          notes: "",
+          cremas: [],
+          agregados: [],
+        },
       };
     });
   };
@@ -280,6 +287,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
             precio: item.product.precio,
             cantidad: item.quantity,
             receta: item.product.receta || [],
+            recetaCantidades: item.product.recetaCantidades || {},
             notas: item.notes,
             extras: extrasFromAgregados,
           };
@@ -300,15 +308,16 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       setCustomerName("");
       setMontoEfectivo("");
       setMontoDigital("");
-
       // Usa el pedido tal como lo devolvió el backend (ya con insumo.nombre resuelto
       // para cada crema/agregado), no el objeto local: ese solo tenía el insumoId,
       // así que la boleta mostraba "Crema/Aderezo" genérico en vez del nombre real.
       const createdOrder = usePosStore.getState().pedidos.find((o) => o.code === newOrder.code) || newOrder;
       setSelectedPrintOrder(createdOrder);
-    } catch (err: any) {
-      console.error("Error creating order:", err);
-      alert("Error al registrar comanda: " + (err.response?.data?.message || err.message || "Error desconocido"));
+      setSelectedKitchenOrder(createdOrder);
+    } catch (error: unknown) {
+      console.error("Error creating order:", error);
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      alert("Error al registrar comanda: " + message);
     } finally {
       setIsSubmittingOrder(false);
     }
@@ -693,6 +702,13 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                             </button>
                           )}
                           <button
+                            onClick={() => setSelectedKitchenOrder(order)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-100 border border-orange-300 hover:bg-orange-500 hover:text-white text-orange-700 font-bold text-[11px] transition shadow-sm"
+                            title="Imprimir Comanda de Cocina"
+                          >
+                            🔥 Cocina
+                          </button>
+                          <button
                             onClick={() => setSelectedDetailOrder(order)}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-[11px] transition shadow-sm"
                             title="Ver Detalle del Pedido"
@@ -1051,10 +1067,19 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         </div>
       )}
 
-      {selectedPrintOrder && (
+      {selectedPrintOrder && !selectedKitchenOrder && (
         <TicketReceiptModal
           order={selectedPrintOrder}
           onClose={() => setSelectedPrintOrder(null)}
+        />
+      )}
+
+      {/* BOLETERA DE COCINA: ticket sin precios, solo el detalle del pedido */}
+      {selectedKitchenOrder && (
+        <TicketReceiptModal
+          order={selectedKitchenOrder}
+          mode="comanda"
+          onClose={() => setSelectedKitchenOrder(null)}
         />
       )}
 

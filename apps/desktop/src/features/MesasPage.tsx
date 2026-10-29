@@ -122,6 +122,12 @@ export default function MesasPage() {
   const [montoDigital, setMontoDigital] = useState("");
   const [showCheckout, setShowCheckout] = useState(false);
   const [receiptOrder, setReceiptOrder] = useState<Order | null>(null);
+  const [kitchenOrder, setKitchenOrder] = useState<Order | null>(null);
+  // Ronda (tanda) a imprimir en la boletera de cocina. La mesa es acumulativa:
+  // cuando se envía una tanda nueva, cocina debe recibir SOLO esa tanda, no toda
+  // la cuenta (eso lo imprime la pre-cuenta). Aquí se guarda el número de ronda
+  // del último envío para que el ticket muestre únicamente esos ítems.
+  const [kitchenRonda, setKitchenRonda] = useState<number | null>(null);
   const [checkoutIsPartial, setCheckoutIsPartial] = useState(false);
   const [partialPaymentAmount, setPartialPaymentAmount] = useState("");
   const [isSubmittingTanda, setIsSubmittingTanda] = useState(false);
@@ -261,7 +267,14 @@ export default function MesasPage() {
       });
 
       const result = await addItemsToMesa(targetMesaId, items);
-      if (result) setCart({});
+      if (result) {
+        setCart({});
+        // Boletera de cocina automática: al enviar la tanda se abre el ticket con
+        // únicamente los ítems de ESTA ronda (la nueva), no toda la mesa.
+        const nuevaRonda = Math.max(0, ...result.currentOrder?.items.map((i) => i.ronda ?? 1) ?? [0]) || 1;
+        setKitchenOrder(result.currentOrder);
+        setKitchenRonda(nuevaRonda);
+      }
     } finally {
       setIsSubmittingTanda(false);
     }
@@ -1009,6 +1022,29 @@ export default function MesasPage() {
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
+                        onClick={() => {
+                          if (!selectedMesa.currentOrder) return;
+                          // Impresión manual: se manda la ÚLTIMA tanda enviada
+                          // (la más reciente), que es la que cocina está esperando.
+                          const ultimaRonda = Math.max(
+                            0,
+                            ...selectedMesa.currentOrder.items.map((i) => i.ronda ?? 1)
+                          );
+                          setKitchenRonda(ultimaRonda || null);
+                          setKitchenOrder({
+                            ...selectedMesa.currentOrder,
+                            type: "Mesa",
+                            tableId: selectedMesa.id,
+                            table: { number: selectedMesa.number },
+                          });
+                        }}
+                        disabled={!selectedMesa.currentOrder?.items.length}
+                        className="py-3 bg-orange-500 hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        🔥 Comanda Cocina
+                      </button>
+                      <button
+                        type="button"
                         onClick={handlePrintPreBill}
                         disabled={!cajaEstado?.isOpen || !selectedMesa.currentOrder?.items.length}
                         className="col-span-2 py-3 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
@@ -1390,6 +1426,20 @@ export default function MesasPage() {
           order={receiptOrder}
           mode="precuenta"
           onClose={() => setReceiptOrder(null)}
+        />
+      )}
+
+      {/* BOLETERA DE COCINA: ticket sin precios, solo el detalle del pedido */}
+      {kitchenOrder && (
+        <TicketReceiptModal
+          order={kitchenOrder}
+          mode="comanda"
+          mesaNumero={selectedMesa?.number ?? null}
+          soloRonda={kitchenRonda}
+          onClose={() => {
+            setKitchenOrder(null);
+            setKitchenRonda(null);
+          }}
         />
       )}
 

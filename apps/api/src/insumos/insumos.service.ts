@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MovimientoTipo } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { CreateInsumoDto } from './dto/create-insumo.dto';
@@ -89,5 +93,30 @@ export class InsumosService {
       where: { id },
       data: { stockMinimo },
     });
+  }
+
+  async remove(id: string) {
+    const insumo = await this.findOne(id);
+
+    const recetaCount = await this.prisma.recetaItem.count({
+      where: { insumoId: id },
+    });
+    if (recetaCount > 0) {
+      // El insumo forma parte de recetas de productos: no se puede borrar
+      // sin romper el cálculo de descuento de stock.
+      throw new BadRequestException(
+        `No se puede eliminar "${insumo.nombre}" porque está siendo usado en ${recetaCount} receta(s) de productos.`,
+      );
+    }
+
+    const movimientosCount = await this.prisma.movimientoStock.count({
+      where: { insumoId: id },
+    });
+
+    if (movimientosCount > 0) {
+      await this.prisma.movimientoStock.deleteMany({ where: { insumoId: id } });
+    }
+
+    return this.prisma.insumo.delete({ where: { id } });
   }
 }

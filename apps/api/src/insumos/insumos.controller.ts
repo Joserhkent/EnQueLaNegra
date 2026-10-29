@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Post,
   Body,
@@ -55,5 +56,11 @@ export class InsumosController {
     @Body('stockMinimo') stockMinimo: number,
   ) {
     return this.insumosService.updateMinimo(id, stockMinimo);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.insumosService.remove(id);
   }
 }

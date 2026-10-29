@@ -59,7 +59,9 @@ describe('MesasService', () => {
         }),
       },
       cajaSesion: {
-        findFirst: jest.fn().mockResolvedValue({ id: 'sesion-1', estado: 'ABIERTA' }),
+        findFirst: jest
+          .fn()
+          .mockResolvedValue({ id: 'sesion-1', estado: 'ABIERTA' }),
       },
       $transaction: jest
         .fn()
