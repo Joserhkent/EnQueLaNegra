@@ -53,7 +53,6 @@ async function main() {
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.table.deleteMany();
-  await prisma.cliente.deleteMany();
   await prisma.movimientoStock.deleteMany();
   await prisma.cierreCaja.deleteMany();
   await prisma.cajaSesion.deleteMany();

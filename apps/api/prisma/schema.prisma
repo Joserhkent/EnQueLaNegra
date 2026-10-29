@@ -197,22 +197,10 @@ model Table {
   @@index([joinedToId])
 }
 
-// ---------- Clientes ----------
-model Cliente {
-  id        String   @id @default(uuid())
-  nombre    String
-  telefono  String?
-  direccion String?
-  createdAt DateTime @default(now())
-
-  orders Order[]
-}
-
 // ---------- Ventas ----------
 model Order {
   id            String        @id @default(uuid())
   code          String        @unique // #ORD-1048
-  clienteId     String?       // null = cliente de mostrador, sin registrar
   customer      String        @default("Cliente Mostrador") // nombre rápido para mostrador, sin exigir registro
   type          OrderType     @default(MESA)
   status        OrderStatus   @default(PREPARACION)
@@ -229,7 +217,6 @@ model Order {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  cliente         Cliente?    @relation(fields: [clienteId], references: [id])
   user            User?       @relation(fields: [userId], references: [id])
   table           Table?      @relation("TableOrders", fields: [tableId], references: [id])
   asCurrentOfMesa Table?      @relation("TableCurrentOrder")

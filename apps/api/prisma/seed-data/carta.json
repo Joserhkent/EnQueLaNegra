@@ -152,7 +152,7 @@
       "nombre": "Aguacate",
       "categoria": "Verduras y Legumbres",
       "unidadMedida": "unidad",
-      "stockActual": 81,
+      "stockActual": 108,
       "stockMinimo": 15,
       "costoUnitario": 0.8
     },
@@ -170,7 +170,7 @@
       "nombre": "Atún en Lata",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
-      "stockActual": 25,
+      "stockActual": 35,
       "stockMinimo": 15,
       "costoUnitario": 1
     },
@@ -179,7 +179,7 @@
       "nombre": "Caraotas Negras Refritas",
       "categoria": "Verduras y Legumbres",
       "unidadMedida": "porción",
-      "stockActual": 38,
+      "stockActual": 40,
       "stockMinimo": 20,
       "costoUnitario": 0.6
     },
@@ -206,7 +206,7 @@
       "nombre": "Carne Mechada",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
-      "stockActual": 22,
+      "stockActual": 35,
       "stockMinimo": 20,
       "costoUnitario": 2.2
     },
@@ -215,7 +215,7 @@
       "nombre": "Carne Molida",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
-      "stockActual": 24,
+      "stockActual": 30,
       "stockMinimo": 15,
       "costoUnitario": 2
     },
@@ -467,7 +467,7 @@
       "nombre": "Chicharrón",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
-      "stockActual": 18,
+      "stockActual": 20,
       "stockMinimo": 12,
       "costoUnitario": 1.3
     },
@@ -620,7 +620,7 @@
       "nombre": "Ketchup",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
+      "stockActual": 10000,
       "stockMinimo": 0,
       "costoUnitario": 0.01
     },
@@ -629,7 +629,7 @@
       "nombre": "Harina de Maíz Precocida",
       "categoria": "Panes y Masas",
       "unidadMedida": "porción",
-      "stockActual": 24,
+      "stockActual": 94,
       "stockMinimo": 40,
       "costoUnitario": 0.3
     },
@@ -638,7 +638,7 @@
       "nombre": "Maíz Tierno (Cachapa)",
       "categoria": "Panes y Masas",
       "unidadMedida": "porción",
-      "stockActual": 37,
+      "stockActual": 40,
       "stockMinimo": 25,
       "costoUnitario": 0.6
     },
@@ -647,7 +647,7 @@
       "nombre": "Masa para Empanada",
       "categoria": "Panes y Masas",
       "unidadMedida": "unidad",
-      "stockActual": 44,
+      "stockActual": 50,
       "stockMinimo": 30,
       "costoUnitario": 0.25
     },
@@ -665,7 +665,7 @@
       "nombre": "Mayonesa",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
+      "stockActual": 10002,
       "stockMinimo": 0,
       "costoUnitario": 0.01
     },
@@ -755,7 +755,7 @@
       "nombre": "Plátano Maduro",
       "categoria": "Verduras y Legumbres",
       "unidadMedida": "unidad",
-      "stockActual": 20,
+      "stockActual": 30,
       "stockMinimo": 15,
       "costoUnitario": 0.4
     },
@@ -773,7 +773,7 @@
       "nombre": "Pollo Desmechado",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
-      "stockActual": 3,
+      "stockActual": 50,
       "stockMinimo": 20,
       "costoUnitario": 1.8
     },
@@ -845,7 +845,7 @@
       "nombre": "Salchicha Criolla",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "unidad",
-      "stockActual": 28,
+      "stockActual": 30,
       "stockMinimo": 15,
       "costoUnitario": 1
     },
@@ -863,108 +863,12 @@
       "nombre": "Tocineta",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
-      "stockActual": 19,
+      "stockActual": 20,
       "stockMinimo": 15,
       "costoUnitario": 1.1
     }
   ],
   "productos": [
-    {
-      "id": "AR01",
-      "sku": "AR01",
-      "nombre": "Reina Pepiada",
-      "categoria": "Arepas Tradicionales",
-      "precio": 4,
-      "isAvailable": false,
-      "isPopular": true,
-      "descripcion": "Pollo desmechado con aguacate cremoso y aderezo de la casa.",
-      "iconoEmoji": "🥑",
-      "receta": [
-        {
-          "insumoId": "aguacate",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "masa_arepa",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "pollo_desmechado",
-          "cantidad": 1
-        }
-      ]
-    },
-    {
-      "id": "AR03",
-      "sku": "AR03",
-      "nombre": "Pabellón",
-      "categoria": "Arepas Tradicionales",
-      "precio": 4.5,
-      "isAvailable": false,
-      "isPopular": true,
-      "descripcion": "Carne mechada, caraotas negras, tajadas de plátano maduro y queso.",
-      "iconoEmoji": "🇻🇪",
-      "receta": [
-        {
-          "insumoId": "caraotas_negras",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "carne_mechada",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "masa_arepa",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "platano_maduro",
-          "cantidad": 1
-        }
-      ]
-    },
-    {
-      "id": "AR06",
-      "sku": "AR06",
-      "nombre": "Atún",
-      "categoria": "Arepas Tradicionales",
-      "precio": 3.5,
-      "isAvailable": false,
-      "isPopular": false,
-      "descripcion": "Guiso de atún sazonado con cebollita y pimiento.",
-      "iconoEmoji": "🐟",
-      "receta": [
-        {
-          "insumoId": "atun",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "masa_arepa",
-          "cantidad": 1
-        }
-      ]
-    },
-    {
-      "id": "AR08",
-      "sku": "AR08",
-      "nombre": "Salchicha",
-      "categoria": "Arepas Tradicionales",
-      "precio": 3,
-      "isAvailable": false,
-      "isPopular": false,
-      "descripcion": "Salchichas salteadas en salsa criolla especial.",
-      "iconoEmoji": "🌭",
-      "receta": [
-        {
-          "insumoId": "masa_arepa",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "salchicha",
-          "cantidad": 1
-        }
-      ]
-    },
     {
       "id": "carta_prod_carta_arepa_ahumada_01",
       "sku": "CARTA_AREPA_AHUMADA_01",
@@ -974,7 +878,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Salchicha ahumada.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🌭",
       "receta": []
     },
     {
@@ -998,7 +902,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Diablito, salsa rosada y queso.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥫",
       "receta": []
     },
     {
@@ -1022,7 +926,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Carne mechada.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥩",
       "receta": []
     },
     {
@@ -1046,7 +950,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Carne molida.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥩",
       "receta": []
     },
     {
@@ -1058,7 +962,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Carne molida y queso.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🧀",
       "receta": []
     },
     {
@@ -1070,7 +974,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Pollo.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🐔",
       "receta": []
     },
     {
@@ -1094,7 +998,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Queso.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🧀",
       "receta": []
     },
     {
@@ -1106,7 +1010,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Plátano frito y queso.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍌",
       "receta": []
     },
     {
@@ -1118,7 +1022,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Fresa y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍓",
       "receta": []
     },
     {
@@ -1130,7 +1034,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Fresa y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍓",
       "receta": []
     },
     {
@@ -1142,7 +1046,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Mango y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥭",
       "receta": []
     },
     {
@@ -1154,7 +1058,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Mango y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥭",
       "receta": []
     },
     {
@@ -1166,7 +1070,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Papaya y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": []
     },
     {
@@ -1178,7 +1082,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Papaya y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": []
     },
     {
@@ -1190,7 +1094,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Piña y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍍",
       "receta": []
     },
     {
@@ -1202,7 +1106,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Piña y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍍",
       "receta": []
     },
     {
@@ -1214,7 +1118,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Plátano y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍌",
       "receta": []
     },
     {
@@ -1226,7 +1130,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Plátano y leche.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍌",
       "receta": []
     },
     {
@@ -1238,7 +1142,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Agua personal.",
-      "iconoEmoji": null,
+      "iconoEmoji": "💧",
       "receta": [
         {
           "insumoId": "carta_beb_agua",
@@ -1255,7 +1159,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Coca Cola personal.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": [
         {
           "insumoId": "carta_beb_coca_personal",
@@ -1272,7 +1176,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Coca Cola de 1.5 litros.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": [
         {
           "insumoId": "carta_beb_coca_1500",
@@ -1289,7 +1193,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Coca Cola de medio litro.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": [
         {
           "insumoId": "carta_beb_coca_500",
@@ -1306,7 +1210,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Fanta personal.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": [
         {
           "insumoId": "carta_beb_fanta",
@@ -1323,7 +1227,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Frescolita en lata.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥫",
       "receta": [
         {
           "insumoId": "carta_beb_frescolita",
@@ -1340,7 +1244,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Inca Kola personal.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": [
         {
           "insumoId": "carta_beb_inca_personal",
@@ -1357,7 +1261,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Inca Kola de 1.5 litros.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": [
         {
           "insumoId": "carta_beb_inca_1500",
@@ -1374,7 +1278,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Inca Kola de medio litro.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": [
         {
           "insumoId": "carta_beb_inca_500",
@@ -1391,7 +1295,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Malta en lata.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥫",
       "receta": [
         {
           "insumoId": "carta_beb_malta",
@@ -1408,7 +1312,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Sporade personal.",
-      "iconoEmoji": null,
+      "iconoEmoji": "⚡",
       "receta": [
         {
           "insumoId": "carta_beb_sporade",
@@ -1425,7 +1329,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Sprite personal.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥤",
       "receta": [
         {
           "insumoId": "carta_beb_sprite",
@@ -1454,7 +1358,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Extra queso.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🌽",
       "receta": []
     },
     {
@@ -1526,7 +1430,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Tallarín, carne molida, plátano frito y queso rallado o parmesano. Disponible los sábados.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍝",
       "receta": []
     },
     {
@@ -1550,7 +1454,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Carne mechada.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥟",
       "receta": []
     },
     {
@@ -1646,7 +1550,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Fresa.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍓",
       "receta": []
     },
     {
@@ -1658,7 +1562,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Guayaba.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🧃",
       "receta": []
     },
     {
@@ -1670,7 +1574,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Melón.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍈",
       "receta": []
     },
     {
@@ -1682,7 +1586,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Piña.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍍",
       "receta": []
     },
     {
@@ -1694,7 +1598,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Jamón y queso.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥐",
       "receta": []
     },
     {
@@ -1706,7 +1610,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Carne mechada.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🥐",
       "receta": []
     },
     {
@@ -1874,7 +1778,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Maracuyá.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍹",
       "receta": []
     },
     {
@@ -1886,7 +1790,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Maracuyá.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍹",
       "receta": []
     },
     {
@@ -1898,7 +1802,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Maracuyá.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍹",
       "receta": []
     },
     {
@@ -1910,7 +1814,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Papelón y limón.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍋",
       "receta": []
     },
     {
@@ -1922,7 +1826,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Papelón y limón.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍋",
       "receta": []
     },
     {
@@ -1934,7 +1838,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Papelón y limón.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍋",
       "receta": []
     },
     {
@@ -1970,7 +1874,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Costillas. Disponible los domingos.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍲",
       "receta": []
     },
     {
@@ -1982,7 +1886,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Costillas. Disponible los domingos.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍲",
       "receta": []
     },
     {
@@ -1994,7 +1898,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Mondongo. Disponible los domingos.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍲",
       "receta": []
     },
     {
@@ -2006,7 +1910,7 @@
       "isAvailable": true,
       "isPopular": false,
       "descripcion": "Mondongo. Disponible los domingos.",
-      "iconoEmoji": null,
+      "iconoEmoji": "🍲",
       "receta": []
     }
   ]
