@@ -7,6 +7,7 @@ import {
   IsArray,
   ValidateNested,
   IsPositive,
+  Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -42,6 +43,7 @@ export class CreateProductoDto {
   nombre: string;
 
   @IsNumber()
+  @Min(0)
   precio: number;
 
   @IsBoolean()

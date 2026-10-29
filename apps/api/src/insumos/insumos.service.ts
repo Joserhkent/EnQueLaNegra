@@ -109,6 +109,16 @@ export class InsumosService {
       );
     }
 
+    // Los extras de pedidos ya vendidos referencian el insumo (sin cascada).
+    const extrasCount = await this.prisma.orderItemExtra.count({
+      where: { insumoId: id },
+    });
+    if (extrasCount > 0) {
+      throw new BadRequestException(
+        `No se puede eliminar "${insumo.nombre}" porque aparece como extra en ${extrasCount} ítem(s) de pedidos ya registrados.`,
+      );
+    }
+
     const movimientosCount = await this.prisma.movimientoStock.count({
       where: { insumoId: id },
     });

@@ -123,7 +123,10 @@ describe('MesasService', () => {
   });
 
   it('rejects joining a table that is already occupied', async () => {
-    const occupiedTable = { ...otherTable, status: TableStatus.OCCUPIED };
+    const occupiedTable = {
+      ...otherTable,
+      status: TableStatus.OCCUPIED as TableStatus,
+    } as typeof otherTable;
     const { service, transactionClient } = await makeService([
       mainTable,
       occupiedTable,

@@ -13,6 +13,8 @@ import {
   ItemKitchenStatus,
   Prisma,
 } from '@prisma/client';
+import { formatFecha, formatHora } from '../common/date';
+import { itemLineTotal, splitIgv } from '../common/order-totals';
 
 const ORDER_INCLUDE = {
   items: { include: { extras: { include: { insumo: true } } } },
@@ -62,9 +64,9 @@ export class PedidosService {
   async create(dto: CreatePedidoDto, userId?: string) {
     await this.assertCajaAbierta();
     const now = new Date();
-    // Usa fecha/hora LOCAL del servidor, no UTC (toISOString desplaza el día en las noches, ya que Perú es UTC-5)
-    const fecha = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const hora = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    // Fecha/hora de Perú (UTC-5), no UTC del servidor ni toISOString (desplaza el día en las noches)
+    const fecha = formatFecha(now);
+    const hora = formatHora(now);
 
     // Resuelve todos los productoId faltantes en UNA sola consulta (antes se hacía
     // una por ítem, dos veces — una para descontar inventario y otra para guardar).
@@ -83,25 +85,26 @@ export class PedidosService {
       productoId: item.productoId || skuToId.get(item.sku) || '',
     }));
 
+    const sinProducto = itemsWithProductoId.find((i) => !i.productoId);
+    if (sinProducto) {
+      throw new BadRequestException(
+        `El producto "${sinProducto.nombre}" (${sinProducto.sku}) no existe en el catálogo`,
+      );
+    }
+
     // Insumo -> cantidad total a descontar, calculado en memoria (1 sola consulta
     // para todas las recetas involucradas, agrupando ítems repetidos).
     const deducciones =
       await this.buildInventoryDeductions(itemsWithProductoId);
 
-    // Total de productos + extras cobrados aparte
-    const total = itemsWithProductoId.reduce((acc, item) => {
-      const itemTotal = item.precio * item.cantidad;
-      const extrasTotal = (item.extras ?? []).reduce(
-        (accExtra, extra) =>
-          accExtra + (extra.precioExtra ?? 0) * (extra.cantidad ?? 1),
+    // Total de productos + extras (por unidad) cobrados aparte, con IGV Perú 18%
+    const { total, subtotal, igv } = splitIgv(
+      itemsWithProductoId.reduce(
+        (acc, item) =>
+          acc + itemLineTotal(item.precio, item.cantidad, item.extras),
         0,
-      );
-      return acc + itemTotal + extrasTotal;
-    }, 0);
-
-    // IGV Perú 18%
-    const subtotal = Math.round((total / 1.18) * 100) / 100;
-    const igv = Math.round((total - subtotal) * 100) / 100;
+      ),
+    );
 
     // 1. Normalización de OrderType (Enum de Prisma)
     const rawType = (dto.type || 'MESA').toUpperCase();
@@ -122,6 +125,14 @@ export class PedidosService {
     }
 
     const isMixto = paymentMethod === PaymentMethod.MIXTO;
+    if (isMixto) {
+      const sumaMixta = (dto.montoEfectivo ?? 0) + (dto.montoDigital ?? 0);
+      if (Math.abs(sumaMixta - total) > 0.01) {
+        throw new BadRequestException(
+          `El pago mixto debe sumar exactamente S/ ${total.toFixed(2)}`,
+        );
+      }
+    }
 
     const pagosData: Prisma.PagoCreateWithoutOrderInput[] = isMixto
       ? [
@@ -151,9 +162,9 @@ export class PedidosService {
 
     const codeLabel = dto.code ?? 'Nuevo Pedido';
 
-    // Crear el pedido y descontar el inventario son escrituras a tablas distintas
-    // sin dependencia entre sí — se disparan juntas en vez de una tras otra.
-    const [order] = await Promise.all([
+    // Pedido e inventario van en una sola transacción: si algo falla no queda un
+    // pedido sin descontar stock (ni stock descontado sin pedido).
+    const [order] = await this.prisma.$transaction([
       this.prisma.order.create({
         data: {
           code: dto.code ?? `#ORD-${Date.now()}`,
@@ -178,7 +189,7 @@ export class PedidosService {
         },
         include: ORDER_INCLUDE,
       }),
-      this.applyInventoryDeductions(
+      ...this.buildInventoryOps(
         deducciones,
         userId,
         `Venta comanda ${codeLabel}`,
@@ -272,14 +283,14 @@ export class PedidosService {
     return deducciones;
   }
 
-  private async applyInventoryDeductions(
+  private buildInventoryOps(
     deducciones: Map<string, number>,
     userId: string | undefined,
     motivo: string,
   ) {
-    if (deducciones.size === 0) return;
+    if (deducciones.size === 0) return [];
 
-    await Promise.all([
+    return [
       ...[...deducciones.entries()].map(([insumoId, cantidad]) =>
         this.prisma.insumo.update({
           where: { id: insumoId },
@@ -296,6 +307,6 @@ export class PedidosService {
           usuarioId: userId,
         })),
       }),
-    ]);
+    ];
   }
 }

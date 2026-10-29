@@ -14,6 +14,7 @@ import { UpdateStatusDto } from './dto/update-status.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
 import { UpdateItemKitchenStatusDto } from './dto/update-item-kitchen-status.dto';
+@UseGuards(JwtAuthGuard)
 @Controller('pedidos')
 export class PedidosController {
   constructor(private readonly pedidosService: PedidosService) {}
@@ -28,7 +29,6 @@ export class PedidosController {
     return this.pedidosService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   create(
     @Body() createPedidoDto: CreatePedidoDto,
@@ -37,7 +37,6 @@ export class PedidosController {
     return this.pedidosService.create(createPedidoDto, userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id/status')
   updateStatus(
     @Param('id') id: string,
@@ -49,7 +48,6 @@ export class PedidosController {
     return this.pedidosService.updateStatus(id, updateStatusDto.status);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id/items/:itemId/kitchen-status')
   updateItemKitchenStatus(
     @Param('id') id: string,

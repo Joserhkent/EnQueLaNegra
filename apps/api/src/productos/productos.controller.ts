@@ -12,7 +12,9 @@ import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JefeGuard } from '../auth/jefe.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('productos')
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
@@ -27,13 +29,13 @@ export class ProductosController {
     return this.productosService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JefeGuard)
   @Post()
   create(@Body() createProductoDto: CreateProductoDto) {
     return this.productosService.create(createProductoDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JefeGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -42,13 +44,12 @@ export class ProductosController {
     return this.productosService.update(id, updateProductoDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id/toggle-availability')
   toggleAvailability(@Param('id') id: string) {
     return this.productosService.toggleAvailability(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JefeGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productosService.remove(id);

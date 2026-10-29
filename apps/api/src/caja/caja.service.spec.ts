@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return -- mocks de Prisma tipados como any */
 import { Test } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { CajaService } from './caja.service';
@@ -22,14 +23,12 @@ describe('CajaService', () => {
       },
       order: {
         findMany: jest.fn().mockResolvedValue([]),
+        count: jest.fn().mockResolvedValue(0),
       },
     };
 
     const module = await Test.createTestingModule({
-      providers: [
-        CajaService,
-        { provide: PrismaService, useValue: prisma },
-      ],
+      providers: [CajaService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
     service = module.get<CajaService>(CajaService);
@@ -80,6 +79,7 @@ describe('CajaService', () => {
         usuarioApertura: 'Cajero',
       };
       prisma.cajaSesion.findFirst.mockResolvedValue(activeSession);
+      prisma.order.count.mockResolvedValue(0);
       prisma.order.findMany.mockResolvedValue([
         {
           id: 'ord-1',
@@ -99,6 +99,21 @@ describe('CajaService', () => {
       expect(res.efectivoEsperado).toBe(150);
       expect(res.efectivoReal).toBe(150);
       expect(res.diferencia).toBe(0);
+    });
+
+    it('rechaza cerrar si hay mesas con cuenta abierta', async () => {
+      prisma.cajaSesion.findFirst.mockResolvedValue({
+        id: 'sesion-1',
+        estado: EstadoCaja.ABIERTA,
+        montoInicial: 100,
+        fechaApertura: new Date(),
+      });
+      prisma.order.count.mockResolvedValue(1);
+
+      await expect(service.cerrarCajaSesion({})).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(prisma.cajaSesion.update).not.toHaveBeenCalled();
     });
 
     it('rechaza cerrar si no hay caja abierta', async () => {

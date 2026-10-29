@@ -12,8 +12,10 @@ import { InsumosService } from './insumos.service';
 import { CreateInsumoDto } from './dto/create-insumo.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JefeGuard } from '../auth/jefe.guard';
 import { GetUser } from '../auth/get-user.decorator';
 
+@UseGuards(JwtAuthGuard)
 @Controller('insumos')
 export class InsumosController {
   constructor(private readonly insumosService: InsumosService) {}
@@ -33,13 +35,12 @@ export class InsumosController {
     return this.insumosService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JefeGuard)
   @Post()
   create(@Body() createInsumoDto: CreateInsumoDto) {
     return this.insumosService.create(createInsumoDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post(':id/movimiento')
   updateStock(
     @Param('id') id: string,
@@ -49,7 +50,7 @@ export class InsumosController {
     return this.insumosService.updateStock(id, dto, userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JefeGuard)
   @Patch(':id/minimo')
   updateMinimo(
     @Param('id') id: string,
@@ -58,7 +59,7 @@ export class InsumosController {
     return this.insumosService.updateMinimo(id, stockMinimo);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JefeGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.insumosService.remove(id);

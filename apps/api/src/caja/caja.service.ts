@@ -5,6 +5,7 @@ import { AbrirCajaDto } from './dto/abrir-caja.dto';
 import { CerrarCajaDto } from './dto/cerrar-caja.dto';
 import { OrderStatus, PaymentMethod, EstadoCaja } from '@prisma/client';
 import { AuthenticatedUser } from '../auth/jwt-payload.interface';
+import { formatFecha, formatHora } from '../common/date';
 
 @Injectable()
 export class CajaService {
@@ -98,6 +99,17 @@ export class CajaService {
       throw new BadRequestException('No hay ninguna caja abierta para cerrar.');
     }
 
+    // Una mesa abierta tiene consumo sin cobrar: cerrar la caja la dejaría fuera
+    // de todos los reportes y sin poder cobrarse hasta abrir otro turno.
+    const mesasAbiertas = await this.prisma.order.count({
+      where: { status: OrderStatus.OPEN },
+    });
+    if (mesasAbiertas > 0) {
+      throw new BadRequestException(
+        `Hay ${mesasAbiertas} mesa(s) con cuenta abierta. Cóbralas o libéralas antes de cerrar la caja.`,
+      );
+    }
+
     const resumen = await this.calcularResumenSesion(activeSession);
     const now = new Date();
     const efectivoEsperado = Number(
@@ -133,8 +145,8 @@ export class CajaService {
     });
 
     // Guardar también en CierreCaja para compatibilidad histórica con reportes antiguos
-    const hora = now.toTimeString().split(' ')[0].substring(0, 5);
-    const fecha = now.toISOString().split('T')[0];
+    const hora = formatHora(now);
+    const fecha = formatFecha(now);
     await this.prisma.cierreCaja.create({
       data: {
         fecha,
@@ -175,7 +187,7 @@ export class CajaService {
   }
 
   async getResumenHoy() {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = formatFecha();
 
     const ordersToday = await this.prisma.order.findMany({
       where: {
@@ -239,7 +251,7 @@ export class CajaService {
 
     const resumen = await this.getResumenHoy();
     const now = new Date();
-    const hora = now.toTimeString().split(' ')[0].substring(0, 5);
+    const hora = formatHora(now);
 
     return this.prisma.cierreCaja.create({
       data: {

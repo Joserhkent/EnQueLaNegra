@@ -7,6 +7,17 @@ const adapter = new PrismaPg(process.env.DATABASE_URL as string);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  // El seed BORRA todas las tablas (pedidos, caja, productos, usuarios...) y carga el
+  // catálogo inicial de demostración, que ya no coincide con la carta real. Solo debe
+  // correr sobre una base vacía, o a propósito con SEED_FORCE=1.
+  const existentes = await prisma.producto.count();
+  if (existentes > 0 && process.env.SEED_FORCE !== '1') {
+    console.error(
+      `⛔ La base ya tiene ${existentes} productos. El seed borraría TODOS los datos (ventas, caja, usuarios). Si es lo que quieres, ejecútalo con SEED_FORCE=1.`,
+    );
+    process.exit(1);
+  }
+
   console.log('🌱 Iniciando carga de datos semilla (Seed) para En que la Negra POS...');
 
   // 1. Limpiar base de datos (orden respeta dependencias FK)

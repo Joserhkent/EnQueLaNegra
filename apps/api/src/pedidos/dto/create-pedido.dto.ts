@@ -1,11 +1,14 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayMinSize,
   IsArray,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  Min,
   ValidateNested,
 } from 'class-validator';
 
@@ -28,10 +31,12 @@ export class PedidoItemExtraDto {
   insumoId = '';
 
   @IsNumber()
+  @Min(0)
   @IsOptional()
   cantidad?: number = 1;
 
   @IsNumber()
+  @Min(0)
   @IsOptional()
   precioExtra?: number = 0;
 }
@@ -50,12 +55,12 @@ export class PedidoItemDto {
   nombre = '';
 
   @IsNumber()
-  @IsNotEmpty()
+  @Min(0)
   precio = 0;
 
-  @IsNumber()
-  @IsNotEmpty()
-  cantidad = 0;
+  @IsInt()
+  @Min(1)
+  cantidad = 1;
 
   @IsString()
   @IsOptional()
@@ -87,14 +92,17 @@ export class CreatePedidoDto {
 
   // Solo se usan cuando paymentMethod = MIXTO
   @IsNumber()
+  @Min(0)
   @IsOptional()
   montoEfectivo?: number;
 
   @IsNumber()
+  @Min(0)
   @IsOptional()
   montoDigital?: number;
 
   @IsArray()
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => PedidoItemDto)
   items: PedidoItemDto[] = [];
