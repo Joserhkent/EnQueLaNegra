@@ -1,0 +1,2013 @@
+{
+  "categorias": [
+    {
+      "nombre": "Arepas Tradicionales",
+      "tipo": "PRODUCTO",
+      "orden": 0
+    },
+    {
+      "nombre": "Hamburguesas",
+      "tipo": "PRODUCTO",
+      "orden": 0
+    },
+    {
+      "nombre": "Arepas",
+      "tipo": "PRODUCTO",
+      "orden": 1
+    },
+    {
+      "nombre": "Empanadas",
+      "tipo": "PRODUCTO",
+      "orden": 1
+    },
+    {
+      "nombre": "Cachapas",
+      "tipo": "PRODUCTO",
+      "orden": 2
+    },
+    {
+      "nombre": "Patacones",
+      "tipo": "PRODUCTO",
+      "orden": 3
+    },
+    {
+      "nombre": "Pepitos",
+      "tipo": "PRODUCTO",
+      "orden": 4
+    },
+    {
+      "nombre": "Shawarmas",
+      "tipo": "PRODUCTO",
+      "orden": 5
+    },
+    {
+      "nombre": "Perros calientes",
+      "tipo": "PRODUCTO",
+      "orden": 6
+    },
+    {
+      "nombre": "Acompañamientos",
+      "tipo": "PRODUCTO",
+      "orden": 7
+    },
+    {
+      "nombre": "Agregados",
+      "tipo": "PRODUCTO",
+      "orden": 7
+    },
+    {
+      "nombre": "Pasteles",
+      "tipo": "PRODUCTO",
+      "orden": 9
+    },
+    {
+      "nombre": "Sábados de comida criolla",
+      "tipo": "PRODUCTO",
+      "orden": 10
+    },
+    {
+      "nombre": "Domingos de sopas",
+      "tipo": "PRODUCTO",
+      "orden": 11
+    },
+    {
+      "nombre": "Refrescos",
+      "tipo": "PRODUCTO",
+      "orden": 12
+    },
+    {
+      "nombre": "Jugos",
+      "tipo": "PRODUCTO",
+      "orden": 13
+    },
+    {
+      "nombre": "Batidos",
+      "tipo": "PRODUCTO",
+      "orden": 14
+    },
+    {
+      "nombre": "Bebidas en lata",
+      "tipo": "PRODUCTO",
+      "orden": 15
+    },
+    {
+      "nombre": "Gaseosas y otras bebidas",
+      "tipo": "PRODUCTO",
+      "orden": 16
+    },
+    {
+      "nombre": "Panes y Masas",
+      "tipo": "INSUMO",
+      "orden": 0
+    },
+    {
+      "nombre": "Carnes y Proteínas",
+      "tipo": "INSUMO",
+      "orden": 1
+    },
+    {
+      "nombre": "Abarrotes para bebidas",
+      "tipo": "INSUMO",
+      "orden": 2
+    },
+    {
+      "nombre": "Quesos y Lácteos",
+      "tipo": "INSUMO",
+      "orden": 2
+    },
+    {
+      "nombre": "Verduras y Legumbres",
+      "tipo": "INSUMO",
+      "orden": 3
+    },
+    {
+      "nombre": "Frutas",
+      "tipo": "INSUMO",
+      "orden": 4
+    },
+    {
+      "nombre": "Papas",
+      "tipo": "INSUMO",
+      "orden": 4
+    },
+    {
+      "nombre": "Bebidas envasadas",
+      "tipo": "INSUMO",
+      "orden": 5
+    },
+    {
+      "nombre": "Salsas y Aderezos",
+      "tipo": "INSUMO",
+      "orden": 5
+    },
+    {
+      "nombre": "Cremas",
+      "tipo": "INSUMO",
+      "orden": 6
+    }
+  ],
+  "insumos": [
+    {
+      "id": "aguacate",
+      "nombre": "Aguacate",
+      "categoria": "Verduras y Legumbres",
+      "unidadMedida": "unidad",
+      "stockActual": 81,
+      "stockMinimo": 15,
+      "costoUnitario": 0.8
+    },
+    {
+      "id": "arroz",
+      "nombre": "Arroz Blanco",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "porción",
+      "stockActual": 40,
+      "stockMinimo": 20,
+      "costoUnitario": 0.4
+    },
+    {
+      "id": "atun",
+      "nombre": "Atún en Lata",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 25,
+      "stockMinimo": 15,
+      "costoUnitario": 1
+    },
+    {
+      "id": "caraotas_negras",
+      "nombre": "Caraotas Negras Refritas",
+      "categoria": "Verduras y Legumbres",
+      "unidadMedida": "porción",
+      "stockActual": 38,
+      "stockMinimo": 20,
+      "costoUnitario": 0.6
+    },
+    {
+      "id": "carne_bolonesa",
+      "nombre": "Salsa Boloñesa",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 20,
+      "stockMinimo": 10,
+      "costoUnitario": 1.5
+    },
+    {
+      "id": "carne_hamburguesa",
+      "nombre": "Carne de Hamburguesa (patty)",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "unidad",
+      "stockActual": 40,
+      "stockMinimo": 25,
+      "costoUnitario": 2
+    },
+    {
+      "id": "carne_mechada",
+      "nombre": "Carne Mechada",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 22,
+      "stockMinimo": 20,
+      "costoUnitario": 2.2
+    },
+    {
+      "id": "carne_molida",
+      "nombre": "Carne Molida",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 24,
+      "stockMinimo": 15,
+      "costoUnitario": 2
+    },
+    {
+      "id": "carne_shawarma",
+      "nombre": "Carne de Shawarma",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 25,
+      "stockMinimo": 15,
+      "costoUnitario": 2.5
+    },
+    {
+      "id": "carta_beb_agua",
+      "nombre": "Agua Personal",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_coca_1500",
+      "nombre": "Coca Cola 1.5 litros",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_coca_500",
+      "nombre": "Coca Cola 500 ml",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_coca_personal",
+      "nombre": "Coca Cola Personal",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_fanta",
+      "nombre": "Fanta Personal",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_frescolita",
+      "nombre": "Frescolita Lata",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_inca_1500",
+      "nombre": "Inca Kola 1.5 litros",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_inca_500",
+      "nombre": "Inca Kola 500 ml",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_inca_personal",
+      "nombre": "Inca Kola Personal",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_malta",
+      "nombre": "Malta Lata",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_sporade",
+      "nombre": "Sporade Personal",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_beb_sprite",
+      "nombre": "Sprite Personal",
+      "categoria": "Bebidas envasadas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_chorizo",
+      "nombre": "Chorizo",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_diablito",
+      "nombre": "Diablito",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_fresa",
+      "nombre": "Fresa",
+      "categoria": "Frutas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_guayaba",
+      "nombre": "Guayaba",
+      "categoria": "Frutas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_leche",
+      "nombre": "Leche",
+      "categoria": "Quesos y Lácteos",
+      "unidadMedida": "ml",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_limon",
+      "nombre": "Limón",
+      "categoria": "Frutas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_mango",
+      "nombre": "Mango",
+      "categoria": "Frutas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_maracuya",
+      "nombre": "Maracuyá",
+      "categoria": "Frutas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_melon",
+      "nombre": "Melón",
+      "categoria": "Frutas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_papaya",
+      "nombre": "Papaya",
+      "categoria": "Frutas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_papelon",
+      "nombre": "Papelón",
+      "categoria": "Abarrotes para bebidas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_pina",
+      "nombre": "Piña",
+      "categoria": "Frutas",
+      "unidadMedida": "g",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_salchicha_ahumada",
+      "nombre": "Salchicha ahumada",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "unidad",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "carta_tallarin",
+      "nombre": "Tallarín",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "porción",
+      "stockActual": 0,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "chicharron",
+      "nombre": "Chicharrón",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 18,
+      "stockMinimo": 12,
+      "costoUnitario": 1.3
+    },
+    {
+      "id": "chuleta_cerdo",
+      "nombre": "Chuleta de Cerdo",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "unidad",
+      "stockActual": 15,
+      "stockMinimo": 10,
+      "costoUnitario": 3
+    },
+    {
+      "id": "costillas",
+      "nombre": "Costillas de Res",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 15,
+      "stockMinimo": 10,
+      "costoUnitario": 2.8
+    },
+    {
+      "id": "crema_aceituna",
+      "nombre": "Aceituna",
+      "categoria": "Cremas",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_aji_esp",
+      "nombre": "Ají Especial",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_bbq",
+      "nombre": "BBQ",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_golf",
+      "nombre": "Golf",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_huancaina",
+      "nombre": "Huancaina",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_maiz",
+      "nombre": "Maíz",
+      "categoria": "Cremas",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_queso",
+      "nombre": "Queso",
+      "categoria": "Cremas",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_rocoto",
+      "nombre": "Rocoto",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_tartara",
+      "nombre": "Tártara",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_tocino",
+      "nombre": "Tocino",
+      "categoria": "Cremas",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "crema_vinagreta",
+      "nombre": "Vinagreta",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "ensalada_rusa",
+      "nombre": "Ensalada Rusa",
+      "categoria": "Verduras y Legumbres",
+      "unidadMedida": "porción",
+      "stockActual": 25,
+      "stockMinimo": 15,
+      "costoUnitario": 0.6
+    },
+    {
+      "id": "huevo",
+      "nombre": "Huevo",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "unidad",
+      "stockActual": 60,
+      "stockMinimo": 30,
+      "costoUnitario": 0.3
+    },
+    {
+      "id": "jamon",
+      "nombre": "Jamón Cocido",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 30,
+      "stockMinimo": 15,
+      "costoUnitario": 1.2
+    },
+    {
+      "id": "ketchup",
+      "nombre": "Ketchup",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0.01
+    },
+    {
+      "id": "masa_arepa",
+      "nombre": "Harina de Maíz Precocida",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "porción",
+      "stockActual": 24,
+      "stockMinimo": 40,
+      "costoUnitario": 0.3
+    },
+    {
+      "id": "masa_cachapa",
+      "nombre": "Maíz Tierno (Cachapa)",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "porción",
+      "stockActual": 37,
+      "stockMinimo": 25,
+      "costoUnitario": 0.6
+    },
+    {
+      "id": "masa_empanada",
+      "nombre": "Masa para Empanada",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "unidad",
+      "stockActual": 44,
+      "stockMinimo": 30,
+      "costoUnitario": 0.25
+    },
+    {
+      "id": "masa_pastelito",
+      "nombre": "Masa Hojaldrada (Pastelito)",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "unidad",
+      "stockActual": 50,
+      "stockMinimo": 25,
+      "costoUnitario": 0.3
+    },
+    {
+      "id": "mayonesa",
+      "nombre": "Mayonesa",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0.01
+    },
+    {
+      "id": "mondongo",
+      "nombre": "Mondongo",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 15,
+      "stockMinimo": 10,
+      "costoUnitario": 2.5
+    },
+    {
+      "id": "mostaza",
+      "nombre": "Mostaza",
+      "categoria": "Cremas",
+      "unidadMedida": "ml",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0.01
+    },
+    {
+      "id": "pan_arabe",
+      "nombre": "Pan Árabe (Shawarma)",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "unidad",
+      "stockActual": 35,
+      "stockMinimo": 20,
+      "costoUnitario": 0.5
+    },
+    {
+      "id": "pan_hamburguesa",
+      "nombre": "Pan de Hamburguesa",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "unidad",
+      "stockActual": 45,
+      "stockMinimo": 25,
+      "costoUnitario": 0.5
+    },
+    {
+      "id": "pan_pepito",
+      "nombre": "Pan Baguette (Pepito)",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "unidad",
+      "stockActual": 40,
+      "stockMinimo": 20,
+      "costoUnitario": 0.6
+    },
+    {
+      "id": "pan_perro",
+      "nombre": "Pan de Perro Caliente",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "unidad",
+      "stockActual": 40,
+      "stockMinimo": 20,
+      "costoUnitario": 0.4
+    },
+    {
+      "id": "papas_fritas",
+      "nombre": "Papas Fritas",
+      "categoria": "Papas",
+      "unidadMedida": "porción",
+      "stockActual": 80,
+      "stockMinimo": 40,
+      "costoUnitario": 1
+    },
+    {
+      "id": "papas_ralladas",
+      "nombre": "Papitas Ralladas",
+      "categoria": "Papas",
+      "unidadMedida": "porción",
+      "stockActual": 40,
+      "stockMinimo": 20,
+      "costoUnitario": 0.4
+    },
+    {
+      "id": "pasta_lasagna",
+      "nombre": "Pasta para Lasagna",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "porción",
+      "stockActual": 20,
+      "stockMinimo": 10,
+      "costoUnitario": 1.2
+    },
+    {
+      "id": "platano_maduro",
+      "nombre": "Plátano Maduro",
+      "categoria": "Verduras y Legumbres",
+      "unidadMedida": "unidad",
+      "stockActual": 20,
+      "stockMinimo": 15,
+      "costoUnitario": 0.4
+    },
+    {
+      "id": "platano_verde",
+      "nombre": "Plátano Verde (Patacón)",
+      "categoria": "Panes y Masas",
+      "unidadMedida": "unidad",
+      "stockActual": 35,
+      "stockMinimo": 20,
+      "costoUnitario": 0.4
+    },
+    {
+      "id": "pollo_desmechado",
+      "nombre": "Pollo Desmechado",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 3,
+      "stockMinimo": 20,
+      "costoUnitario": 1.8
+    },
+    {
+      "id": "pollo_shawarma",
+      "nombre": "Pollo para Shawarma",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 25,
+      "stockMinimo": 15,
+      "costoUnitario": 2
+    },
+    {
+      "id": "queso_chedar",
+      "nombre": "Queso Cheddar",
+      "categoria": "Quesos y Lácteos",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "queso_de_mano",
+      "nombre": "Queso de Mano",
+      "categoria": "Quesos y Lácteos",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "queso_edam",
+      "nombre": "Queso Edam",
+      "categoria": "Quesos y Lácteos",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "queso_fresquito",
+      "nombre": "Queso Fresco",
+      "categoria": "Quesos y Lácteos",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "queso_rallar",
+      "nombre": "Queso para Rallar",
+      "categoria": "Quesos y Lácteos",
+      "unidadMedida": "porción",
+      "stockActual": 9999,
+      "stockMinimo": 0,
+      "costoUnitario": 0
+    },
+    {
+      "id": "repollo",
+      "nombre": "Repollo Rallado",
+      "categoria": "Verduras y Legumbres",
+      "unidadMedida": "porción",
+      "stockActual": 30,
+      "stockMinimo": 15,
+      "costoUnitario": 0.3
+    },
+    {
+      "id": "salchicha",
+      "nombre": "Salchicha Criolla",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "unidad",
+      "stockActual": 28,
+      "stockMinimo": 15,
+      "costoUnitario": 1
+    },
+    {
+      "id": "salchicha_perro",
+      "nombre": "Salchicha Perro Caliente",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "unidad",
+      "stockActual": 35,
+      "stockMinimo": 20,
+      "costoUnitario": 0.9
+    },
+    {
+      "id": "tocino",
+      "nombre": "Tocineta",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "porción",
+      "stockActual": 19,
+      "stockMinimo": 15,
+      "costoUnitario": 1.1
+    }
+  ],
+  "productos": [
+    {
+      "id": "AR01",
+      "sku": "AR01",
+      "nombre": "Reina Pepiada",
+      "categoria": "Arepas Tradicionales",
+      "precio": 4,
+      "isAvailable": false,
+      "isPopular": true,
+      "descripcion": "Pollo desmechado con aguacate cremoso y aderezo de la casa.",
+      "iconoEmoji": "🥑",
+      "receta": [
+        {
+          "insumoId": "aguacate",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "AR03",
+      "sku": "AR03",
+      "nombre": "Pabellón",
+      "categoria": "Arepas Tradicionales",
+      "precio": 4.5,
+      "isAvailable": false,
+      "isPopular": true,
+      "descripcion": "Carne mechada, caraotas negras, tajadas de plátano maduro y queso.",
+      "iconoEmoji": "🇻🇪",
+      "receta": [
+        {
+          "insumoId": "caraotas_negras",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "carne_mechada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "AR06",
+      "sku": "AR06",
+      "nombre": "Atún",
+      "categoria": "Arepas Tradicionales",
+      "precio": 3.5,
+      "isAvailable": false,
+      "isPopular": false,
+      "descripcion": "Guiso de atún sazonado con cebollita y pimiento.",
+      "iconoEmoji": "🐟",
+      "receta": [
+        {
+          "insumoId": "atun",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "AR08",
+      "sku": "AR08",
+      "nombre": "Salchicha",
+      "categoria": "Arepas Tradicionales",
+      "precio": 3,
+      "isAvailable": false,
+      "isPopular": false,
+      "descripcion": "Salchichas salteadas en salsa criolla especial.",
+      "iconoEmoji": "🌭",
+      "receta": [
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "salchicha",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_arepa_ahumada_01",
+      "sku": "CARTA_AREPA_AHUMADA_01",
+      "nombre": "Arepa de salchicha ahumada",
+      "categoria": "Arepas",
+      "precio": 18,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Salchicha ahumada.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "AR05",
+      "sku": "CARTA_AREPA_CARAOTA_01",
+      "nombre": "Arepa de caraota con queso",
+      "categoria": "Arepas",
+      "precio": 17,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Frijol negro y queso.",
+      "iconoEmoji": "⚫",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_arepa_diablito_01",
+      "sku": "CARTA_AREPA_DIABLITO_01",
+      "nombre": "Arepa de diablito en salsa rosada y queso",
+      "categoria": "Arepas",
+      "precio": 18,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Diablito, salsa rosada y queso.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "AR07",
+      "sku": "CARTA_AREPA_JAMON_01",
+      "nombre": "Arepa de jamón con queso",
+      "categoria": "Arepas",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Jamón y queso.",
+      "iconoEmoji": "🧈",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_arepa_mechada_01",
+      "sku": "CARTA_AREPA_MECHADA_01",
+      "nombre": "Arepa de carne mechada",
+      "categoria": "Arepas",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne mechada.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "AR02",
+      "sku": "CARTA_AREPA_MECHADA_02",
+      "nombre": "Arepa de carne mechada con queso",
+      "categoria": "Arepas",
+      "precio": 19,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne mechada y queso.",
+      "iconoEmoji": "🧀",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_arepa_molida_01",
+      "sku": "CARTA_AREPA_MOLIDA_01",
+      "nombre": "Arepa de carne molida",
+      "categoria": "Arepas",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne molida.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_arepa_molida_02",
+      "sku": "CARTA_AREPA_MOLIDA_02",
+      "nombre": "Arepa de carne molida con queso",
+      "categoria": "Arepas",
+      "precio": 19,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne molida y queso.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_arepa_pollo_01",
+      "sku": "CARTA_AREPA_POLLO_01",
+      "nombre": "Arepa de pollo",
+      "categoria": "Arepas",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Pollo.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "AR04",
+      "sku": "CARTA_AREPA_POLLO_02",
+      "nombre": "Arepa de pollo con queso",
+      "categoria": "Arepas",
+      "precio": 19,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Pollo y queso.",
+      "iconoEmoji": "🐔",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_arepa_queso_01",
+      "sku": "CARTA_AREPA_QUESO_01",
+      "nombre": "Arepa de queso",
+      "categoria": "Arepas",
+      "precio": 13,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Queso.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_arepa_tajada_01",
+      "sku": "CARTA_AREPA_TAJADA_01",
+      "nombre": "Arepa de tajada con queso",
+      "categoria": "Arepas",
+      "precio": 14,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Plátano frito y queso.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_fresa_01",
+      "sku": "CARTA_BATIDO_FRESA_01",
+      "nombre": "Batido de fresa con leche (en local)",
+      "categoria": "Batidos",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Fresa y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_fresa_02",
+      "sku": "CARTA_BATIDO_FRESA_02",
+      "nombre": "Batido de fresa con leche (para llevar)",
+      "categoria": "Batidos",
+      "precio": 17,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Fresa y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_mango_01",
+      "sku": "CARTA_BATIDO_MANGO_01",
+      "nombre": "Batido de mango con leche (en local)",
+      "categoria": "Batidos",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Mango y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_mango_02",
+      "sku": "CARTA_BATIDO_MANGO_02",
+      "nombre": "Batido de mango con leche (para llevar)",
+      "categoria": "Batidos",
+      "precio": 17,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Mango y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_papaya_01",
+      "sku": "CARTA_BATIDO_PAPAYA_01",
+      "nombre": "Batido de papaya con leche (en local)",
+      "categoria": "Batidos",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Papaya y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_papaya_02",
+      "sku": "CARTA_BATIDO_PAPAYA_02",
+      "nombre": "Batido de papaya con leche (para llevar)",
+      "categoria": "Batidos",
+      "precio": 17,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Papaya y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_pina_01",
+      "sku": "CARTA_BATIDO_PINA_01",
+      "nombre": "Batido de piña con leche (en local)",
+      "categoria": "Batidos",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Piña y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_pina_02",
+      "sku": "CARTA_BATIDO_PINA_02",
+      "nombre": "Batido de piña con leche (para llevar)",
+      "categoria": "Batidos",
+      "precio": 17,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Piña y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_platano_01",
+      "sku": "CARTA_BATIDO_PLATANO_01",
+      "nombre": "Batido de plátano con leche (en local)",
+      "categoria": "Batidos",
+      "precio": 16,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Plátano y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_batido_platano_02",
+      "sku": "CARTA_BATIDO_PLATANO_02",
+      "nombre": "Batido de plátano con leche (para llevar)",
+      "categoria": "Batidos",
+      "precio": 17,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Plátano y leche.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_bebida_agua_01",
+      "sku": "CARTA_BEBIDA_AGUA_01",
+      "nombre": "Agua (personal)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 5,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Agua personal.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_agua",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_coca_01",
+      "sku": "CARTA_BEBIDA_COCA_01",
+      "nombre": "Coca Cola (personal)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 5,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Coca Cola personal.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_coca_personal",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_coca_02",
+      "sku": "CARTA_BEBIDA_COCA_02",
+      "nombre": "Coca Cola (1.5 litros)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Coca Cola de 1.5 litros.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_coca_1500",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_coca_03",
+      "sku": "CARTA_BEBIDA_COCA_03",
+      "nombre": "Coca Cola (medio litro)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 5,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Coca Cola de medio litro.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_coca_500",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_fanta_01",
+      "sku": "CARTA_BEBIDA_FANTA_01",
+      "nombre": "Fanta (personal)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 5,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Fanta personal.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_fanta",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_frescolita_01",
+      "sku": "CARTA_BEBIDA_FRESCOLITA_01",
+      "nombre": "Frescolita (lata)",
+      "categoria": "Bebidas en lata",
+      "precio": 10,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Frescolita en lata.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_frescolita",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_inca_01",
+      "sku": "CARTA_BEBIDA_INCA_01",
+      "nombre": "Inca Kola (personal)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 5,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Inca Kola personal.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_inca_personal",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_inca_02",
+      "sku": "CARTA_BEBIDA_INCA_02",
+      "nombre": "Inca Kola (1.5 litros)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Inca Kola de 1.5 litros.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_inca_1500",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_inca_03",
+      "sku": "CARTA_BEBIDA_INCA_03",
+      "nombre": "Inca Kola (medio litro)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 5,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Inca Kola de medio litro.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_inca_500",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_malta_01",
+      "sku": "CARTA_BEBIDA_MALTA_01",
+      "nombre": "Malta (lata)",
+      "categoria": "Bebidas en lata",
+      "precio": 10,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Malta en lata.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_malta",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_sporade_01",
+      "sku": "CARTA_BEBIDA_SPORADE_01",
+      "nombre": "Sporade (personal)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 4,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Sporade personal.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_sporade",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "carta_prod_carta_bebida_sprite_01",
+      "sku": "CARTA_BEBIDA_SPRITE_01",
+      "nombre": "Sprite (personal)",
+      "categoria": "Gaseosas y otras bebidas",
+      "precio": 5,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Sprite personal.",
+      "iconoEmoji": null,
+      "receta": [
+        {
+          "insumoId": "carta_beb_sprite",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "CH02",
+      "sku": "CARTA_CACHAPA_CHICHARRON_01",
+      "nombre": "Cachapa chicharrón con queso",
+      "categoria": "Cachapas",
+      "precio": 27,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Queso y chicharrón.",
+      "iconoEmoji": "🥓",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_cachapa_extra_01",
+      "sku": "CARTA_CACHAPA_EXTRA_01",
+      "nombre": "Cachapa extra queso",
+      "categoria": "Cachapas",
+      "precio": 25,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Extra queso.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "CH03",
+      "sku": "CARTA_CACHAPA_MECHADA_01",
+      "nombre": "Cachapa carne mechada con queso",
+      "categoria": "Cachapas",
+      "precio": 24,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Queso y carne mechada.",
+      "iconoEmoji": "🥩",
+      "receta": []
+    },
+    {
+      "id": "CH01",
+      "sku": "CARTA_CACHAPA_SIMPLE_01",
+      "nombre": "Cachapa simple con queso",
+      "categoria": "Cachapas",
+      "precio": 20,
+      "isAvailable": true,
+      "isPopular": true,
+      "descripcion": "Queso.",
+      "iconoEmoji": "🌽",
+      "receta": []
+    },
+    {
+      "id": "CH04",
+      "sku": "CARTA_CACHAPA_TOCINO_01",
+      "nombre": "Cachapa tocino con queso",
+      "categoria": "Cachapas",
+      "precio": 22,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Queso y tocino.",
+      "iconoEmoji": "🥓",
+      "receta": []
+    },
+    {
+      "id": "FS01",
+      "sku": "CARTA_CRIOLLA_CHULETA_01",
+      "nombre": "Chuleta ahumada",
+      "categoria": "Sábados de comida criolla",
+      "precio": 28,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Chuleta ahumada, arroz blanco, plátano frito y ensalada rusa. Disponible los sábados.",
+      "iconoEmoji": "🍖",
+      "receta": []
+    },
+    {
+      "id": "FS02",
+      "sku": "CARTA_CRIOLLA_PABELLON_01",
+      "nombre": "Pabellón",
+      "categoria": "Sábados de comida criolla",
+      "precio": 25,
+      "isAvailable": true,
+      "isPopular": true,
+      "descripcion": "Arroz blanco, carne mechada, plátano frito, frijol negro, palta y huevo. Disponible los sábados.",
+      "iconoEmoji": "🇻🇪",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_criolla_tallarin_01",
+      "sku": "CARTA_CRIOLLA_TALLARIN_01",
+      "nombre": "Tallarín con carne molida",
+      "categoria": "Sábados de comida criolla",
+      "precio": 20,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Tallarín, carne molida, plátano frito y queso rallado o parmesano. Disponible los sábados.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "EP04",
+      "sku": "CARTA_EMP_JAMON_01",
+      "nombre": "Empanada de jamón y queso",
+      "categoria": "Empanadas",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Jamón y queso.",
+      "iconoEmoji": "🥟",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_emp_mechada_01",
+      "sku": "CARTA_EMP_MECHADA_01",
+      "nombre": "Empanada de carne mechada",
+      "categoria": "Empanadas",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne mechada.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "EP01",
+      "sku": "CARTA_EMP_MOLIDA_01",
+      "nombre": "Empanada de carne molida",
+      "categoria": "Empanadas",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": true,
+      "descripcion": "Carne molida.",
+      "iconoEmoji": "🥟",
+      "receta": []
+    },
+    {
+      "id": "EP02",
+      "sku": "CARTA_EMP_POLLO_01",
+      "nombre": "Empanada de pollo",
+      "categoria": "Empanadas",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Pollo.",
+      "iconoEmoji": "🥟",
+      "receta": []
+    },
+    {
+      "id": "EP03",
+      "sku": "CARTA_EMP_QUESO_01",
+      "nombre": "Empanada de queso",
+      "categoria": "Empanadas",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Queso.",
+      "iconoEmoji": "🧀",
+      "receta": []
+    },
+    {
+      "id": "EP06",
+      "sku": "CARTA_EMP_SALCHICHA_01",
+      "nombre": "Empanada de salchicha",
+      "categoria": "Empanadas",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Salchicha.",
+      "iconoEmoji": "🌭",
+      "receta": []
+    },
+    {
+      "id": "HB02",
+      "sku": "CARTA_HAMB_FULL_01",
+      "nombre": "Hamburguesa full",
+      "categoria": "Hamburguesas",
+      "precio": 22,
+      "isAvailable": true,
+      "isPopular": true,
+      "descripcion": "Pollo, huevo, jamón, tocino, queso cheddar, chorizo, ensalada y cremas al gusto.",
+      "iconoEmoji": "🍔",
+      "receta": []
+    },
+    {
+      "id": "HB03",
+      "sku": "CARTA_HAMB_MIXTA_01",
+      "nombre": "Hamburguesa mixta",
+      "categoria": "Hamburguesas",
+      "precio": 38,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne, pollo, queso cheddar, doble huevo, jamón, tocino, chorizo, papas fritas, ensalada y cremas al gusto.",
+      "iconoEmoji": "🍔",
+      "receta": []
+    },
+    {
+      "id": "HB01",
+      "sku": "CARTA_HAMB_SIMPLE_01",
+      "nombre": "Hamburguesa simple",
+      "categoria": "Hamburguesas",
+      "precio": 18,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne molida, queso cheddar, huevo, papas fritas, ensalada y cremas al gusto.",
+      "iconoEmoji": "🍔",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_jugo_fresa_01",
+      "sku": "CARTA_JUGO_FRESA_01",
+      "nombre": "Jugo de fresa (vaso)",
+      "categoria": "Jugos",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Fresa.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_jugo_guayaba_01",
+      "sku": "CARTA_JUGO_GUAYABA_01",
+      "nombre": "Jugo de guayaba (vaso)",
+      "categoria": "Jugos",
+      "precio": 14,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Guayaba.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_jugo_melon_01",
+      "sku": "CARTA_JUGO_MELON_01",
+      "nombre": "Jugo de melón (vaso)",
+      "categoria": "Jugos",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Melón.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_jugo_pina_01",
+      "sku": "CARTA_JUGO_PINA_01",
+      "nombre": "Jugo de piña (vaso)",
+      "categoria": "Jugos",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Piña.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_pastel_jamon_01",
+      "sku": "CARTA_PASTEL_JAMON_01",
+      "nombre": "Pastel de jamón y queso",
+      "categoria": "Pasteles",
+      "precio": 15,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Jamón y queso.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_pastel_mechada_01",
+      "sku": "CARTA_PASTEL_MECHADA_01",
+      "nombre": "Pastel de carne mechada",
+      "categoria": "Pasteles",
+      "precio": 18,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne mechada.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "HO01",
+      "sku": "CARTA_PASTEL_MOLIDA_01",
+      "nombre": "Pastel de carne molida",
+      "categoria": "Pasteles",
+      "precio": 15,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne molida.",
+      "iconoEmoji": "🥐",
+      "receta": []
+    },
+    {
+      "id": "HO02",
+      "sku": "CARTA_PASTEL_POLLO_01",
+      "nombre": "Pastel de pollo",
+      "categoria": "Pasteles",
+      "precio": 15,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Pollo.",
+      "iconoEmoji": "🥐",
+      "receta": []
+    },
+    {
+      "id": "HO03",
+      "sku": "CARTA_PASTEL_QUESO_01",
+      "nombre": "Pastel de queso",
+      "categoria": "Pasteles",
+      "precio": 15,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Queso.",
+      "iconoEmoji": "🥐",
+      "receta": []
+    },
+    {
+      "id": "PT01",
+      "sku": "CARTA_PATACON_MECHADA_01",
+      "nombre": "Patacón de carne mechada",
+      "categoria": "Patacones",
+      "precio": 30,
+      "isAvailable": true,
+      "isPopular": true,
+      "descripcion": "Plátano verde, carne mechada, ensalada rallada, jamón, tocino, queso y cremas al gusto.",
+      "iconoEmoji": "🍌",
+      "receta": []
+    },
+    {
+      "id": "PT03",
+      "sku": "CARTA_PATACON_MOLIDA_01",
+      "nombre": "Patacón de carne molida",
+      "categoria": "Patacones",
+      "precio": 25,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Plátano verde, carne molida, ensalada rallada, jamón, tocino, queso y cremas al gusto.",
+      "iconoEmoji": "🍌",
+      "receta": []
+    },
+    {
+      "id": "PT02",
+      "sku": "CARTA_PATACON_POLLO_01",
+      "nombre": "Patacón de pollo",
+      "categoria": "Patacones",
+      "precio": 25,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Plátano verde, pollo, ensalada rallada, jamón, tocino, queso y cremas al gusto.",
+      "iconoEmoji": "🍌",
+      "receta": []
+    },
+    {
+      "id": "PP02",
+      "sku": "CARTA_PEPITO_FULL_01",
+      "nombre": "Pepito full",
+      "categoria": "Pepitos",
+      "precio": 35,
+      "isAvailable": true,
+      "isPopular": true,
+      "descripcion": "Pollo, chorizo, jamón, queso rallado, maíz, ensalada, papas al hilo y cremas al gusto.",
+      "iconoEmoji": "🥖",
+      "receta": []
+    },
+    {
+      "id": "PP03",
+      "sku": "CARTA_PEPITO_MIXTO_01",
+      "nombre": "Pepito mixto",
+      "categoria": "Pepitos",
+      "precio": 45,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne, pollo, chorizo, jamón, tocino, queso rallado, papas al hilo, ensalada y cremas al gusto.",
+      "iconoEmoji": "🥖",
+      "receta": []
+    },
+    {
+      "id": "PC02",
+      "sku": "CARTA_PERRO_ESPECIAL_01",
+      "nombre": "Perro caliente especial",
+      "categoria": "Perros calientes",
+      "precio": 18,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Pan fresco, ensalada rallada, queso rallado, salchicha ahumada, jamón, maíz dulce y cremas al gusto.",
+      "iconoEmoji": "🌭",
+      "receta": []
+    },
+    {
+      "id": "PC03",
+      "sku": "CARTA_PERRO_POLLO_01",
+      "nombre": "Perro caliente con pollo",
+      "categoria": "Perros calientes",
+      "precio": 22,
+      "isAvailable": true,
+      "isPopular": true,
+      "descripcion": "Pan fresco, ensalada rallada, queso rallado, pollo, salchicha ahumada, jamón, maíz dulce y cremas al gusto.",
+      "iconoEmoji": "🌭",
+      "receta": []
+    },
+    {
+      "id": "PC01",
+      "sku": "CARTA_PERRO_SIMPLE_01",
+      "nombre": "Perro caliente simple",
+      "categoria": "Perros calientes",
+      "precio": 12,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Pan fresco, ensalada rallada, queso rallado, hot dog de pollo y cremas al gusto.",
+      "iconoEmoji": "🌭",
+      "receta": []
+    },
+    {
+      "id": "PF01",
+      "sku": "CARTA_PORCION_PAPAS_01",
+      "nombre": "Porción de papas",
+      "categoria": "Acompañamientos",
+      "precio": 15,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Papas fritas.",
+      "iconoEmoji": "🍟",
+      "receta": []
+    },
+    {
+      "id": "AGX01",
+      "sku": "CARTA_QUESO_ADICIONAL",
+      "nombre": "Queso adicional",
+      "categoria": "Agregados",
+      "precio": 3,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Solo para empanadas y pasteles. Cantidad de queso por confirmar.",
+      "iconoEmoji": "🧀",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_refresco_maracuya_01",
+      "sku": "CARTA_REFRESCO_MARACUYA_01",
+      "nombre": "Maracuyá (vaso)",
+      "categoria": "Refrescos",
+      "precio": 8,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Maracuyá.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_refresco_maracuya_02",
+      "sku": "CARTA_REFRESCO_MARACUYA_02",
+      "nombre": "Maracuyá (mediana)",
+      "categoria": "Refrescos",
+      "precio": 10,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Maracuyá.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_refresco_maracuya_03",
+      "sku": "CARTA_REFRESCO_MARACUYA_03",
+      "nombre": "Maracuyá (jarra)",
+      "categoria": "Refrescos",
+      "precio": 18,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Maracuyá.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_refresco_papelon_01",
+      "sku": "CARTA_REFRESCO_PAPELON_01",
+      "nombre": "Papelón con limón (vaso)",
+      "categoria": "Refrescos",
+      "precio": 8,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Papelón y limón.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_refresco_papelon_02",
+      "sku": "CARTA_REFRESCO_PAPELON_02",
+      "nombre": "Papelón con limón (mediana)",
+      "categoria": "Refrescos",
+      "precio": 10,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Papelón y limón.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_refresco_papelon_03",
+      "sku": "CARTA_REFRESCO_PAPELON_03",
+      "nombre": "Papelón con limón (jarra)",
+      "categoria": "Refrescos",
+      "precio": 18,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Papelón y limón.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "SH02",
+      "sku": "CARTA_SHAWARMA_MIXTO_01",
+      "nombre": "Shawarma mixto",
+      "categoria": "Shawarmas",
+      "precio": 28,
+      "isAvailable": true,
+      "isPopular": true,
+      "descripcion": "Carne, pollo, ensalada, papas al hilo, maíz, tocino, queso rallado, jamón y cremas al gusto.",
+      "iconoEmoji": "🌯",
+      "receta": []
+    },
+    {
+      "id": "SH01",
+      "sku": "CARTA_SHAWARMA_POLLO_01",
+      "nombre": "Shawarma de pollo",
+      "categoria": "Shawarmas",
+      "precio": 25,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Pollo, ensalada, papas al hilo, maíz, queso, jamón y cremas al gusto.",
+      "iconoEmoji": "🌯",
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_sopa_costilla_01",
+      "sku": "CARTA_SOPA_COSTILLA_01",
+      "nombre": "Sopa de costillas (pequeña)",
+      "categoria": "Domingos de sopas",
+      "precio": 14,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Costillas. Disponible los domingos.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_sopa_costilla_02",
+      "sku": "CARTA_SOPA_COSTILLA_02",
+      "nombre": "Sopa de costillas (grande)",
+      "categoria": "Domingos de sopas",
+      "precio": 27,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Costillas. Disponible los domingos.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_sopa_mondongo_01",
+      "sku": "CARTA_SOPA_MONDONGO_01",
+      "nombre": "Sopa de mondongo (pequeña)",
+      "categoria": "Domingos de sopas",
+      "precio": 14,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Mondongo. Disponible los domingos.",
+      "iconoEmoji": null,
+      "receta": []
+    },
+    {
+      "id": "carta_prod_carta_sopa_mondongo_02",
+      "sku": "CARTA_SOPA_MONDONGO_02",
+      "nombre": "Sopa de mondongo (grande)",
+      "categoria": "Domingos de sopas",
+      "precio": 27,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Mondongo. Disponible los domingos.",
+      "iconoEmoji": null,
+      "receta": []
+    }
+  ]
+}

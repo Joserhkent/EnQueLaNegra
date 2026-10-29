@@ -10,6 +10,7 @@
     "db:init": "npx prisma db push && npx prisma db seed",
     "db:push": "npx prisma db push",
     "db:seed": "npx prisma db seed",
+    "carta:exportar": "npx ts-node prisma/exportar-carta.ts",
     "db:studio": "npx prisma studio",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -22,7 +23,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:flujos": "node test/preparar-base-flujos.mjs && jest --config ./test/jest-e2e.json --runInBand flujos"
   },
   "prisma": {
     "seed": "npx ts-node prisma/seed.ts"

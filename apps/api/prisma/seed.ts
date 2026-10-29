@@ -2,14 +2,41 @@ import 'dotenv/config';
 import { PrismaClient, Accion, CategoriaTipo } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcrypt';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+interface Carta {
+  categorias: { nombre: string; tipo: CategoriaTipo; orden: number }[];
+  insumos: {
+    id: string;
+    nombre: string;
+    categoria: string;
+    unidadMedida: string;
+    stockActual: number;
+    stockMinimo: number;
+    costoUnitario: number;
+  }[];
+  productos: {
+    id: string;
+    sku: string;
+    nombre: string;
+    categoria: string;
+    precio: number;
+    isAvailable: boolean;
+    isPopular: boolean;
+    descripcion: string | null;
+    iconoEmoji: string | null;
+    receta: { insumoId: string; cantidad: number }[];
+  }[];
+}
 
 const adapter = new PrismaPg(process.env.DATABASE_URL as string);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  // El seed BORRA todas las tablas (pedidos, caja, productos, usuarios...) y carga el
-  // catálogo inicial de demostración, que ya no coincide con la carta real. Solo debe
-  // correr sobre una base vacía, o a propósito con SEED_FORCE=1.
+  // El seed BORRA todas las tablas (pedidos, caja, productos, usuarios...) y carga la
+  // carta real desde seed-data/carta.json. Solo debe correr sobre una base vacía, o a
+  // propósito con SEED_FORCE=1.
   const existentes = await prisma.producto.count();
   if (existentes > 0 && process.env.SEED_FORCE !== '1') {
     console.error(
@@ -139,196 +166,43 @@ async function main() {
   await prisma.table.createMany({ data: mesasData });
   console.log(`🍽️  ${mesasData.length} Mesas del salón creadas.`);
 
-  // 7. Categorías (separadas por tipo: INSUMO vs PRODUCTO)
-  const categoriasInsumoData = [
-    'Panes y Masas',
-    'Carnes y Proteínas',
-    'Quesos y Lácteos',
-    'Verduras y Legumbres',
-    'Papas',
-    'Salsas y Aderezos',
-  ];
-  const categoriasProductoData = [
-    'Arepas Tradicionales',
-    'Empanadas',
-    'Cachapas',
-    'Patacones',
-    'Comida Rápida',
-    'Horneados',
-    'Especiales de Fin de Semana',
-    'Agregados',
-  ];
+  // 7-9. Carta real: categorías, insumos, productos y recetas (BOM) desde
+  // prisma/seed-data/carta.json. Para actualizarla tras cambiar la carta en el POS:
+  // npm run carta:exportar
+  const carta = JSON.parse(
+    readFileSync(join(__dirname, 'seed-data', 'carta.json'), 'utf8'),
+  ) as Carta;
 
-  const categoriasInsumo = new Map<string, { id: string }>();
-  for (const [i, nombre] of categoriasInsumoData.entries()) {
-    const cat = await prisma.categoria.create({
-      data: { nombre, tipo: CategoriaTipo.INSUMO, orden: i },
-    });
-    categoriasInsumo.set(nombre, cat);
+  const categoriaId = new Map<string, string>();
+  for (const c of carta.categorias) {
+    const cat = await prisma.categoria.create({ data: c });
+    categoriaId.set(`${c.tipo}:${c.nombre}`, cat.id);
   }
+  console.log(`🗂️  ${carta.categorias.length} Categorías creadas.`);
 
-  const categoriasProducto = new Map<string, { id: string }>();
-  for (const [i, nombre] of categoriasProductoData.entries()) {
-    const cat = await prisma.categoria.create({
-      data: { nombre, tipo: CategoriaTipo.PRODUCTO, orden: i },
-    });
-    categoriasProducto.set(nombre, cat);
-  }
+  await prisma.insumo.createMany({
+    data: carta.insumos.map(({ categoria, ...insumo }) => ({
+      ...insumo,
+      categoriaId: categoriaId.get(`${CategoriaTipo.INSUMO}:${categoria}`)!,
+    })),
+  });
+  console.log(`📦 ${carta.insumos.length} Insumos cargados.`);
 
-  // 8. Insumos base (BOM) — carnes, panes/masas, quesos, verduras, papas y salsas venezolanas
-  const insumosData = [
-    // Panes y Masas
-    { id: 'masa_arepa', nombre: 'Harina de Maíz Precocida', unidadMedida: 'porción', stockActual: 60, stockMinimo: 40, costoUnitario: 0.30, categoria: 'Panes y Masas' },
-    { id: 'masa_empanada', nombre: 'Masa para Empanada', unidadMedida: 'unidad', stockActual: 50, stockMinimo: 30, costoUnitario: 0.25, categoria: 'Panes y Masas' },
-    { id: 'masa_cachapa', nombre: 'Maíz Tierno (Cachapa)', unidadMedida: 'porción', stockActual: 40, stockMinimo: 25, costoUnitario: 0.60, categoria: 'Panes y Masas' },
-    { id: 'platano_verde', nombre: 'Plátano Verde (Patacón)', unidadMedida: 'unidad', stockActual: 35, stockMinimo: 20, costoUnitario: 0.40, categoria: 'Panes y Masas' },
-    { id: 'pan_pepito', nombre: 'Pan Baguette (Pepito)', unidadMedida: 'unidad', stockActual: 40, stockMinimo: 20, costoUnitario: 0.60, categoria: 'Panes y Masas' },
-    { id: 'pan_hamburguesa', nombre: 'Pan de Hamburguesa', unidadMedida: 'unidad', stockActual: 45, stockMinimo: 25, costoUnitario: 0.50, categoria: 'Panes y Masas' },
-    { id: 'pan_arabe', nombre: 'Pan Árabe (Shawarma)', unidadMedida: 'unidad', stockActual: 35, stockMinimo: 20, costoUnitario: 0.50, categoria: 'Panes y Masas' },
-    { id: 'pan_perro', nombre: 'Pan de Perro Caliente', unidadMedida: 'unidad', stockActual: 40, stockMinimo: 20, costoUnitario: 0.40, categoria: 'Panes y Masas' },
-    { id: 'masa_pastelito', nombre: 'Masa Hojaldrada (Pastelito)', unidadMedida: 'unidad', stockActual: 50, stockMinimo: 25, costoUnitario: 0.30, categoria: 'Panes y Masas' },
-    { id: 'pasta_lasagna', nombre: 'Pasta para Lasagna', unidadMedida: 'porción', stockActual: 20, stockMinimo: 10, costoUnitario: 1.20, categoria: 'Panes y Masas' },
-    { id: 'arroz', nombre: 'Arroz Blanco', unidadMedida: 'porción', stockActual: 40, stockMinimo: 20, costoUnitario: 0.40, categoria: 'Panes y Masas' },
-
-    // Carnes y Proteínas
-    { id: 'pollo_desmechado', nombre: 'Pollo Desmechado', unidadMedida: 'porción', stockActual: 30, stockMinimo: 20, costoUnitario: 1.80, categoria: 'Carnes y Proteínas' },
-    { id: 'carne_mechada', nombre: 'Carne Mechada', unidadMedida: 'porción', stockActual: 35, stockMinimo: 20, costoUnitario: 2.20, categoria: 'Carnes y Proteínas' },
-    { id: 'carne_molida', nombre: 'Carne Molida', unidadMedida: 'porción', stockActual: 30, stockMinimo: 15, costoUnitario: 2.00, categoria: 'Carnes y Proteínas' },
-    { id: 'carne_hamburguesa', nombre: 'Carne de Hamburguesa (patty)', unidadMedida: 'unidad', stockActual: 40, stockMinimo: 25, costoUnitario: 2.00, categoria: 'Carnes y Proteínas' },
-    { id: 'carne_shawarma', nombre: 'Carne de Shawarma', unidadMedida: 'porción', stockActual: 25, stockMinimo: 15, costoUnitario: 2.50, categoria: 'Carnes y Proteínas' },
-    { id: 'pollo_shawarma', nombre: 'Pollo para Shawarma', unidadMedida: 'porción', stockActual: 25, stockMinimo: 15, costoUnitario: 2.00, categoria: 'Carnes y Proteínas' },
-    { id: 'jamon', nombre: 'Jamón Cocido', unidadMedida: 'porción', stockActual: 30, stockMinimo: 15, costoUnitario: 1.20, categoria: 'Carnes y Proteínas' },
-    { id: 'salchicha', nombre: 'Salchicha Criolla', unidadMedida: 'unidad', stockActual: 30, stockMinimo: 15, costoUnitario: 1.00, categoria: 'Carnes y Proteínas' },
-    { id: 'salchicha_perro', nombre: 'Salchicha Perro Caliente', unidadMedida: 'unidad', stockActual: 35, stockMinimo: 20, costoUnitario: 0.90, categoria: 'Carnes y Proteínas' },
-    { id: 'tocino', nombre: 'Tocineta', unidadMedida: 'porción', stockActual: 20, stockMinimo: 15, costoUnitario: 1.10, categoria: 'Carnes y Proteínas' },
-    { id: 'chicharron', nombre: 'Chicharrón', unidadMedida: 'porción', stockActual: 20, stockMinimo: 12, costoUnitario: 1.30, categoria: 'Carnes y Proteínas' },
-    { id: 'chuleta_cerdo', nombre: 'Chuleta de Cerdo', unidadMedida: 'unidad', stockActual: 15, stockMinimo: 10, costoUnitario: 3.00, categoria: 'Carnes y Proteínas' },
-    { id: 'mondongo', nombre: 'Mondongo', unidadMedida: 'porción', stockActual: 15, stockMinimo: 10, costoUnitario: 2.50, categoria: 'Carnes y Proteínas' },
-    { id: 'costillas', nombre: 'Costillas de Res', unidadMedida: 'porción', stockActual: 15, stockMinimo: 10, costoUnitario: 2.80, categoria: 'Carnes y Proteínas' },
-    { id: 'atun', nombre: 'Atún en Lata', unidadMedida: 'porción', stockActual: 25, stockMinimo: 15, costoUnitario: 1.00, categoria: 'Carnes y Proteínas' },
-    { id: 'huevo', nombre: 'Huevo', unidadMedida: 'unidad', stockActual: 60, stockMinimo: 30, costoUnitario: 0.30, categoria: 'Carnes y Proteínas' },
-    { id: 'carne_bolonesa', nombre: 'Salsa Boloñesa', unidadMedida: 'porción', stockActual: 20, stockMinimo: 10, costoUnitario: 1.50, categoria: 'Carnes y Proteínas' },
-
-    // Quesos y Lácteos
-    { id: 'queso_amarillo', nombre: 'Queso Amarillo', unidadMedida: 'laminado', stockActual: 30, stockMinimo: 40, costoUnitario: 0.50, categoria: 'Quesos y Lácteos' },
-    { id: 'queso_blanco', nombre: 'Queso Blanco Fresco', unidadMedida: 'porción', stockActual: 30, stockMinimo: 20, costoUnitario: 0.45, categoria: 'Quesos y Lácteos' },
-    { id: 'queso_telita', nombre: 'Queso Telita', unidadMedida: 'porción', stockActual: 25, stockMinimo: 20, costoUnitario: 0.70, categoria: 'Quesos y Lácteos' },
-    { id: 'bechamel', nombre: 'Salsa Bechamel', unidadMedida: 'ml', stockActual: 2000, stockMinimo: 800, costoUnitario: 0.01, categoria: 'Quesos y Lácteos' },
-
-    // Verduras y Legumbres
-    { id: 'caraotas_negras', nombre: 'Caraotas Negras Refritas', unidadMedida: 'porción', stockActual: 40, stockMinimo: 20, costoUnitario: 0.60, categoria: 'Verduras y Legumbres' },
-    { id: 'platano_maduro', nombre: 'Plátano Maduro', unidadMedida: 'unidad', stockActual: 30, stockMinimo: 15, costoUnitario: 0.40, categoria: 'Verduras y Legumbres' },
-    { id: 'aguacate', nombre: 'Aguacate', unidadMedida: 'unidad', stockActual: 25, stockMinimo: 15, costoUnitario: 0.80, categoria: 'Verduras y Legumbres' },
-    { id: 'repollo', nombre: 'Repollo Rallado', unidadMedida: 'porción', stockActual: 30, stockMinimo: 15, costoUnitario: 0.30, categoria: 'Verduras y Legumbres' },
-    { id: 'ensalada_rusa', nombre: 'Ensalada Rusa', unidadMedida: 'porción', stockActual: 25, stockMinimo: 15, costoUnitario: 0.60, categoria: 'Verduras y Legumbres' },
-
-    // Papas
-    { id: 'papas_ralladas', nombre: 'Papitas Ralladas', unidadMedida: 'porción', stockActual: 40, stockMinimo: 20, costoUnitario: 0.40, categoria: 'Papas' },
-    { id: 'papas_fritas', nombre: 'Papas Fritas', unidadMedida: 'porción', stockActual: 80, stockMinimo: 40, costoUnitario: 1.00, categoria: 'Papas' },
-
-    // Salsas y Aderezos (cremas gratis + agregados pagos)
-    { id: 'guasacaca', nombre: 'Guasacaca', unidadMedida: 'ml', stockActual: 2000, stockMinimo: 700, costoUnitario: 0.02, categoria: 'Salsas y Aderezos' },
-    { id: 'salsa_ajo', nombre: 'Salsa de Ajo', unidadMedida: 'ml', stockActual: 1500, stockMinimo: 600, costoUnitario: 0.02, categoria: 'Salsas y Aderezos' },
-    { id: 'mayonesa', nombre: 'Mayonesa', unidadMedida: 'ml', stockActual: 3000, stockMinimo: 1000, costoUnitario: 0.01, categoria: 'Salsas y Aderezos' },
-    { id: 'ketchup', nombre: 'Ketchup', unidadMedida: 'ml', stockActual: 2500, stockMinimo: 800, costoUnitario: 0.01, categoria: 'Salsas y Aderezos' },
-    { id: 'mostaza', nombre: 'Mostaza', unidadMedida: 'ml', stockActual: 2000, stockMinimo: 800, costoUnitario: 0.01, categoria: 'Salsas y Aderezos' },
-    { id: 'picante_casero', nombre: 'Picante Casero', unidadMedida: 'ml', stockActual: 1200, stockMinimo: 500, costoUnitario: 0.02, categoria: 'Salsas y Aderezos' },
-  ];
-
-  for (const item of insumosData) {
-    const { categoria, ...rest } = item;
-    await prisma.insumo.create({
-      data: { ...rest, categoriaId: categoriasInsumo.get(categoria)!.id },
-    });
-  }
-
-  console.log(`📦 ${insumosData.length} Insumos cargados.`);
-
-  // 9. Crear Productos con Recetas (BOM) — carta oficial de "En que la Negra"
-  const productosData = [
-    // Arepas Tradicionales
-    { id: 'AR01', sku: 'AR01', nombre: 'Reina Pepiada', categoria: 'Arepas Tradicionales', precio: 4.00, isPopular: true, descripcion: 'Pollo desmechado con aguacate cremoso y aderezo de la casa.', iconoEmoji: '🥑', receta: ['masa_arepa', 'pollo_desmechado', 'aguacate'] },
-    { id: 'AR02', sku: 'AR02', nombre: 'La Pelúa', categoria: 'Arepas Tradicionales', precio: 4.00, descripcion: 'Carne mechada guisada cubierta con queso amarillo rallado.', iconoEmoji: '🧀', receta: ['masa_arepa', 'carne_mechada', 'queso_amarillo'] },
-    { id: 'AR03', sku: 'AR03', nombre: 'Pabellón', categoria: 'Arepas Tradicionales', precio: 4.50, isPopular: true, descripcion: 'Carne mechada, caraotas negras, tajadas de plátano maduro y queso.', iconoEmoji: '🇻🇪', receta: ['masa_arepa', 'carne_mechada', 'caraotas_negras', 'platano_maduro', 'queso_blanco'] },
-    { id: 'AR04', sku: 'AR04', nombre: 'Catira', categoria: 'Arepas Tradicionales', precio: 3.50, descripcion: 'Pollo desmechado sazonado acompañado de queso amarillo.', iconoEmoji: '🐔', receta: ['masa_arepa', 'pollo_desmechado', 'queso_amarillo'] },
-    { id: 'AR05', sku: 'AR05', nombre: 'Dominó', categoria: 'Arepas Tradicionales', precio: 3.00, descripcion: 'Caraotas negras refritas coronadas con queso blanco fresco.', iconoEmoji: '⚫', receta: ['masa_arepa', 'caraotas_negras', 'queso_blanco'] },
-    { id: 'AR06', sku: 'AR06', nombre: 'Atún', categoria: 'Arepas Tradicionales', precio: 3.50, descripcion: 'Guiso de atún sazonado con cebollita y pimiento.', iconoEmoji: '🐟', receta: ['masa_arepa', 'atun'] },
-    { id: 'AR07', sku: 'AR07', nombre: 'Jamón y Queso', categoria: 'Arepas Tradicionales', precio: 3.00, descripcion: 'Jamón cocido y queso derretido.', iconoEmoji: '🧈', receta: ['masa_arepa', 'jamon', 'queso_amarillo'] },
-    { id: 'AR08', sku: 'AR08', nombre: 'Salchicha', categoria: 'Arepas Tradicionales', precio: 3.00, descripcion: 'Salchichas salteadas en salsa criolla especial.', iconoEmoji: '🌭', receta: ['masa_arepa', 'salchicha'] },
-    { id: 'AR09', sku: 'AR09', nombre: 'Perico', categoria: 'Arepas Tradicionales', precio: 3.00, descripcion: 'Huevos revueltos preparados con sofrito criollo de tomate y cebolla.', iconoEmoji: '🍳', receta: ['masa_arepa', 'huevo'] },
-
-    // Empanadas
-    { id: 'EP01', sku: 'EP01', nombre: 'Empanada de Carne Molida', categoria: 'Empanadas', precio: 1.75, isPopular: true, descripcion: 'Empanada frita y crujiente rellena de carne molida.', iconoEmoji: '🥟', receta: ['masa_empanada', 'carne_molida'] },
-    { id: 'EP02', sku: 'EP02', nombre: 'Empanada de Pollo', categoria: 'Empanadas', precio: 1.75, descripcion: 'Empanada frita y crujiente rellena de pollo desmechado.', iconoEmoji: '🥟', receta: ['masa_empanada', 'pollo_desmechado'] },
-    { id: 'EP03', sku: 'EP03', nombre: 'Empanada de Queso', categoria: 'Empanadas', precio: 1.50, descripcion: 'Empanada frita y crujiente rellena de queso blanco.', iconoEmoji: '🧀', receta: ['masa_empanada', 'queso_blanco'] },
-    { id: 'EP04', sku: 'EP04', nombre: 'Empanada de Jamón y Queso', categoria: 'Empanadas', precio: 1.75, descripcion: 'Empanada frita y crujiente rellena de jamón y queso.', iconoEmoji: '🥟', receta: ['masa_empanada', 'jamon', 'queso_amarillo'] },
-    { id: 'EP05', sku: 'EP05', nombre: 'Empanada de Caraota y Queso', categoria: 'Empanadas', precio: 1.50, descripcion: 'Empanada frita y crujiente rellena de caraotas negras y queso.', iconoEmoji: '🫘', receta: ['masa_empanada', 'caraotas_negras', 'queso_blanco'] },
-    { id: 'EP06', sku: 'EP06', nombre: 'Empanada de Salchicha', categoria: 'Empanadas', precio: 1.50, descripcion: 'Empanada frita y crujiente rellena de salchicha.', iconoEmoji: '🌭', receta: ['masa_empanada', 'salchicha'] },
-
-    // Cachapas
-    { id: 'CH01', sku: 'CH01', nombre: 'Cachapa Simple con Queso Telita', categoria: 'Cachapas', precio: 4.50, isPopular: true, descripcion: 'Torta de maíz dulce con auténtico queso telita fresco y mantequilla.', iconoEmoji: '🌽', receta: ['masa_cachapa', 'queso_telita'] },
-    { id: 'CH02', sku: 'CH02', nombre: 'Cachapa Queso Telita y Chicharrón', categoria: 'Cachapas', precio: 6.00, descripcion: 'Queso tierno fundente con trozos crujientes de chicharrón.', iconoEmoji: '🥓', receta: ['masa_cachapa', 'queso_telita', 'chicharron'] },
-    { id: 'CH03', sku: 'CH03', nombre: 'Cachapa Carne Mechada y Queso', categoria: 'Cachapas', precio: 6.50, descripcion: 'Jugosa carne desmechada con abundante queso.', iconoEmoji: '🥩', receta: ['masa_cachapa', 'carne_mechada', 'queso_telita'] },
-    { id: 'CH04', sku: 'CH04', nombre: 'Cachapa Tocino y Queso Telita', categoria: 'Cachapas', precio: 6.00, descripcion: 'Tocino ahumado entrelazado con suave queso telita derretido.', iconoEmoji: '🥓', receta: ['masa_cachapa', 'tocino', 'queso_telita'] },
-
-    // Patacones
-    { id: 'PT01', sku: 'PT01', nombre: 'Patacón Relleno de Carne Mechada', categoria: 'Patacones', precio: 5.50, isPopular: true, descripcion: 'Tapas crocantes de plátano verde con carne mechada, vegetales, queso y salsas.', iconoEmoji: '🍌', receta: ['platano_verde', 'carne_mechada', 'queso_blanco'] },
-    { id: 'PT02', sku: 'PT02', nombre: 'Patacón Relleno de Pollo', categoria: 'Patacones', precio: 5.00, descripcion: 'Tapas crocantes de plátano verde con pollo, vegetales, queso y salsas.', iconoEmoji: '🍌', receta: ['platano_verde', 'pollo_desmechado', 'queso_blanco'] },
-    { id: 'PT03', sku: 'PT03', nombre: 'Patacón Relleno de Carne Molida', categoria: 'Patacones', precio: 5.00, descripcion: 'Tapas crocantes de plátano verde con carne molida, vegetales, queso y salsas.', iconoEmoji: '🍌', receta: ['platano_verde', 'carne_molida', 'queso_blanco'] },
-
-    // Comida Rápida & Callejera
-    { id: 'HB01', sku: 'HB01', nombre: 'Hamburguesa Simple', categoria: 'Comida Rápida', precio: 4.50, descripcion: 'Hamburguesa sencilla con papas fritas.', iconoEmoji: '🍔', receta: ['pan_hamburguesa', 'carne_hamburguesa', 'papas_fritas'] },
-    { id: 'HB02', sku: 'HB02', nombre: 'Hamburguesa Full', categoria: 'Comida Rápida', precio: 6.50, isPopular: true, descripcion: 'Hamburguesa con queso, tocineta, huevo y papas fritas.', iconoEmoji: '🍔', receta: ['pan_hamburguesa', 'carne_hamburguesa', 'queso_amarillo', 'tocino', 'huevo', 'papas_fritas'] },
-    { id: 'HB03', sku: 'HB03', nombre: 'Hamburguesa Mixta', categoria: 'Comida Rápida', precio: 6.00, descripcion: 'Hamburguesa con jamón, queso y papas fritas.', iconoEmoji: '🍔', receta: ['pan_hamburguesa', 'carne_hamburguesa', 'jamon', 'queso_amarillo', 'papas_fritas'] },
-    { id: 'HB04', sku: 'HB04', nombre: 'Hamburguesa Doble Carne', categoria: 'Comida Rápida', precio: 7.50, descripcion: 'Doble carne, queso y papas fritas.', iconoEmoji: '🍔', receta: ['pan_hamburguesa', 'carne_hamburguesa', 'queso_amarillo', 'papas_fritas'] },
-    { id: 'PP01', sku: 'PP01', nombre: 'Mini Pepito', categoria: 'Comida Rápida', precio: 3.50, descripcion: 'Pepito pequeño en baguette suave con carne mechada.', iconoEmoji: '🥖', receta: ['pan_pepito', 'carne_mechada'] },
-    { id: 'PP02', sku: 'PP02', nombre: 'Pepito Full', categoria: 'Comida Rápida', precio: 6.50, isPopular: true, descripcion: 'Pepito completo con queso, huevo y papas fritas.', iconoEmoji: '🥖', receta: ['pan_pepito', 'carne_mechada', 'queso_amarillo', 'huevo', 'papas_fritas'] },
-    { id: 'PP03', sku: 'PP03', nombre: 'Pepito Mixto', categoria: 'Comida Rápida', precio: 6.00, descripcion: 'Pepito con carne, jamón y queso.', iconoEmoji: '🥖', receta: ['pan_pepito', 'carne_mechada', 'jamon', 'queso_amarillo'] },
-    { id: 'SH01', sku: 'SH01', nombre: 'Shawarma Simple', categoria: 'Comida Rápida', precio: 5.00, descripcion: 'Pan plano con pollo y salsa tártara de ajo.', iconoEmoji: '🌯', receta: ['pan_arabe', 'pollo_shawarma', 'salsa_ajo'] },
-    { id: 'SH02', sku: 'SH02', nombre: 'Shawarma Full', categoria: 'Comida Rápida', precio: 6.50, isPopular: true, descripcion: 'Pan plano con pollo, carne, vegetales, salsa de ajo y papas.', iconoEmoji: '🌯', receta: ['pan_arabe', 'pollo_shawarma', 'carne_shawarma', 'salsa_ajo', 'papas_fritas'] },
-    { id: 'PC01', sku: 'PC01', nombre: 'Perro Simple', categoria: 'Comida Rápida', precio: 2.50, descripcion: 'Perro caliente con repollo, papitas ralladas y salsas.', iconoEmoji: '🌭', receta: ['pan_perro', 'salchicha_perro', 'repollo', 'papas_ralladas'] },
-    { id: 'PC02', sku: 'PC02', nombre: 'Perro Especial', categoria: 'Comida Rápida', precio: 3.50, descripcion: 'Perro caliente con queso, repollo, papitas ralladas y salsas.', iconoEmoji: '🌭', receta: ['pan_perro', 'salchicha_perro', 'repollo', 'papas_ralladas', 'queso_amarillo'] },
-    { id: 'PC03', sku: 'PC03', nombre: 'Perripollo', categoria: 'Comida Rápida', precio: 4.00, isPopular: true, descripcion: 'Perro caliente con pollo desmechado, repollo, papitas ralladas y salsas.', iconoEmoji: '🌭', receta: ['pan_perro', 'salchicha_perro', 'pollo_desmechado', 'repollo', 'papas_ralladas'] },
-    { id: 'PF01', sku: 'PF01', nombre: 'Porción de Papas Fritas', categoria: 'Comida Rápida', precio: 3.00, descripcion: 'Porción individual de papas fritas.', iconoEmoji: '🍟', receta: ['papas_fritas'] },
-
-    // Especialidades del Horno y Fritura
-    { id: 'HO01', sku: 'HO01', nombre: 'Pastelito de Carne', categoria: 'Horneados', precio: 1.50, descripcion: 'Masa hojaldrada crocante rellena de carne.', iconoEmoji: '🥐', receta: ['masa_pastelito', 'carne_molida'] },
-    { id: 'HO02', sku: 'HO02', nombre: 'Pastelito de Pollo', categoria: 'Horneados', precio: 1.50, descripcion: 'Masa hojaldrada crocante rellena de pollo.', iconoEmoji: '🥐', receta: ['masa_pastelito', 'pollo_desmechado'] },
-    { id: 'HO03', sku: 'HO03', nombre: 'Pastelito de Queso', categoria: 'Horneados', precio: 1.50, descripcion: 'Masa hojaldrada crocante rellena de queso.', iconoEmoji: '🥐', receta: ['masa_pastelito', 'queso_blanco'] },
-    { id: 'HO04', sku: 'HO04', nombre: 'Lasagna', categoria: 'Horneados', precio: 7.00, isPopular: true, descripcion: 'Pasta artesanal con boloñesa, bechamel y queso gratinado.', iconoEmoji: '🍝', receta: ['pasta_lasagna', 'carne_bolonesa', 'bechamel', 'queso_amarillo'] },
-
-    // Especiales de Fin de Semana
-    { id: 'FS01', sku: 'FS01', nombre: 'Plato Chuleta (Sábado)', categoria: 'Especiales de Fin de Semana', precio: 7.50, descripcion: 'Chuleta con ensalada rusa y plátano frito.', iconoEmoji: '🍖', receta: ['chuleta_cerdo', 'ensalada_rusa', 'platano_maduro'] },
-    { id: 'FS02', sku: 'FS02', nombre: 'Pabellón Criollo (Sábado)', categoria: 'Especiales de Fin de Semana', precio: 7.00, isPopular: true, descripcion: 'Arroz, caraotas negras, carne mechada y tajadas.', iconoEmoji: '🇻🇪', receta: ['arroz', 'caraotas_negras', 'carne_mechada', 'platano_maduro'] },
-    { id: 'FS03', sku: 'FS03', nombre: 'Sopa de Mondongo (Domingo)', categoria: 'Especiales de Fin de Semana', precio: 5.50, descripcion: 'Sopa tradicional de mondongo.', iconoEmoji: '🍲', receta: ['mondongo'] },
-    { id: 'FS04', sku: 'FS04', nombre: 'Sopa de Costillas (Domingo)', categoria: 'Especiales de Fin de Semana', precio: 5.50, descripcion: 'Sopa tradicional de costillas de res.', iconoEmoji: '🍲', receta: ['costillas'] },
-
-    // Agregados (porciones extra, también usados como "agregados" pagos en el selector dinámico)
-    { id: 'AGX01', sku: 'AGX01', nombre: 'Queso Extra (agregado)', categoria: 'Agregados', precio: 0.75, descripcion: 'Porción extra de queso amarillo.', iconoEmoji: '🧀', receta: ['queso_amarillo'] },
-    { id: 'AGX02', sku: 'AGX02', nombre: 'Tajadas Extra (agregado)', categoria: 'Agregados', precio: 0.75, descripcion: 'Porción extra de plátano maduro frito.', iconoEmoji: '🍌', receta: ['platano_maduro'] },
-    { id: 'AGX03', sku: 'AGX03', nombre: 'Carne Mechada Extra (agregado)', categoria: 'Agregados', precio: 1.50, descripcion: 'Porción extra de carne mechada.', iconoEmoji: '🥩', receta: ['carne_mechada'] },
-    { id: 'AGX04', sku: 'AGX04', nombre: 'Pollo Extra (agregado)', categoria: 'Agregados', precio: 1.50, descripcion: 'Porción extra de pollo desmechado.', iconoEmoji: '🍗', receta: ['pollo_desmechado'] },
-    { id: 'AGX05', sku: 'AGX05', nombre: 'Tocineta Extra (agregado)', categoria: 'Agregados', precio: 1.00, descripcion: 'Porción extra de tocineta.', iconoEmoji: '🥓', receta: ['tocino'] },
-    { id: 'AGX06', sku: 'AGX06', nombre: 'Chicharrón Extra (agregado)', categoria: 'Agregados', precio: 1.00, descripcion: 'Porción extra de chicharrón.', iconoEmoji: '🧈', receta: ['chicharron'] },
-  ];
-
-  for (const prod of productosData) {
-    const { receta, categoria, ...productoInfo } = prod;
+  for (const { receta, categoria, ...producto } of carta.productos) {
     await prisma.producto.create({
       data: {
-        ...productoInfo,
-        categoriaId: categoriasProducto.get(categoria)!.id,
+        ...producto,
+        categoriaId: categoriaId.get(`${CategoriaTipo.PRODUCTO}:${categoria}`)!,
         recetaItems: {
-          create: receta.map((insumoId) => ({
-            insumoId,
-            cantidadRequerida: 1.0,
+          create: receta.map((r) => ({
+            insumoId: r.insumoId,
+            cantidadRequerida: r.cantidad,
           })),
         },
       },
     });
   }
-
-  console.log(`🍽️  ${productosData.length} Productos y Recetas (BOM) creados.`);
+  console.log(`🍽️  ${carta.productos.length} Productos y Recetas (BOM) creados.`);
 
   // 10. Turno de caja inicial abierto para que el sistema esté listo para demostración
   await prisma.cajaSesion.create({
