@@ -173,10 +173,12 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
             </div>
 
             {itemsAImprimir.map((item, idx) => {
-              const extrasTotal = (item.extras || []).reduce(
-                (sum, e) => sum + e.precioExtra * e.cantidad,
-                0
-              );
+              // Los extras se cobran por unidad del plato (igual que en el backend)
+              const extrasTotal =
+                (item.extras || []).reduce(
+                  (sum, e) => sum + e.precioExtra * e.cantidad,
+                  0
+                ) * item.cantidad;
               const lineTotal = item.precio * item.cantidad + extrasTotal;
 
               const cremasDelItem = (item.extras || []).filter((e) => e.precioExtra === 0);

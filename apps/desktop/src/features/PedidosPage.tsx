@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { usePosStore, type Order, type Producto } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
 import OrderDetailModal from "../components/OrderDetailModal";
+import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import {
   ShoppingBag,
   PlusCircle,
@@ -35,21 +36,6 @@ const AGREGADOS_DISPONIBLES = [
   { nombre: "Chicharrón", precio: 1.00 },
 ];
 
-// Solo estas categorías permiten notas y agregados extra (las cremas van solo en el comentario).
-const CATEGORIAS_CON_PERSONALIZACION = [
-  "Arepas Tradicionales",
-  "Empanadas",
-  "Cachapas",
-  "Patacones",
-  "Comida Rápida",
-  "Horneados",
-  "Especiales de Fin de Semana",
-];
-
-const getCategoriaNombre = (prod: Producto): string => {
-  const catObj = prod.categoria as any;
-  return typeof catObj === "object" && catObj !== null ? catObj.nombre : String(catObj || "");
-};
 
 function formatElapsed(startIso?: string | null): string {
   if (!startIso) return "--";
@@ -86,7 +72,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [paymentMethod, setPaymentMethod] = useState<"Efectivo" | "Yape/Plin" | "Mixto">("Yape/Plin");
   const [montoEfectivo, setMontoEfectivo] = useState<string>("");
   const [montoDigital, setMontoDigital] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
+  const { tabs: menuTabs, activeCategory: selectedCategory, setSelectedCategory } = useMenuCategories(productos);
   const [selectedPrintOrder, setSelectedPrintOrder] = useState<Order | null>(null);
   const [selectedKitchenOrder, setSelectedKitchenOrder] = useState<Order | null>(null);
   const [selectedDetailOrder, setSelectedDetailOrder] = useState<Order | null>(null);
@@ -127,20 +113,6 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [cart, setCart] = useState<
     Record<string, { product: Producto; quantity: number; notes: string; cremas?: string[]; agregados: string[] }>
   >({});
-
-  // `value` filtra contra la categoría real en BD ("Agregados", igual que el seed);
-  // `label` es lo que ve el usuario. Se renombra a "Porciones Extras" en la UI para no
-  // confundirse con los agregados/modificadores por plato (checkboxes dentro de cada línea).
-  const categories = [
-    { value: "Arepas Tradicionales", label: "Arepas" },
-    { value: "Empanadas", label: "Empanadas" },
-    { value: "Cachapas", label: "Cachapas" },
-    { value: "Patacones", label: "Patacones" },
-    { value: "Comida Rápida", label: "Comida Rápida" },
-    { value: "Horneados", label: "Horneados" },
-    { value: "Especiales de Fin de Semana", label: "Fin de Semana" },
-    { value: "Agregados", label: "Porciones Extras" },
-  ];
 
   // Agrega una unidad más a una línea EXISTENTE del mismo producto solo si esa línea
   // todavía no tiene personalización (recién agregada, sin cremas/agregados/notas).
@@ -800,18 +772,18 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                     onWheel={handleCategoryWheel}
                     className="flex gap-2 overflow-x-auto px-7 py-1.5 scrollbar-none scroll-smooth w-full"
                   >
-                    {categories.map((cat) => (
+                    {menuTabs.map((cat) => (
                       <button
-                        key={cat.value}
+                        key={cat}
                         type="button"
-                        onClick={() => setSelectedCategory(cat.value)}
+                        onClick={() => setSelectedCategory(cat)}
                         className={`px-3.5 py-1.5 rounded-2xl text-[11px] font-extrabold transition-all duration-200 whitespace-nowrap border shrink-0 ${
-                          selectedCategory === cat.value
+                          selectedCategory === cat
                             ? "bg-slate-900 text-amber-400 border-slate-900 shadow-md shadow-slate-900/20 scale-105"
                             : "bg-slate-100 text-slate-600 border-slate-200/80 hover:bg-slate-200 hover:text-slate-900"
                         }`}
                       >
-                        {cat.label}
+                        {labelCategoria(cat)}
                       </button>
                     ))}
                   </div>
@@ -828,15 +800,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
 
               <div className="grid grid-cols-2 gap-3">
                 {productos
-                  .filter((p) => {
-                    const catObj = p.categoria as any;
-                    const catName =
-                      typeof catObj === "object" && catObj !== null
-                        ? catObj.nombre
-                        : String(catObj || "");
-
-                    return catName === selectedCategory && p.isAvailable;
-                  })
+                  .filter((p) => getCategoriaNombre(p) === selectedCategory && p.isAvailable)
                   .map((prod) => {
                     const precioNum =
                       typeof prod.precio === "number"
@@ -922,7 +886,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                             </div>
                           </div>
 
-                          {CATEGORIAS_CON_PERSONALIZACION.includes(getCategoriaNombre(item.product)) && (
+                          {permitePersonalizacion(getCategoriaNombre(item.product)) && (
                             <>
                               <textarea
                                 rows={4}

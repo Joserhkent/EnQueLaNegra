@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { usePosStore, type Mesa, type Producto, type Order, type OrderItem } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
+import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import {
   Users,
   Clock,
@@ -28,35 +29,6 @@ const AGREGADOS_DISPONIBLES = [
   { nombre: "Tocineta", precio: 1.00 },
   { nombre: "Chicharrón", precio: 1.00 },
 ];
-
-const CATEGORIAS_CON_PERSONALIZACION = [
-  "Arepas Tradicionales",
-  "Empanadas",
-  "Cachapas",
-  "Patacones",
-  "Comida Rápida",
-  "Horneados",
-  "Especiales de Fin de Semana",
-];
-
-const CATEGORIES = [
-  "Arepas Tradicionales",
-  "Empanadas",
-  "Cachapas",
-  "Patacones",
-  "Comida Rápida",
-  "Horneados",
-  "Especiales de Fin de Semana",
-  "Agregados",
-];
-
-const getCategoriaNombre = (prod: Producto): string => {
-  const categoria = prod.categoria as unknown;
-  if (typeof categoria === "object" && categoria !== null && "nombre" in categoria) {
-    return String((categoria as { nombre?: unknown }).nombre || "");
-  }
-  return String(categoria || "");
-};
 
 type CartLine = { product: Producto; quantity: number; notes: string; agregados: string[] };
 
@@ -108,7 +80,7 @@ export default function MesasPage() {
   const [joinTableIds, setJoinTableIds] = useState<string[]>([]);
   const [mainJoinTableId, setMainJoinTableId] = useState<string | null>(null);
 
-  const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
+  const { tabs: CATEGORIES, activeCategory: selectedCategory, setSelectedCategory } = useMenuCategories(productos);
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [customizingProduct, setCustomizingProduct] = useState<Producto | null>(null);
   const [customizingQuantity, setCustomizingQuantity] = useState(1);
@@ -768,7 +740,7 @@ export default function MesasPage() {
                             : "bg-slate-100 text-slate-600 border-slate-200/80 hover:bg-slate-200 hover:text-slate-900"
                         }`}
                       >
-                        {cat === "Agregados" ? "Porciones Extras" : cat}
+                        {labelCategoria(cat)}
                       </button>
                     ))}
                   </div>
@@ -943,7 +915,7 @@ export default function MesasPage() {
                             </div>
                           </div>
 
-                          {showInlineCustomization && CATEGORIAS_CON_PERSONALIZACION.includes(getCategoriaNombre(item.product)) && (
+                          {showInlineCustomization && permitePersonalizacion(getCategoriaNombre(item.product)) && (
                             <>
                               <textarea
                                 rows={4}

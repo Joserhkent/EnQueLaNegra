@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- el store normaliza respuestas crudas de la API, cuya forma no está tipada */
 import { create } from "zustand";
 
 export type UserRole = "jefe" | "empleado";
@@ -41,6 +42,7 @@ export interface Categoria {
   id: string;
   nombre: string;
   tipo: "PRODUCTO" | "INSUMO";
+  orden?: number;
 }
 
 export interface MovimientoStock {

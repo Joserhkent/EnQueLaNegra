@@ -2,6 +2,10 @@ import { useEffect, useMemo } from "react";
 import { usePosStore, type Order, type OrderItem } from "../store/usePosStore";
 import { ChefHat, Clock, CheckCircle2, Circle, Flame, UtensilsCrossed, ShoppingBag } from "lucide-react";
 
+function isOlderThan(startIso: string | null | undefined, ms: number): boolean {
+  return startIso ? Date.now() - new Date(startIso).getTime() > ms : false;
+}
+
 function formatElapsed(startIso?: string | null): string {
   if (!startIso) return "--";
   const start = new Date(startIso).getTime();
@@ -170,9 +174,7 @@ export default function KitchenPage() {
           {tickets.map((ticket) => {
             const allReady = isAllReady(ticket.items);
             const elapsed = formatElapsed(ticket.createdAt);
-            const isSlow = ticket.createdAt
-              ? Date.now() - new Date(ticket.createdAt).getTime() > 20 * 60 * 1000
-              : false;
+            const isSlow = isOlderThan(ticket.createdAt, 20 * 60 * 1000);
 
             return (
               <div
