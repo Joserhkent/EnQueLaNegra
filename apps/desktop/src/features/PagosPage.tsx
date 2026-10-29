@@ -11,6 +11,7 @@ import {
   AlertCircle,
   TrendingUp,
   User,
+  Receipt,
 } from "lucide-react";
 
 export default function PagosPage() {
@@ -238,7 +239,21 @@ export default function PagosPage() {
       )}
 
       {/* Turn Breakdown KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        {/* Total vendido: lo cobrado (efectivo + digital), mismo cálculo que el cierre de caja */}
+        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-900 shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Total Vendido</span>
+            <div className="text-2xl font-black text-white mt-1">S/ {(cashSales + yapePlinSales).toFixed(2)}</div>
+            <span className="text-[11px] text-slate-400 mt-1 block">
+              {rangeOrders.length} {rangeOrders.length === 1 ? "pedido cobrado" : "pedidos cobrados"}
+            </span>
+          </div>
+          <div className="w-10 h-10 rounded-2xl bg-amber-400 text-slate-900 flex items-center justify-center font-bold">
+            <Receipt className="w-5 h-5" />
+          </div>
+        </div>
+
         {/* Fondo Inicial / Base */}
         <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
