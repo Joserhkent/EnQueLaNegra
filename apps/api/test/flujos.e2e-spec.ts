@@ -74,6 +74,8 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     );
     await app.init();
     db = new Pool({ connectionString: TEST_DB });
+    // Stock holgado para los flujos; el bloqueo sin stock se prueba aparte
+    await db.query('update "Insumo" set "stockActual" = 100');
 
     [prod] =
       await q(`select id,sku,nombre,precio from "Producto" p where "isAvailable"
@@ -335,6 +337,56 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     await api('patch', `/pedidos/${dup.body.id}/status`, empleado, {
       status: 'ENTREGADO',
     }).expect(400);
+  });
+
+  it('sin stock no se vende (llevar, mesa y subir cantidad)', async () => {
+    const insumo = receta[0].insumoId;
+    const porUnidad = receta[0].cantidadRequerida;
+    const llevar = {
+      type: 'LLEVAR',
+      paymentMethod: 'EFECTIVO',
+      items: [item(prod)],
+    };
+
+    // Stock para una sola unidad: dos ventas a la vez, solo una pasa
+    await q('update "Insumo" set "stockActual"=$2 where id=$1', [
+      insumo,
+      porUnidad,
+    ]);
+    const [a, b] = await Promise.all([
+      api('post', '/pedidos', empleado, llevar),
+      api('post', '/pedidos', empleado, llevar),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([201, 400]);
+    expect(await stock(insumo)).toBeCloseTo(0, 5);
+
+    // Con stock 0: se rechaza con un mensaje que dice qué falta
+    const r = await api('post', '/pedidos', empleado, llevar).expect(400);
+    expect(r.body.message).toMatch(/Sin stock suficiente/);
+
+    const mesa = mesas[5].id;
+    await api('post', `/tables/${mesa}/open`, empleado, {}).expect(201);
+    await api('post', `/tables/${mesa}/items`, empleado, {
+      items: [item(prod)],
+    }).expect(400);
+
+    // Hay para una unidad pero no para subirla a dos
+    await q('update "Insumo" set "stockActual"=$2 where id=$1', [
+      insumo,
+      porUnidad,
+    ]);
+    const t = await api('post', `/tables/${mesa}/items`, empleado, {
+      items: [item(prod)],
+    }).expect(201);
+    const itemId = t.body.currentOrder.items[0].id;
+    await api('patch', `/tables/${mesa}/items/${itemId}`, empleado, {
+      cantidad: 2,
+    }).expect(400);
+    expect(await stock(insumo)).toBeCloseTo(0, 5);
+    await api('delete', `/tables/${mesa}/items/${itemId}`, empleado).expect(
+      200,
+    );
+    await q('update "Insumo" set "stockActual"=100 where id=$1', [insumo]);
   });
 
   it('permisos: el empleado opera pero no administra el catálogo', async () => {

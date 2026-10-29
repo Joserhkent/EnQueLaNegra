@@ -23,6 +23,12 @@ import { UpdateTableDto } from './dto/update-table.dto';
 import { formatFecha, formatHora } from '../common/date';
 import { itemLineTotal, round2, splitIgv } from '../common/order-totals';
 import { resolverProductos } from '../common/productos';
+import {
+  assertStockSuficiente,
+  descontarStock,
+  esSinStock,
+  sinStockConcurrente,
+} from '../common/stock';
 
 const ORDER_INCLUDE = {
   items: {
@@ -395,23 +401,27 @@ export class MesasService {
 
     // Ítems, descuento de inventario (stock + kardex) y vuelta a "consumiendo" van
     // en una sola transacción: o se guarda la tanda completa o no se guarda nada.
-    const [updatedOrder] = await this.prisma.$transaction([
-      this.prisma.order.update({
-        where: { id: table.currentOrderId },
-        data: { items: { create: itemsFormatted }, total, subtotal, igv },
-        include: ORDER_INCLUDE,
-      }),
-      ...(await this.buildDeductionOps(itemsWithProductoId, userId, motivo)),
-      // Si ya se había pedido la pre-cuenta y llega una tanda nueva, vuelve a "consumiendo"
-      ...(table.status === TableStatus.BILLING
-        ? [
-            this.prisma.table.update({
-              where: { id: table.id },
-              data: { status: TableStatus.OCCUPIED },
-            }),
-          ]
-        : []),
-    ]);
+    const [updatedOrder] = await this.prisma
+      .$transaction([
+        this.prisma.order.update({
+          where: { id: table.currentOrderId },
+          data: { items: { create: itemsFormatted }, total, subtotal, igv },
+          include: ORDER_INCLUDE,
+        }),
+        ...(await this.buildDeductionOps(itemsWithProductoId, userId, motivo)),
+        // Si ya se había pedido la pre-cuenta y llega una tanda nueva, vuelve a "consumiendo"
+        ...(table.status === TableStatus.BILLING
+          ? [
+              this.prisma.table.update({
+                where: { id: table.id },
+                data: { status: TableStatus.OCCUPIED },
+              }),
+            ]
+          : []),
+      ])
+      .catch((error: unknown) => {
+        throw esSinStock(error) ? sinStockConcurrente() : error;
+      });
 
     return {
       ...table,
@@ -682,29 +692,33 @@ export class MesasService {
         ? await this.buildAdjustOps(item, cantidadDelta, userId, motivo)
         : [];
 
-    const [updatedOrder] = await this.prisma.$transaction([
-      this.prisma.order.update({
-        where: { id: order.id },
-        data: {
-          total,
-          subtotal,
-          igv,
-          items: {
-            update: {
-              where: { id: itemId },
-              data: {
-                cantidad: nuevaCantidad,
-                subtotal: item.precio * nuevaCantidad,
-                notas: dto.notas,
-                kitchenStatus: dto.kitchenStatus as ItemKitchenStatus,
+    const [updatedOrder] = await this.prisma
+      .$transaction([
+        this.prisma.order.update({
+          where: { id: order.id },
+          data: {
+            total,
+            subtotal,
+            igv,
+            items: {
+              update: {
+                where: { id: itemId },
+                data: {
+                  cantidad: nuevaCantidad,
+                  subtotal: item.precio * nuevaCantidad,
+                  notas: dto.notas,
+                  kitchenStatus: dto.kitchenStatus as ItemKitchenStatus,
+                },
               },
             },
           },
-        },
-        include: ORDER_INCLUDE,
-      }),
-      ...inventoryOps,
-    ]);
+          include: ORDER_INCLUDE,
+        }),
+        ...inventoryOps,
+      ])
+      .catch((error: unknown) => {
+        throw esSinStock(error) ? sinStockConcurrente() : error;
+      });
 
     return { ...table, currentOrder: updatedOrder };
   }
@@ -792,13 +806,17 @@ export class MesasService {
 
     const tipo =
       cantidadDelta > 0 ? MovimientoTipo.SALIDA : MovimientoTipo.ENTRADA;
+    // Subir la cantidad también consume stock: no se permite si no alcanza
+    if (cantidadDelta > 0) await assertStockSuficiente(this.prisma, deltas);
 
     return [
       ...[...deltas.entries()].map(([insumoId, cantidad]) =>
-        this.prisma.insumo.update({
-          where: { id: insumoId },
-          data: { stockActual: { decrement: cantidad } },
-        }),
+        cantidadDelta > 0
+          ? descontarStock(this.prisma, insumoId, cantidad)
+          : this.prisma.insumo.update({
+              where: { id: insumoId },
+              data: { stockActual: { decrement: cantidad } },
+            }),
       ),
       this.prisma.movimientoStock.createMany({
         data: [...deltas.entries()].map(([insumoId, cantidad]) => ({
@@ -879,13 +897,11 @@ export class MesasService {
     }
 
     if (deducciones.size === 0) return [];
+    await assertStockSuficiente(this.prisma, deducciones);
 
     return [
       ...[...deducciones.entries()].map(([insumoId, cantidad]) =>
-        this.prisma.insumo.update({
-          where: { id: insumoId },
-          data: { stockActual: { decrement: cantidad } },
-        }),
+        descontarStock(this.prisma, insumoId, cantidad),
       ),
       this.prisma.movimientoStock.createMany({
         data: [...deducciones.entries()].map(([insumoId, cantidad]) => ({

@@ -3,6 +3,7 @@ import { usePosStore, type Order, type Producto } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
 import OrderDetailModal from "../components/OrderDetailModal";
 import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
+import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import {
   ShoppingBag,
@@ -804,13 +805,15 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                       typeof prod.precio === "number"
                         ? prod.precio
                         : Number(prod.precio || 0);
+                    const agotado = productoSinStock(prod, insumos);
 
                     return (
                       <button
                         key={prod.id}
                         type="button"
+                        disabled={agotado}
                         onClick={() => handleAddToCart(prod)}
-                        className="p-3 bg-slate-50 hover:bg-amber-500/10 hover:border-amber-400 border border-slate-200/80 rounded-2xl text-left transition flex items-center justify-between group"
+                        className="p-3 bg-slate-50 hover:bg-amber-500/10 hover:border-amber-400 border border-slate-200/80 rounded-2xl text-left transition flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-50 disabled:hover:border-slate-200/80"
                       >
                         <div>
                           <span className="text-xl">{prod.iconoEmoji}</span>
@@ -819,6 +822,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                           </div>
                           <div className="text-[11px] font-extrabold text-slate-600 mt-0.5">
                             S/ {precioNum.toFixed(2)}
+                            {agotado && <span className="ml-1.5 text-rose-600">· Sin stock</span>}
                           </div>
                         </div>
                         <div className="w-7 h-7 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 group-hover:bg-amber-500 group-hover:text-slate-950 group-hover:border-amber-500 transition">

@@ -11,9 +11,12 @@ export const AGREGADOS_DISPONIBLES = [
 
 const normalizar = (s: string) => s.trim().toLowerCase();
 
-// Solo se ofrecen los agregados que tienen su insumo en inventario. Si no, el carrito
-// los mostraba con precio pero al enviar se descartaban sin cobrarse.
-export function agregadosConInsumo(insumos: { nombre: string }[]) {
-  const nombres = new Set(insumos.map((i) => normalizar(i.nombre)));
+// Solo se ofrecen los agregados que tienen su insumo en inventario y con stock. Si no,
+// el carrito los mostraba con precio pero al enviar se descartaban sin cobrarse (o el
+// backend rechazaba la tanda por falta de stock).
+export function agregadosConInsumo(insumos: { nombre: string; stockActual: number }[]) {
+  const nombres = new Set(
+    insumos.filter((i) => i.stockActual >= 1).map((i) => normalizar(i.nombre))
+  );
   return AGREGADOS_DISPONIBLES.filter((a) => nombres.has(normalizar(a.nombre)));
 }

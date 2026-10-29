@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { usePosStore, type Mesa, type Producto, type Order, type OrderItem } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
 import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
+import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import {
   Users,
@@ -764,25 +765,30 @@ export default function MesasPage() {
                 <div className="grid grid-cols-2 gap-3">
                   {productos
                     .filter((p) => getCategoriaNombre(p) === selectedCategory && p.isAvailable)
-                    .map((prod) => (
+                    .map((prod) => {
+                      const agotado = productoSinStock(prod, insumos);
+                      return (
                       <button
                         key={prod.id}
                         type="button"
+                        disabled={agotado}
                         onClick={() => handleAddToCart(prod)}
-                        className="p-3 bg-slate-50 hover:bg-amber-500/10 hover:border-amber-400 border border-slate-200/80 rounded-2xl text-left transition flex items-center justify-between group"
+                        className="p-3 bg-slate-50 hover:bg-amber-500/10 hover:border-amber-400 border border-slate-200/80 rounded-2xl text-left transition flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-50 disabled:hover:border-slate-200/80"
                       >
                         <div>
                           <span className="text-xl">{prod.iconoEmoji}</span>
                           <div className="font-bold text-slate-900 text-xs mt-1 group-hover:text-amber-700">{prod.nombre}</div>
                           <div className="text-[11px] font-extrabold text-slate-600 mt-0.5">
                             S/ {Number(prod.precio || 0).toFixed(2)}
+                            {agotado && <span className="ml-1.5 text-rose-600">· Sin stock</span>}
                           </div>
                         </div>
                         <div className="w-7 h-7 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 group-hover:bg-amber-500 group-hover:text-slate-950 group-hover:border-amber-500 transition">
                           <Plus className="w-4 h-4" />
                         </div>
                       </button>
-                    ))}
+                      );
+                    })}
                 </div>
 
                 {/* Consumo acumulado */}

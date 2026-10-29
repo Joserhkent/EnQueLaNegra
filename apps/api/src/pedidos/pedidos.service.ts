@@ -16,6 +16,12 @@ import {
 import { formatFecha, formatHora } from '../common/date';
 import { itemLineTotal, splitIgv } from '../common/order-totals';
 import { resolverProductos } from '../common/productos';
+import {
+  assertStockSuficiente,
+  descontarStock,
+  esSinStock,
+  sinStockConcurrente,
+} from '../common/stock';
 
 function esCodigoDuplicado(error: unknown): boolean {
   return (
@@ -84,6 +90,7 @@ export class PedidosService {
     // para todas las recetas involucradas, agrupando ítems repetidos).
     const deducciones =
       await this.buildInventoryDeductions(itemsWithProductoId);
+    await assertStockSuficiente(this.prisma, deducciones);
 
     // Total de productos + extras (por unidad) cobrados aparte, con IGV Perú 18%
     const { total, subtotal, igv } = splitIgv(
@@ -187,9 +194,15 @@ export class PedidosService {
       const [order] = await crear(codigoPropuesto);
       return order;
     } catch (error) {
+      if (esSinStock(error)) throw sinStockConcurrente();
       if (!esCodigoDuplicado(error)) throw error;
-      const [order] = await crear(`#ORD-${Date.now()}`);
-      return order;
+      try {
+        const [order] = await crear(`#ORD-${Date.now()}`);
+        return order;
+      } catch (reintento) {
+        if (esSinStock(reintento)) throw sinStockConcurrente();
+        throw reintento;
+      }
     }
   }
 
@@ -326,14 +339,14 @@ export class PedidosService {
     tipo: MovimientoTipo = MovimientoTipo.SALIDA,
   ) {
     if (deducciones.size === 0) return [];
-    const campo = tipo === MovimientoTipo.SALIDA ? 'decrement' : 'increment';
-
     return [
       ...[...deducciones.entries()].map(([insumoId, cantidad]) =>
-        this.prisma.insumo.update({
-          where: { id: insumoId },
-          data: { stockActual: { [campo]: cantidad } },
-        }),
+        tipo === MovimientoTipo.SALIDA
+          ? descontarStock(this.prisma, insumoId, cantidad)
+          : this.prisma.insumo.update({
+              where: { id: insumoId },
+              data: { stockActual: { increment: cantidad } },
+            }),
       ),
       this.prisma.movimientoStock.createMany({
         data: [...deducciones.entries()].map(([insumoId, cantidad]) => ({
