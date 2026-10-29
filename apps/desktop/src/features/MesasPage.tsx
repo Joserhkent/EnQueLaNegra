@@ -35,6 +35,20 @@ function formatElapsed(startIso?: string | null): string {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
+// Importe de la línea con sus agregados (se cobran por unidad, igual que en el backend)
+function lineaTotal(item: OrderItem): number {
+  const extras = (item.extras || []).reduce((s, e) => s + e.precioExtra * e.cantidad, 0);
+  return (item.precio + extras) * item.cantidad;
+}
+
+// Nota del cliente y agregados del ítem, para que el mesero vea lo que se pidió
+function detalleItem(item: OrderItem): string {
+  const agregados = (item.extras || [])
+    .filter((e) => e.precioExtra > 0)
+    .map((e) => `+ ${e.insumo?.nombre || "Agregado"}`);
+  return [item.notas?.trim() ? `"${item.notas.trim()}"` : "", ...agregados].filter(Boolean).join(" · ");
+}
+
 export default function MesasPage() {
   const {
     mesas,
@@ -271,6 +285,7 @@ export default function MesasPage() {
       return;
     }
     setCheckoutIsPartial(true);
+    if (paymentMethod === "Mixto") setPaymentMethod("Efectivo");
     setPartialPaymentAmount("");
     setShowCheckout(true);
   };
@@ -786,8 +801,8 @@ export default function MesasPage() {
                               <div key={item.id} className="flex items-center justify-between gap-2 text-xs">
                                 <div className="flex-1 min-w-0">
                                   <div className="font-semibold text-slate-700 truncate">{item.nombre}</div>
-                                  {item.notas && (
-                                    <div className="text-[10px] text-slate-400 italic truncate">"{item.notas}"</div>
+                                  {detalleItem(item) && (
+                                    <div className="text-[10px] text-slate-400 italic truncate">{detalleItem(item)}</div>
                                   )}
                                 </div>
                                 <div className="flex items-center gap-1 shrink-0 bg-white border border-slate-200 rounded-lg p-0.5">
@@ -814,7 +829,7 @@ export default function MesasPage() {
                                   </button>
                                 </div>
                                 <span className="font-bold text-slate-500 w-16 text-right shrink-0">
-                                  S/ {(item.precio * item.cantidad).toFixed(2)}
+                                  S/ {lineaTotal(item).toFixed(2)}
                                 </span>
                                 <button
                                   type="button"
@@ -852,13 +867,18 @@ export default function MesasPage() {
                                 const isUpdating = updatingItemId === item.id;
                                 return (
                                   <div key={item.id} className="flex items-center justify-between gap-2 text-xs">
-                                    <div className="flex-1 min-w-0"><div className="font-semibold text-slate-700 truncate">{item.nombre}</div></div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="font-semibold text-slate-700 truncate">{item.nombre}</div>
+                                      {detalleItem(item) && (
+                                        <div className="text-[10px] text-slate-400 italic truncate">{detalleItem(item)}</div>
+                                      )}
+                                    </div>
                                     <div className="flex items-center gap-1 shrink-0 bg-slate-50 border-slate-200 rounded-lg p-0.5">
                                       <button type="button" disabled={isUpdating} onClick={() => handleEditItemQty(item, -1)} className="w-5 h-5 rounded flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-rose-100 disabled:opacity-40">-</button>
                                       <span className="text-[11px] font-extrabold px-1 text-slate-900 w-4 text-center">{item.cantidad}</span>
                                       <button type="button" disabled={isUpdating} onClick={() => handleEditItemQty(item, 1)} className="w-5 h-5 rounded flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-emerald-100 disabled:opacity-40">+</button>
                                     </div>
-                                    <span className="font-bold text-slate-500 w-16 text-right shrink-0">S/ {(item.precio * item.cantidad).toFixed(2)}</span>
+                                    <span className="font-bold text-slate-500 w-16 text-right shrink-0">S/ {lineaTotal(item).toFixed(2)}</span>
                                     <button type="button" disabled={isUpdating} onClick={() => handleRemoveItem(item)} title="Quitar ítem de la cuenta" className="w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:bg-rose-100 hover:text-rose-600 disabled:opacity-40 shrink-0"><Trash2 className="w-3.5 h-3.5" /></button>
                                   </div>
                                 );
@@ -1061,7 +1081,11 @@ export default function MesasPage() {
                   ) : (
                     <div className="space-y-3 animate-in fade-in duration-200">
                       <div className="rounded-2xl p-3 bg-blue-50 border-blue-200 text-xs font-bold text-blue-900">
-                        {checkoutIsPartial ? `Pago parcial · Saldo pendiente: S/ ${remainingAmount.toFixed(2)}` : `Cobro total · Total de la mesa: S/ ${(selectedMesa.currentOrder?.total || 0).toFixed(2)}`}
+                        {checkoutIsPartial
+                          ? `Pago parcial · Saldo pendiente: S/ ${remainingAmount.toFixed(2)}`
+                          : paidAmount > 0
+                            ? `Cobro final · Falta cobrar: S/ ${remainingAmount.toFixed(2)} (total S/ ${(selectedMesa.currentOrder?.total || 0).toFixed(2)})`
+                            : `Cobro total · Total de la mesa: S/ ${(selectedMesa.currentOrder?.total || 0).toFixed(2)}`}
                       </div>
                       {checkoutIsPartial && (
                         <div>
@@ -1078,8 +1102,13 @@ export default function MesasPage() {
                           />
                         </div>
                       )}
-                      <div className="grid grid-cols-3 gap-1.5">
-                        {(["Efectivo", "Yape/Plin", "Mixto"] as const).map((m) => (
+                      {/* Un abono parcial va con un solo método (el backend rechaza MIXTO):
+                          si pagan con dos, se registran dos abonos */}
+                      <div className={`grid gap-1.5 ${checkoutIsPartial ? "grid-cols-2" : "grid-cols-3"}`}>
+                        {(checkoutIsPartial
+                          ? (["Efectivo", "Yape/Plin"] as const)
+                          : (["Efectivo", "Yape/Plin", "Mixto"] as const)
+                        ).map((m) => (
                           <button
                             key={m}
                             type="button"
@@ -1108,7 +1137,8 @@ export default function MesasPage() {
                                   const val = e.target.value;
                                   setMontoDigital(val);
                                   const num = parseFloat(val) || 0;
-                                  const tot = selectedMesa.currentOrder?.total || 0;
+                                  // Lo que falta cobrar (descontando abonos parciales), igual que valida el backend
+                                  const tot = Math.round(remainingAmount * 100) / 100;
                                   setMontoEfectivo(num <= tot ? (tot - num).toFixed(2) : "0");
                                 }}
                                 className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500"
@@ -1124,7 +1154,7 @@ export default function MesasPage() {
                                   const val = e.target.value;
                                   setMontoEfectivo(val);
                                   const num = parseFloat(val) || 0;
-                                  const tot = selectedMesa.currentOrder?.total || 0;
+                                  const tot = Math.round(remainingAmount * 100) / 100;
                                   setMontoDigital(num <= tot ? (tot - num).toFixed(2) : "0");
                                 }}
                                 className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500"

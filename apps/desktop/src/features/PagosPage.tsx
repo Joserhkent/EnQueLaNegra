@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePosStore } from "../store/usePosStore";
+import { usePosStore, type Order } from "../store/usePosStore";
 import {
   QrCode,
   Lock,
@@ -86,19 +86,27 @@ export default function PagosPage() {
   // o "EFECTIVO" / "YAPE_PLIN" (formato que devuelve el backend)
   const normalizePaymentMethod = (metodo: string) => metodo.toUpperCase().replace(/\s+/g, "_");
 
-  const cashSales = rangeOrders.reduce((acc, o) => {
+  // Cuánto entró en efectivo y cuánto en digital. Se suma desde los pagos registrados
+  // (como hace el cierre de caja en el backend): una mesa puede tener abonos parciales
+  // con distintos métodos, que no se ven en paymentMethod/montoEfectivo del pedido.
+  const desglosePago = (o: Order) => {
+    if (o.pagos && o.pagos.length > 0) {
+      return o.pagos.reduce(
+        (acc, p) =>
+          normalizePaymentMethod(p.metodoPago) === "EFECTIVO"
+            ? { ...acc, efectivo: acc.efectivo + p.monto }
+            : { ...acc, digital: acc.digital + p.monto },
+        { efectivo: 0, digital: 0 }
+      );
+    }
     const metodo = normalizePaymentMethod(o.paymentMethod);
-    if (metodo === "EFECTIVO") return acc + o.total;
-    if (metodo === "MIXTO") return acc + (o.montoEfectivo || 0);
-    return acc;
-  }, 0);
+    if (metodo === "EFECTIVO") return { efectivo: o.total, digital: 0 };
+    if (metodo === "MIXTO") return { efectivo: o.montoEfectivo || 0, digital: o.montoDigital || 0 };
+    return { efectivo: 0, digital: o.total };
+  };
 
-  const yapePlinSales = rangeOrders.reduce((acc, o) => {
-    const metodo = normalizePaymentMethod(o.paymentMethod);
-    if (metodo === "YAPE/PLIN" || metodo === "YAPE_PLIN") return acc + o.total;
-    if (metodo === "MIXTO") return acc + (o.montoDigital || 0);
-    return acc;
-  }, 0);
+  const cashSales = rangeOrders.reduce((acc, o) => acc + desglosePago(o).efectivo, 0);
+  const yapePlinSales = rangeOrders.reduce((acc, o) => acc + desglosePago(o).digital, 0);
 
   const filteredOrders = rangeOrders.filter((order) => {
     const matchesMethod = methodFilter === "all" || order.paymentMethod === methodFilter;
@@ -424,10 +432,10 @@ export default function PagosPage() {
                         {isMixto ? (
                           <div className="flex flex-col gap-0.5 text-[11px]">
                             <span>
-                              Efectivo: <strong>S/ {(order.montoEfectivo || 0).toFixed(2)}</strong>
+                              Efectivo: <strong>S/ {desglosePago(order).efectivo.toFixed(2)}</strong>
                             </span>
                             <span>
-                              Digital: <strong>S/ {(order.montoDigital || 0).toFixed(2)}</strong>
+                              Digital: <strong>S/ {desglosePago(order).digital.toFixed(2)}</strong>
                             </span>
                           </div>
                         ) : isEfectivo && (order.montoRecibido || order.vuelto) ? (

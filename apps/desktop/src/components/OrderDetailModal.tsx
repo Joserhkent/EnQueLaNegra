@@ -67,7 +67,8 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
                       {item.cantidad}x {item.nombre}
                     </div>
                     <div className="font-extrabold text-slate-900 text-sm">
-                      S/ {(item.precio * item.cantidad).toFixed(2)}
+                      {/* Importe con agregados (por unidad del plato), igual que el total cobrado */}
+                      S/ {((item.precio + agregadosDelItem.reduce((s, e) => s + e.precioExtra * e.cantidad, 0)) * item.cantidad).toFixed(2)}
                     </div>
                   </div>
 
