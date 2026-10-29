@@ -41,11 +41,12 @@ export class PedidosController {
   updateStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateStatusDto,
+    @GetUser('id') userId?: string,
   ) {
     if (!updateStatusDto.status) {
       throw new BadRequestException('El status del pedido es obligatorio');
     }
-    return this.pedidosService.updateStatus(id, updateStatusDto.status);
+    return this.pedidosService.updateStatus(id, updateStatusDto.status, userId);
   }
 
   @Patch(':id/items/:itemId/kitchen-status')

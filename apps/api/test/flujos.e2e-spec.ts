@@ -309,6 +309,7 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
       items,
     }).expect(201);
     expect(p.body.total).toBeCloseTo(total, 2);
+    const stockAntes = await stock(receta[0].insumoId);
     const dup = await api('post', '/pedidos', empleado, {
       code: '#ORD-E2E',
       type: 'LLEVAR',
@@ -329,6 +330,8 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     await api('patch', `/pedidos/${dup.body.id}/status`, empleado, {
       status: 'CANCELADO',
     }).expect(200);
+    // Cancelado en preparación: el stock vuelve a como estaba
+    expect(await stock(receta[0].insumoId)).toBeCloseTo(stockAntes, 5);
     await api('patch', `/pedidos/${dup.body.id}/status`, empleado, {
       status: 'ENTREGADO',
     }).expect(400);

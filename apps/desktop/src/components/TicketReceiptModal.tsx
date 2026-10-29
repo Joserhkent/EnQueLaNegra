@@ -26,7 +26,6 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
   // catálogo por SKU. Solo importa para la comanda de cocina (el detalle de
   // preparación), en la boleta se imprime igual que siempre.
   // El hook va antes de cualquier return para respetar las reglas de React.
-  const productos = usePosStore((s) => s.productos);
   const mesas = usePosStore((s) => s.mesas);
 
   if (!order) return null;
@@ -42,9 +41,6 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
     mesaNumero ??
     order.table?.number ??
     (order.tableId ? mesas.find((m) => m.id === order.tableId)?.number : undefined);
-
-  const descripcionDe = (sku: string) =>
-    productos.find((p) => p.sku === sku)?.descripcion?.trim() || "";
 
   // La mesa es acumulativa (cada tanda suma una ronda). Cuando cocina pide el
   // ticket de una tanda puntual, se filtran solo los ítems de esa ronda: lo que
@@ -201,12 +197,6 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
                       </span>
                     )}
                   </div>
-
-                  {isComanda && descripcionDe(item.sku) && (
-                    <div className="text-[10px] text-slate-800 pl-2 leading-snug">
-                      • {descripcionDe(item.sku)}
-                    </div>
-                  )}
 
                   {/* Nota del mesero: aquí escriben las cremas/salsas a mano
                       ("con mayonesa, ketchup y sin cebolla"), se imprime tal cual */}

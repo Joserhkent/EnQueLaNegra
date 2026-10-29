@@ -193,7 +193,7 @@ export class PedidosService {
     }
   }
 
-  async updateStatus(id: string, newStatus: OrderStatus) {
+  async updateStatus(id: string, newStatus: OrderStatus, userId?: string) {
     const order = await this.findOne(id);
 
     if (order.status === newStatus) {
@@ -213,12 +213,42 @@ export class PedidosService {
     }
 
     // El inventario ya se descuenta al CREAR el pedido, no al marcarlo como entregado.
-
-    return this.prisma.order.update({
+    const actualizar = this.prisma.order.update({
       where: { id },
       data: { status: newStatus },
       include: ORDER_INCLUDE,
     });
+
+    // Cancelado antes de que cocina lo prepare: los insumos no se usaron, se devuelve
+    // exactamente lo que se descontó al crearlo. Si ya estaba LISTO, se gastaron.
+    if (
+      newStatus === OrderStatus.CANCELADO &&
+      order.status === OrderStatus.PREPARACION
+    ) {
+      const salidas = await this.prisma.movimientoStock.groupBy({
+        by: ['insumoId'],
+        where: {
+          motivo: `Venta comanda ${order.code}`,
+          tipo: MovimientoTipo.SALIDA,
+        },
+        _sum: { cantidad: true },
+      });
+      const devoluciones = new Map(
+        salidas.map((s) => [s.insumoId, s._sum.cantidad ?? 0]),
+      );
+      const [actualizado] = await this.prisma.$transaction([
+        actualizar,
+        ...this.buildInventoryOps(
+          devoluciones,
+          userId,
+          `Cancelación comanda ${order.code}`,
+          MovimientoTipo.ENTRADA,
+        ),
+      ]);
+      return actualizado;
+    }
+
+    return actualizar;
   }
   async updateItemKitchenStatus(
     orderId: string,
@@ -293,20 +323,22 @@ export class PedidosService {
     deducciones: Map<string, number>,
     userId: string | undefined,
     motivo: string,
+    tipo: MovimientoTipo = MovimientoTipo.SALIDA,
   ) {
     if (deducciones.size === 0) return [];
+    const campo = tipo === MovimientoTipo.SALIDA ? 'decrement' : 'increment';
 
     return [
       ...[...deducciones.entries()].map(([insumoId, cantidad]) =>
         this.prisma.insumo.update({
           where: { id: insumoId },
-          data: { stockActual: { decrement: cantidad } },
+          data: { stockActual: { [campo]: cantidad } },
         }),
       ),
       this.prisma.movimientoStock.createMany({
         data: [...deducciones.entries()].map(([insumoId, cantidad]) => ({
           insumoId,
-          tipo: MovimientoTipo.SALIDA,
+          tipo,
           cantidad,
           motivo,
           usuario: 'Sistema POS Automático',
