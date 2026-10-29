@@ -80,6 +80,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [montoEfectivo, setMontoEfectivo] = useState<string>("");
   const [montoDigital, setMontoDigital] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
   const [selectedPrintOrder, setSelectedPrintOrder] = useState<Order | null>(null);
   const [selectedKitchenOrder, setSelectedKitchenOrder] = useState<Order | null>(null);
   const [selectedDetailOrder, setSelectedDetailOrder] = useState<Order | null>(null);
@@ -160,7 +161,13 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       const newLineId = `${prod.sku}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       return {
         ...prev,
-        [newLineId]: { product: prod, quantity: 1, notes: "", agregados: [] },
+        [newLineId]: {
+          product: prod,
+          quantity: 1,
+          notes: "",
+          cremas: [],
+          agregados: [],
+        },
       };
     });
   };
@@ -227,72 +234,39 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
 
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingOrder) return;
+
     const cartList = Object.values(cart);
     if (cartList.length === 0) {
       alert("Por favor selecciona al menos un producto para la comanda.");
       return;
     }
 
-    const orderNum = pedidos.length + 1049;
-    const now = new Date();
-    const fechaStr = now.toISOString().split("T")[0];
-    const horaStr = now.toTimeString().split(" ")[0].substring(0, 5);
+    setIsSubmittingOrder(true);
+    try {
+      const orderNum = pedidos.length + 1049;
+      const now = new Date();
+      const fechaStr = now.toISOString().split("T")[0];
+      const horaStr = now.toTimeString().split(" ")[0].substring(0, 5);
+      const totalAmount = calculateCartTotal();
+      const numEf = parseFloat(montoEfectivo) || 0;
+      const numDig = parseFloat(montoDigital) || 0;
 
-    const totalAmount = calculateCartTotal();
-    const numEf = parseFloat(montoEfectivo) || 0;
-    const numDig = parseFloat(montoDigital) || 0;
+      const newOrder: Order = {
+        id: String(Date.now()),
+        code: `#ORD-${orderNum}`,
+        customer: customerName.trim() || "Cliente Mostrador",
+        items: cartList.map((item) => {
+          const extrasFromAgregados = item.agregados
+            .map((agregadoName) => {
+              const insumoId = findInsumoId(agregadoName);
+              const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === agregadoName);
+              return insumoId
+                ? { insumoId, cantidad: 1, precioExtra: found ? found.precio : 0 }
+                : null;
+            })
+            .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
 
-    const newOrder: Order = {
-      id: String(Date.now()),
-      code: `#ORD-${orderNum}`,
-      customer: customerName.trim() || "Cliente Mostrador",
-      items: cartList.map((item) => {
-        // Convierte los agregados seleccionados en "extras" con su precio real
-        const extrasFromAgregados = item.agregados
-          .map((agregadoName) => {
-            const insumoId = findInsumoId(agregadoName);
-            const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === agregadoName);
-            return insumoId
-              ? { insumoId, cantidad: 1, precioExtra: found ? found.precio : 0 }
-              : null;
-          })
-          .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
-
-        return {
-          productoId: item.product.id,
-          sku: item.product.sku,
-          nombre: item.product.nombre,
-          precio: item.product.precio,
-          cantidad: item.quantity,
-          receta: item.product.receta || [],
-          notas: item.notes,
-          extras: extrasFromAgregados,
-        };
-      }),
-      total: totalAmount,
-      type: orderType,
-      paymentMethod,
-      montoEfectivo: paymentMethod === "Mixto" ? numEf : undefined,
-      montoDigital: paymentMethod === "Mixto" ? numDig : undefined,
-      status: "preparacion",
-      fecha: fechaStr,
-      hora: horaStr,
-    };
-
-<<<<<<< Updated upstream
-    await addOrder(newOrder);
-    setIsModalOpen(false);
-    setCart({});
-    setCustomerName("");
-    setMontoEfectivo("");
-    setMontoDigital("");
-
-    // Usa el pedido tal como lo devolvió el backend (ya con insumo.nombre resuelto
-    // para cada crema/agregado), no el objeto local: ese solo tenía el insumoId,
-    // así que la boleta mostraba "Crema/Aderezo" genérico en vez del nombre real.
-    const createdOrder = usePosStore.getState().pedidos.find((o) => o.code === newOrder.code) || newOrder;
-    setSelectedPrintOrder(createdOrder);
-=======
           return {
             productoId: item.product.id,
             sku: item.product.sku,
@@ -326,16 +300,15 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       // para cada crema/agregado), no el objeto local: ese solo tenía el insumoId,
       // así que la boleta mostraba "Crema/Aderezo" genérico en vez del nombre real.
       const createdOrder = usePosStore.getState().pedidos.find((o) => o.code === newOrder.code) || newOrder;
-      // Boletera de cocina: al confirmar la comanda se imprime automáticamente
-      // el ticket de cocina (sin precios) para entregarlo a la cocina.
+      setSelectedPrintOrder(createdOrder);
       setSelectedKitchenOrder(createdOrder);
-    } catch (err: any) {
-      console.error("Error creating order:", err);
-      alert("Error al registrar comanda: " + (err.response?.data?.message || err.message || "Error desconocido"));
+    } catch (error: unknown) {
+      console.error("Error creating order:", error);
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      alert("Error al registrar comanda: " + message);
     } finally {
       setIsSubmittingOrder(false);
     }
->>>>>>> Stashed changes
   };
 
   const handleCancelOrder = (order: Order) => {
@@ -1040,9 +1013,10 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                   <button
                     type="button"
                     onClick={handleCreateOrder}
-                    className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
+                    disabled={isSubmittingOrder}
+                    className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
                   >
-                    Confirmar Comanda & Enviar a Cocina
+                    {isSubmittingOrder ? "Registrando..." : "Confirmar Comanda & Enviar a Cocina"}
                   </button>
                 </div>
               </div>
@@ -1051,7 +1025,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         </div>
       )}
 
-      {selectedPrintOrder && (
+      {selectedPrintOrder && !selectedKitchenOrder && (
         <TicketReceiptModal
           order={selectedPrintOrder}
           onClose={() => setSelectedPrintOrder(null)}

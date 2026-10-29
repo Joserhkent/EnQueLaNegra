@@ -57,14 +57,11 @@ describe('MesasService', () => {
           joinedTables: [],
         }),
       },
-<<<<<<< Updated upstream
-=======
       cajaSesion: {
         findFirst: jest
           .fn()
           .mockResolvedValue({ id: 'sesion-1', estado: 'ABIERTA' }),
       },
->>>>>>> Stashed changes
       $transaction: jest
         .fn()
         .mockImplementation(

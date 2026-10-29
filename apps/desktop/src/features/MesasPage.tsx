@@ -105,6 +105,7 @@ export default function MesasPage() {
 
   const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
   const [cart, setCart] = useState<Record<string, CartLine>>({});
+  const [isSubmittingTanda, setIsSubmittingTanda] = useState(false);
   const [customizingProduct, setCustomizingProduct] = useState<Producto | null>(null);
   const [customizingQuantity, setCustomizingQuantity] = useState(1);
   const [customizingNotes, setCustomizingNotes] = useState("");
@@ -219,18 +220,13 @@ export default function MesasPage() {
   // sin ningún pedido real por un clic accidental, y sigue sin fricción para abrir.
   const handleSendTanda = async () => {
     if (!selectedMesa) return;
+    if (isSubmittingTanda) return;
     const cartList = Object.values(cart);
     if (cartList.length === 0) {
       alert("Agrega al menos un producto para enviar a cocina.");
       return;
     }
 
-<<<<<<< Updated upstream
-    const targetMesaId = selectedMesa.id;
-    if (selectedMesa.status === "AVAILABLE") {
-      const opened = await openMesa(targetMesaId);
-      if (!opened) return; // openMesa ya muestra la alerta si falla
-=======
     setIsSubmittingTanda(true);
     try {
       const targetMesaId = selectedMesa.id;
@@ -271,32 +267,7 @@ export default function MesasPage() {
       }
     } finally {
       setIsSubmittingTanda(false);
->>>>>>> Stashed changes
     }
-
-    const items: OrderItem[] = cartList.map((item) => {
-      const extrasFromAgregados = item.agregados
-        .map((agregadoName) => {
-          const insumoId = findInsumoId(agregadoName);
-          const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === agregadoName);
-          return insumoId ? { insumoId, cantidad: 1, precioExtra: found ? found.precio : 0 } : null;
-        })
-        .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
-
-      return {
-        productoId: item.product.id,
-        sku: item.product.sku,
-        nombre: item.product.nombre,
-        precio: item.product.precio,
-        cantidad: item.quantity,
-        receta: item.product.receta || [],
-        notas: item.notes,
-        extras: extrasFromAgregados,
-      };
-    });
-
-    const result = await addItemsToMesa(targetMesaId, items);
-    if (result) setCart({});
   };
 
   // Corrige un error en un ítem ya enviado (cantidad mal puesta) sin tener que
@@ -937,9 +908,10 @@ export default function MesasPage() {
                     <button
                       type="button"
                       onClick={handleSendTanda}
-                      className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+                      disabled={isSubmittingTanda}
+                      className="w-full py-3 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
                     >
-                      <UtensilsCrossed className="w-4 h-4 text-amber-400" /> Enviar Tanda a Cocina (S/ {calculateCartTotal().toFixed(2)})
+                      <UtensilsCrossed className="w-4 h-4 text-amber-400" /> {isSubmittingTanda ? "Enviando..." : `Enviar Tanda a Cocina (S/ ${calculateCartTotal().toFixed(2)})`}
                     </button>
                   )}
                 </div>

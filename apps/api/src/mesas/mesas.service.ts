@@ -385,16 +385,12 @@ export class MesasService {
     return this.getTableDetail(table.id);
   }
 
-<<<<<<< Updated upstream
-  async partialPayment(tableId: string, dto: PartialPaymentDto, userId?: string) {
-=======
   async partialPayment(
     tableId: string,
     dto: PartialPaymentDto,
     userId?: string,
   ) {
     await this.assertCajaAbierta('registrar pagos');
->>>>>>> Stashed changes
     const table = await this.prisma.table.findUnique({
       where: { id: tableId },
       include: { currentOrder: { include: ORDER_INCLUDE } },
@@ -746,6 +742,17 @@ export class MesasService {
     });
     if (!table) throw new NotFoundException('Mesa no encontrada');
     return table;
+  }
+
+  private async assertCajaAbierta(accion = 'realizar esta acción') {
+    const activeCaja = await this.prisma.cajaSesion.findFirst({
+      where: { estado: 'ABIERTA' },
+    });
+    if (!activeCaja) {
+      throw new BadRequestException(
+        `La caja está cerrada. Debe abrir un turno de caja antes de ${accion}.`,
+      );
+    }
   }
 
   private async getTableDetail(tableId: string) {

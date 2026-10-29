@@ -133,8 +133,6 @@ export class ProductosService {
 
   async remove(id: string) {
     await this.findOne(id);
-<<<<<<< Updated upstream
-=======
     const orderItemsCount = await this.prisma.orderItem.count({
       where: { productoId: id },
     });
@@ -149,7 +147,6 @@ export class ProductosService {
       });
     }
 
->>>>>>> Stashed changes
     return this.prisma.producto.delete({ where: { id } });
   }
 }

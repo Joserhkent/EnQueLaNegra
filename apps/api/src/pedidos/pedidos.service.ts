@@ -1,12 +1,8 @@
-<<<<<<< Updated upstream
-import { Injectable, NotFoundException } from '@nestjs/common';
-=======
 import {
   Injectable,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
->>>>>>> Stashed changes
 import { PrismaService } from '../prisma.service';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import {
