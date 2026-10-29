@@ -18,6 +18,7 @@ export default function HistorialPage() {
 
   // Order Detail Modal State
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedKitchenOrder, setSelectedKitchenOrder] = useState<Order | null>(null);
 
   const validOrders = pedidos.filter((o) => o.status !== "cancelado");
 
@@ -224,13 +225,22 @@ export default function HistorialPage() {
                           S/ {order.total.toFixed(2)}
                         </td>
                         <td className="py-4 px-4 text-right">
-                          <button
-                            onClick={() => setSelectedOrder(order)}
-                            className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition"
-                            title="Ver Detalle Completo"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => setSelectedKitchenOrder(order)}
+                              className="p-2 bg-orange-100 hover:bg-orange-500 hover:text-white text-orange-700 rounded-xl transition"
+                              title="Imprimir Comanda de Cocina"
+                            >
+                              🔥
+                            </button>
+                            <button
+                              onClick={() => setSelectedOrder(order)}
+                              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition"
+                              title="Ver Detalle Completo"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -297,6 +307,15 @@ export default function HistorialPage() {
         <TicketReceiptModal
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
+        />
+      )}
+
+      {/* BOLETERA DE COCINA: ticket sin precios, solo el detalle del pedido */}
+      {selectedKitchenOrder && (
+        <TicketReceiptModal
+          order={selectedKitchenOrder}
+          mode="comanda"
+          onClose={() => setSelectedKitchenOrder(null)}
         />
       )}
     </div>

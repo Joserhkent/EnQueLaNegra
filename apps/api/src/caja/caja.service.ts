@@ -35,11 +35,34 @@ export class CajaService {
 
     ordersToday.forEach((order) => {
       totalVendido += order.total;
+<<<<<<< Updated upstream
       order.pagos.forEach((pago) => {
         if (pago.metodoPago === PaymentMethod.EFECTIVO) efectivo += pago.monto;
         if (pago.metodoPago === PaymentMethod.YAPE_PLIN) yapePlin += pago.monto;
         if (pago.metodoPago === PaymentMethod.TARJETA) tarjeta += pago.monto;
       });
+=======
+      if (order.pagos && order.pagos.length > 0) {
+        order.pagos.forEach((pago) => {
+          if (pago.metodoPago === PaymentMethod.EFECTIVO)
+            efectivo += pago.monto;
+          if (pago.metodoPago === PaymentMethod.YAPE_PLIN)
+            yapePlin += pago.monto;
+          if (pago.metodoPago === PaymentMethod.TARJETA) tarjeta += pago.monto;
+        });
+      } else {
+        if (order.paymentMethod === PaymentMethod.EFECTIVO)
+          efectivo += order.total;
+        else if (order.paymentMethod === PaymentMethod.YAPE_PLIN)
+          yapePlin += order.total;
+        else if (order.paymentMethod === PaymentMethod.TARJETA)
+          tarjeta += order.total;
+        else if (order.paymentMethod === PaymentMethod.MIXTO) {
+          efectivo += order.montoEfectivo || 0;
+          yapePlin += order.montoDigital || 0;
+        }
+      }
+>>>>>>> Stashed changes
     });
 
     return {
@@ -79,4 +102,55 @@ export class CajaService {
       },
     });
   }
+<<<<<<< Updated upstream
+=======
+
+  private async calcularResumenSesion(session: { fechaApertura: Date }) {
+    const orders = await this.prisma.order.findMany({
+      where: {
+        createdAt: { gte: session.fechaApertura },
+        status: { notIn: [OrderStatus.CANCELADO, OrderStatus.OPEN] },
+      },
+      include: { pagos: true },
+    });
+
+    let totalVendido = 0;
+    let efectivo = 0;
+    let yapePlin = 0;
+    let tarjeta = 0;
+
+    for (const order of orders) {
+      totalVendido += order.total;
+
+      if (order.pagos && order.pagos.length > 0) {
+        for (const pago of order.pagos) {
+          if (pago.metodoPago === PaymentMethod.EFECTIVO)
+            efectivo += pago.monto;
+          if (pago.metodoPago === PaymentMethod.YAPE_PLIN)
+            yapePlin += pago.monto;
+          if (pago.metodoPago === PaymentMethod.TARJETA) tarjeta += pago.monto;
+        }
+      } else {
+        if (order.paymentMethod === PaymentMethod.EFECTIVO)
+          efectivo += order.total;
+        else if (order.paymentMethod === PaymentMethod.YAPE_PLIN)
+          yapePlin += order.total;
+        else if (order.paymentMethod === PaymentMethod.TARJETA)
+          tarjeta += order.total;
+        else if (order.paymentMethod === PaymentMethod.MIXTO) {
+          efectivo += order.montoEfectivo || 0;
+          yapePlin += order.montoDigital || 0;
+        }
+      }
+    }
+
+    return {
+      totalVendido: Number(totalVendido.toFixed(2)),
+      efectivo: Number(efectivo.toFixed(2)),
+      yapePlin: Number(yapePlin.toFixed(2)),
+      tarjeta: Number(tarjeta.toFixed(2)),
+      cantidadPedidos: orders.length,
+    };
+  }
+>>>>>>> Stashed changes
 }

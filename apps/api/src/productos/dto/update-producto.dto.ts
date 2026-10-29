@@ -4,7 +4,10 @@ import {
   IsBoolean,
   IsOptional,
   IsArray,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { RecetaItemDto } from './create-producto.dto';
 
 export class UpdateProductoDto {
   @IsString()
@@ -41,7 +44,10 @@ export class UpdateProductoDto {
   @IsOptional()
   iconoEmoji?: string;
 
+  // Acepta {insumoId, cantidad}[] (cantidades específicas) y string[] heredado.
   @IsArray()
   @IsOptional()
-  receta?: string[];
+  @ValidateNested({ each: true })
+  @Type(() => RecetaItemDto)
+  receta?: (string | RecetaItemDto)[];
 }

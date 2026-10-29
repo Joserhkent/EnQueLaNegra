@@ -5,7 +5,22 @@ import {
   IsBoolean,
   IsOptional,
   IsArray,
+  ValidateNested,
+  IsPositive,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+
+// Ítem de receta BOM con su cantidad requerida (ej. 0.5 porciones de pollo).
+export class RecetaItemDto {
+  @IsString()
+  @IsNotEmpty()
+  insumoId: string;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  cantidad: number;
+}
 
 export class CreateProductoDto {
   @IsString()
@@ -45,7 +60,10 @@ export class CreateProductoDto {
   @IsOptional()
   iconoEmoji?: string;
 
+  // Acepta {insumoId, cantidad}[] (cantidades específicas) y string[] heredado.
   @IsArray()
   @IsOptional()
-  receta?: string[];
+  @ValidateNested({ each: true })
+  @Type(() => RecetaItemDto)
+  receta?: (string | RecetaItemDto)[];
 }

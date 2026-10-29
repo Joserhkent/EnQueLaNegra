@@ -33,6 +33,14 @@ export interface Producto {
   descripcion: string;
   iconoEmoji: string;
   receta?: string[];
+  /** Cantidad requerida por insumo (BOM). Si falta, se asume 1. */
+  recetaCantidades?: Record<string, number>;
+}
+
+export interface Categoria {
+  id: string;
+  nombre: string;
+  tipo: "PRODUCTO" | "INSUMO";
 }
 
 export interface MovimientoStock {
@@ -61,6 +69,7 @@ export interface OrderItem {
   precio: number;
   cantidad: number;
   receta: string[];
+  recetaCantidades?: Record<string, number>;
   notas?: string;
   extras?: OrderItemExtra[];
   ronda?: number;
@@ -119,6 +128,7 @@ interface PosStore {
   users: UserAccount[];
   insumos: Insumo[];
   productos: Producto[];
+  categorias: Categoria[];
   movimientos: MovimientoStock[];
   pedidos: Order[];
   cierresCaja: CierreCaja[];
@@ -173,6 +183,20 @@ interface PosStore {
   updateProduct: (producto: Producto) => Promise<void>;
   toggleProductAvailability: (id: string) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
+
+  fetchCategorias: () => Promise<void>;
+  addCategoria: (nombre: string, tipo: "PRODUCTO" | "INSUMO") => Promise<boolean>;
+  deleteCategoria: (id: string) => Promise<boolean>;
+
+  addInsumo: (data: {
+    nombre: string;
+    categoria: string;
+    unidadMedida: string;
+    stockActual: number;
+    stockMinimo: number;
+    costoUnitario: number;
+  }) => Promise<boolean>;
+  deleteInsumo: (id: string) => Promise<boolean>;
 
   completeOrder: (orderId: string) => Promise<void>;
   updateOrderStatus: (orderId: string, newStatus: Order["status"]) => Promise<void>;
@@ -251,6 +275,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
   users: [],
   insumos: [],
   productos: [],
+  categorias: [],
   movimientos: [],
   pedidos: [],
   cierresCaja: [],
@@ -267,11 +292,20 @@ export const usePosStore = create<PosStore>((set, get) => ({
       const data = await res.json();
       // 🔧 El backend manda `recetaItems: [{ insumoId, insumo }]`, no un `receta: string[]`
       // plano. Sin esto, el formulario de editar producto nunca ve la receta actual.
+      // También extrae `cantidadRequerida` por insumo para mostrar/editar en el BOM.
       const normalizados: Producto[] = data.map((p: any) => ({
         ...p,
         receta: Array.isArray(p.recetaItems)
           ? p.recetaItems.map((ri: any) => ri.insumoId)
           : [],
+        recetaCantidades: Array.isArray(p.recetaItems)
+          ? Object.fromEntries(
+              p.recetaItems.map((ri: any) => [
+                ri.insumoId,
+                Number(ri.cantidadRequerida) || 1,
+              ]),
+            )
+          : {},
       }));
       set({ productos: normalizados, loading: false });
     } catch (error) {
@@ -739,6 +773,121 @@ export const usePosStore = create<PosStore>((set, get) => ({
     }
   },
 
+  fetchCategorias: async () => {
+    try {
+      const res = await fetch(`${API_URL}/categorias`, {
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      set({ categorias: Array.isArray(data) ? data : [] });
+    } catch (error) {
+      console.error("Error al cargar categorías:", error);
+    }
+  },
+
+  addCategoria: async (nombre, tipo) => {
+    try {
+      const res = await fetch(`${API_URL}/categorias`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ nombre: nombre.trim(), tipo }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        alert(err?.message || "No se pudo crear la categoría");
+        return false;
+      }
+      await get().fetchCategorias();
+      return true;
+    } catch (error) {
+      console.error("Error al crear categoría:", error);
+      alert("No se pudo crear la categoría");
+      return false;
+    }
+  },
+
+  deleteCategoria: async (id) => {
+    try {
+      const res = await fetch(`${API_URL}/categorias/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        alert(err?.message || "No se pudo eliminar la categoría");
+        return false;
+      }
+      await get().fetchCategorias();
+      return true;
+    } catch (error) {
+      console.error("Error al eliminar categoría:", error);
+      alert("No se pudo eliminar la categoría");
+      return false;
+    }
+  },
+
+  addInsumo: async (data) => {
+    try {
+      // El backend exige un id único: se genera un slug a partir del nombre.
+      const slug = data.nombre
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "");
+
+      // Necesitamos el id real de la categoría (UUID), la buscamos por nombre.
+      const categoria = get().categorias.find(
+        (c) => c.tipo === "INSUMO" && c.nombre === data.categoria
+      );
+
+      const res = await fetch(`${API_URL}/insumos`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          id: slug || `insumo_${Date.now()}`,
+          categoriaId: categoria?.id || data.categoria,
+          nombre: data.nombre.trim(),
+          unidadMedida: data.unidadMedida,
+          stockActual: data.stockActual,
+          stockMinimo: data.stockMinimo,
+          costoUnitario: data.costoUnitario,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        alert(err?.message || "No se pudo crear el insumo");
+        return false;
+      }
+      await get().fetchInsumos();
+      return true;
+    } catch (error) {
+      console.error("Error al crear insumo:", error);
+      alert("No se pudo crear el insumo");
+      return false;
+    }
+  },
+
+  deleteInsumo: async (id) => {
+    try {
+      const res = await fetch(`${API_URL}/insumos/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        alert(err?.message || "No se pudo eliminar el insumo");
+        return false;
+      }
+      await Promise.all([get().fetchInsumos(), get().fetchMovimientos()]);
+      return true;
+    } catch (error) {
+      console.error("Error al eliminar insumo:", error);
+      alert("No se pudo eliminar el insumo");
+      return false;
+    }
+  },
+
   addOrder: async (order) => {
     try {
       const payload = {
@@ -758,6 +907,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
           nombre: item.nombre,
           precio: item.precio,
           cantidad: item.cantidad,
+          recetaCantidades: item.recetaCantidades || {},
           notas: item.notas,
           extras: item.extras || [],
         })),

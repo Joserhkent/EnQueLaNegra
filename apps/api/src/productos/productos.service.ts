@@ -8,6 +8,21 @@ import { UpdateProductoDto } from './dto/update-producto.dto';
 export class ProductosService {
   constructor(private prisma: PrismaService) {}
 
+  // Normaliza la receta entrante: acepta string[] (compatibilidad) o
+  // {insumoId, cantidad}[] con la cantidad real que descontará del inventario.
+  private normalizarReceta(
+    receta?: (string | { insumoId: string; cantidad: number })[],
+  ): { insumoId: string; cantidad: number }[] {
+    if (!Array.isArray(receta)) return [];
+    return receta
+      .map((item) =>
+        typeof item === 'string'
+          ? { insumoId: item, cantidad: 1.0 }
+          : { insumoId: item.insumoId, cantidad: Number(item.cantidad) || 1.0 },
+      )
+      .filter((i) => i.insumoId && i.cantidad > 0);
+  }
+
   // El frontend solo conoce nombres de categoría fijos (los del <select>), no UUIDs.
   // Resuelve el nombre a la Categoria real (tipo PRODUCTO) para obtener su id.
   private async resolveCategoriaId(nombre: string): Promise<string> {
@@ -61,9 +76,9 @@ export class ProductosService {
         recetaItems:
           receta && receta.length > 0
             ? {
-                create: receta.map((insumoId) => ({
-                  insumoId,
-                  cantidadRequerida: 1.0,
+                create: this.normalizarReceta(receta).map((r) => ({
+                  insumoId: r.insumoId,
+                  cantidadRequerida: r.cantidad,
                 })),
               }
             : undefined,
@@ -86,12 +101,13 @@ export class ProductosService {
 
     if (receta !== undefined) {
       await this.prisma.recetaItem.deleteMany({ where: { productoId: id } });
-      if (receta.length > 0) {
+      const recetaNormalizada = this.normalizarReceta(receta);
+      if (recetaNormalizada.length > 0) {
         await this.prisma.recetaItem.createMany({
-          data: receta.map((insumoId) => ({
+          data: recetaNormalizada.map((r) => ({
             productoId: id,
-            insumoId,
-            cantidadRequerida: 1.0,
+            insumoId: r.insumoId,
+            cantidadRequerida: r.cantidad,
           })),
         });
       }
@@ -117,6 +133,23 @@ export class ProductosService {
 
   async remove(id: string) {
     await this.findOne(id);
+<<<<<<< Updated upstream
+=======
+    const orderItemsCount = await this.prisma.orderItem.count({
+      where: { productoId: id },
+    });
+
+    if (orderItemsCount > 0) {
+      // Si el producto ya se ha vendido en comandas históricas, no podemos borrarlo de la BD
+      // porque rompería la integridad de los reportes y comandas previas.
+      // En su lugar, lo marcamos como no disponible (isAvailable: false).
+      return this.prisma.producto.update({
+        where: { id },
+        data: { isAvailable: false },
+      });
+    }
+
+>>>>>>> Stashed changes
     return this.prisma.producto.delete({ where: { id } });
   }
 }

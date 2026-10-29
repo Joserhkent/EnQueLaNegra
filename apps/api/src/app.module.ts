@@ -8,6 +8,7 @@ import { InsumosModule } from './insumos/insumos.module';
 import { PedidosModule } from './pedidos/pedidos.module';
 import { CajaModule } from './caja/caja.module';
 import { MesasModule } from './mesas/mesas.module';
+import { CategoriasModule } from './categorias/categorias.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MesasModule } from './mesas/mesas.module';
     PedidosModule,
     CajaModule,
     MesasModule,
+    CategoriasModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

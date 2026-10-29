@@ -81,6 +81,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [montoDigital, setMontoDigital] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("Arepas Tradicionales");
   const [selectedPrintOrder, setSelectedPrintOrder] = useState<Order | null>(null);
+  const [selectedKitchenOrder, setSelectedKitchenOrder] = useState<Order | null>(null);
   const [selectedDetailOrder, setSelectedDetailOrder] = useState<Order | null>(null);
 
   const categoryScrollRef = useRef<HTMLDivElement>(null);
@@ -278,6 +279,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       hora: horaStr,
     };
 
+<<<<<<< Updated upstream
     await addOrder(newOrder);
     setIsModalOpen(false);
     setCart({});
@@ -290,6 +292,50 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
     // así que la boleta mostraba "Crema/Aderezo" genérico en vez del nombre real.
     const createdOrder = usePosStore.getState().pedidos.find((o) => o.code === newOrder.code) || newOrder;
     setSelectedPrintOrder(createdOrder);
+=======
+          return {
+            productoId: item.product.id,
+            sku: item.product.sku,
+            nombre: item.product.nombre,
+            precio: item.product.precio,
+            cantidad: item.quantity,
+            receta: item.product.receta || [],
+            recetaCantidades: item.product.recetaCantidades || {},
+            notas: item.notes,
+            extras: extrasFromAgregados,
+          };
+        }),
+        total: totalAmount,
+        type: orderType,
+        paymentMethod,
+        montoEfectivo: paymentMethod === "Mixto" ? numEf : undefined,
+        montoDigital: paymentMethod === "Mixto" ? numDig : undefined,
+        status: "preparacion",
+        fecha: fechaStr,
+        hora: horaStr,
+      };
+
+      await addOrder(newOrder);
+      setIsModalOpen(false);
+      setCart({});
+      setCustomerName("");
+      setMontoEfectivo("");
+      setMontoDigital("");
+
+      // Usa el pedido tal como lo devolvió el backend (ya con insumo.nombre resuelto
+      // para cada crema/agregado), no el objeto local: ese solo tenía el insumoId,
+      // así que la boleta mostraba "Crema/Aderezo" genérico en vez del nombre real.
+      const createdOrder = usePosStore.getState().pedidos.find((o) => o.code === newOrder.code) || newOrder;
+      // Boletera de cocina: al confirmar la comanda se imprime automáticamente
+      // el ticket de cocina (sin precios) para entregarlo a la cocina.
+      setSelectedKitchenOrder(createdOrder);
+    } catch (err: any) {
+      console.error("Error creating order:", err);
+      alert("Error al registrar comanda: " + (err.response?.data?.message || err.message || "Error desconocido"));
+    } finally {
+      setIsSubmittingOrder(false);
+    }
+>>>>>>> Stashed changes
   };
 
   const handleCancelOrder = (order: Order) => {
@@ -650,6 +696,13 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                             </button>
                           )}
                           <button
+                            onClick={() => setSelectedKitchenOrder(order)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-100 border border-orange-300 hover:bg-orange-500 hover:text-white text-orange-700 font-bold text-[11px] transition shadow-sm"
+                            title="Imprimir Comanda de Cocina"
+                          >
+                            🔥 Cocina
+                          </button>
+                          <button
                             onClick={() => setSelectedDetailOrder(order)}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-[11px] transition shadow-sm"
                             title="Ver Detalle del Pedido"
@@ -1002,6 +1055,15 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         <TicketReceiptModal
           order={selectedPrintOrder}
           onClose={() => setSelectedPrintOrder(null)}
+        />
+      )}
+
+      {/* BOLETERA DE COCINA: ticket sin precios, solo el detalle del pedido */}
+      {selectedKitchenOrder && (
+        <TicketReceiptModal
+          order={selectedKitchenOrder}
+          mode="comanda"
+          onClose={() => setSelectedKitchenOrder(null)}
         />
       )}
 
