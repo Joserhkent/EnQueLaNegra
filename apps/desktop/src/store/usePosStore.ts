@@ -249,12 +249,13 @@ interface PosStore {
 
   completeOrder: (orderId: string) => Promise<void>;
   updateOrderStatus: (orderId: string, newStatus: Order["status"]) => Promise<void>;
-  addOrder: (order: Order) => Promise<void>;
+  /** Devuelve el pedido tal como quedó guardado, o null si el backend lo rechazó. */
+  addOrder: (order: Order) => Promise<Order | null>;
   fetchCierres: () => Promise<void>;
   cerrarCaja: (usuario?: string, notas?: string) => Promise<void>;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+export const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("eqln_token");
@@ -262,6 +263,32 @@ const getAuthHeaders = () => {
     "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
+};
+
+// Todas las rutas de la API piden token. Si caduca (dura 1 día) o deja de ser válido,
+// la API responde 401 a todo: en vez de dejar las pantallas vacías sin explicación, se
+// cierra la sesión una sola vez y App vuelve al login.
+let avisoSesionExpirada = false;
+const authFetch = async (input: string, init?: RequestInit): Promise<Response> => {
+  const res = await fetch(input, init);
+  if (res.status === 401 && localStorage.getItem("eqln_token")) {
+    localStorage.removeItem("eqln_token");
+    localStorage.removeItem("eqln_user");
+    usePosStore.getState().logout();
+    if (!avisoSesionExpirada) {
+      avisoSesionExpirada = true;
+      alert("Tu sesión expiró. Vuelve a iniciar sesión.");
+    }
+  }
+  return res;
+};
+
+// Muestra el mensaje de error de la API (string o lista de validaciones).
+const alertarError = async (res: Response, porDefecto: string) => {
+  if (res.status === 401) return; // authFetch ya avisó y cerró la sesión
+  const err = await res.json().catch(() => null);
+  const msg = err?.message || porDefecto;
+  alert(Array.isArray(msg) ? msg.join(", ") : msg);
 };
 
 // 🔧 El backend (Prisma) guarda el status en MAYÚSCULAS (PREPARACION, LISTO, ENTREGADO, CANCELADO).
@@ -336,7 +363,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
   fetchProductos: async () => {
     try {
       set({ loading: true });
-      const res = await fetch(`${API_URL}/productos`, {
+      const res = await authFetch(`${API_URL}/productos`, {
         headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Error obteniendo productos");
@@ -368,7 +395,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
   fetchInsumos: async () => {
     try {
       set({ loading: true });
-      const res = await fetch(`${API_URL}/insumos`, {
+      const res = await authFetch(`${API_URL}/insumos`, {
         headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Error obteniendo insumos");
@@ -392,7 +419,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   fetchMovimientos: async () => {
     try {
-      const res = await fetch(`${API_URL}/insumos/movimientos`, {
+      const res = await authFetch(`${API_URL}/insumos/movimientos`, {
         headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Error obteniendo movimientos");
@@ -410,7 +437,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   fetchMesas: async () => {
     try {
-      const res = await fetch(`${API_URL}/tables`, {
+      const res = await authFetch(`${API_URL}/tables`, {
         headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Error obteniendo mesas");
@@ -423,7 +450,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   createMesa: async (capacity) => {
     try {
-      const res = await fetch(`${API_URL}/tables`, {
+      const res = await authFetch(`${API_URL}/tables`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ capacity }),
@@ -446,7 +473,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   updateMesa: async (tableId, changes) => {
     try {
-      const res = await fetch(`${API_URL}/tables/${tableId}`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify(changes),
@@ -469,7 +496,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   deleteMesa: async (tableId) => {
     try {
-      const res = await fetch(`${API_URL}/tables/${tableId}`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
@@ -490,7 +517,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   joinMesas: async (mainTableId, tableIds) => {
     try {
-      const res = await fetch(`${API_URL}/tables/${mainTableId}/join`, {
+      const res = await authFetch(`${API_URL}/tables/${mainTableId}/join`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ tableIds }),
@@ -513,7 +540,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   unjoinMesas: async (tableId) => {
     try {
-      const res = await fetch(`${API_URL}/tables/${tableId}/unjoin`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}/unjoin`, {
         method: "POST",
         headers: getAuthHeaders(),
       });
@@ -534,7 +561,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   openMesa: async (tableId, customer) => {
     try {
-      const res = await fetch(`${API_URL}/tables/${tableId}/open`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}/open`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ customer }),
@@ -566,7 +593,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
           extras: item.extras,
         })),
       };
-      const res = await fetch(`${API_URL}/tables/${tableId}/items`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}/items`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(payload),
@@ -590,7 +617,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   updateMesaItem: async (tableId, itemId, dto) => {
     try {
-      const res = await fetch(`${API_URL}/tables/${tableId}/items/${itemId}`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}/items/${itemId}`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify(dto),
@@ -613,7 +640,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   removeMesaItem: async (tableId, itemId) => {
     try {
-      const res = await fetch(`${API_URL}/tables/${tableId}/items/${itemId}`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}/items/${itemId}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
@@ -635,7 +662,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   preBillMesa: async (tableId) => {
     try {
-      const res = await fetch(`${API_URL}/tables/${tableId}/pre-bill`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}/pre-bill`, {
         method: "POST",
         headers: getAuthHeaders(),
       });
@@ -660,7 +687,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
         paymentMethod: paymentMethod === "Yape/Plin" ? "YAPE_PLIN" : paymentMethod.toUpperCase(),
         monto,
       };
-      const res = await fetch(`${API_URL}/tables/${tableId}/partial-payment`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}/partial-payment`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(payload),
@@ -689,7 +716,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
         montoEfectivo,
         montoDigital,
       };
-      const res = await fetch(`${API_URL}/tables/${tableId}/checkout`, {
+      const res = await authFetch(`${API_URL}/tables/${tableId}/checkout`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(payload),
@@ -719,7 +746,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
   fetchPedidos: async () => {
     try {
       set({ loading: true });
-      const res = await fetch(`${API_URL}/pedidos`, {
+      const res = await authFetch(`${API_URL}/pedidos`, {
         headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Error obteniendo pedidos");
@@ -758,12 +785,15 @@ export const usePosStore = create<PosStore>((set, get) => ({
     }
   },
 
-  setCurrentUser: (user) => set({ currentUser: user }),
+  setCurrentUser: (user) => {
+    if (user) avisoSesionExpirada = false;
+    set({ currentUser: user });
+  },
   logout: () => set({ currentUser: null }),
 
   addStockMovement: async (insumoId, cantidad, tipo, motivo, _usuario = "Administrador") => {
     try {
-      const res = await fetch(`${API_URL}/insumos/${insumoId}/movimiento`, {
+      const res = await authFetch(`${API_URL}/insumos/${insumoId}/movimiento`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ cantidad, tipo, motivo }),
@@ -781,11 +811,12 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   updateInsumoMinimo: async (insumoId, stockMinimo) => {
     try {
-      await fetch(`${API_URL}/insumos/${insumoId}/minimo`, {
+      const res = await authFetch(`${API_URL}/insumos/${insumoId}/minimo`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify({ stockMinimo }),
       });
+      if (!res.ok) await alertarError(res, "No se pudo actualizar el stock mínimo");
       await get().fetchInsumos();
     } catch (error) {
       console.error("Error al actualizar insumo:", error);
@@ -794,11 +825,12 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   addProduct: async (producto) => {
     try {
-      await fetch(`${API_URL}/productos`, {
+      const res = await authFetch(`${API_URL}/productos`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(producto),
       });
+      if (!res.ok) await alertarError(res, "No se pudo crear el producto");
       await get().fetchProductos();
     } catch (error) {
       console.error("Error al agregar producto:", error);
@@ -807,11 +839,12 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   updateProduct: async (producto) => {
     try {
-      await fetch(`${API_URL}/productos/${producto.id}`, {
+      const res = await authFetch(`${API_URL}/productos/${producto.id}`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify(producto),
       });
+      if (!res.ok) await alertarError(res, "No se pudo actualizar el producto");
       await get().fetchProductos();
     } catch (error) {
       console.error("Error al actualizar producto:", error);
@@ -819,14 +852,14 @@ export const usePosStore = create<PosStore>((set, get) => ({
   },
 
   toggleProductAvailability: async (id) => {
-    const prod = get().productos.find((p) => p.id === id);
-    if (!prod) return;
     try {
-      await fetch(`${API_URL}/productos/${id}`, {
+      // Endpoint propio (no el PATCH general, que es solo del Jefe): los empleados
+      // también marcan un producto como agotado durante el turno.
+      const res = await authFetch(`${API_URL}/productos/${id}/toggle-availability`, {
         method: "PATCH",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ isAvailable: !prod.isAvailable }),
       });
+      if (!res.ok) await alertarError(res, "No se pudo cambiar la disponibilidad");
       await get().fetchProductos();
     } catch (error) {
       console.error("Error al cambiar disponibilidad:", error);
@@ -835,10 +868,11 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   deleteProduct: async (id) => {
     try {
-      await fetch(`${API_URL}/productos/${id}`, {
+      const res = await authFetch(`${API_URL}/productos/${id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
+      if (!res.ok) await alertarError(res, "No se pudo eliminar el producto");
       await get().fetchProductos();
     } catch (error) {
       console.error("Error al eliminar producto:", error);
@@ -847,7 +881,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   fetchCategorias: async () => {
     try {
-      const res = await fetch(`${API_URL}/categorias`, {
+      const res = await authFetch(`${API_URL}/categorias`, {
         headers: getAuthHeaders(),
       });
       const data = await res.json();
@@ -859,7 +893,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   addCategoria: async (nombre, tipo) => {
     try {
-      const res = await fetch(`${API_URL}/categorias`, {
+      const res = await authFetch(`${API_URL}/categorias`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ nombre: nombre.trim(), tipo }),
@@ -880,7 +914,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   deleteCategoria: async (id) => {
     try {
-      const res = await fetch(`${API_URL}/categorias/${id}`, {
+      const res = await authFetch(`${API_URL}/categorias/${id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
@@ -913,7 +947,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
         (c) => c.tipo === "INSUMO" && c.nombre === data.categoria
       );
 
-      const res = await fetch(`${API_URL}/insumos`, {
+      const res = await authFetch(`${API_URL}/insumos`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({
@@ -942,7 +976,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   deleteInsumo: async (id) => {
     try {
-      const res = await fetch(`${API_URL}/insumos/${id}`, {
+      const res = await authFetch(`${API_URL}/insumos/${id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
@@ -985,7 +1019,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
         })),
       };
 
-      const res = await fetch(`${API_URL}/pedidos`, {
+      const res = await authFetch(`${API_URL}/pedidos`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(payload),
@@ -995,12 +1029,11 @@ export const usePosStore = create<PosStore>((set, get) => ({
         const errorBody = await res.json().catch(() => null);
         console.error("Error al crear pedido, respuesta del servidor:", errorBody);
         const msg = errorBody?.message || "No se pudo registrar el pedido";
-        if (res.status === 401) {
-          alert("Tu sesión ha expirado o no es válida. Por favor cierra sesión e inicia de nuevo.");
-        } else {
+        // Con 401, authFetch ya avisó y cerró la sesión
+        if (res.status !== 401) {
           alert(`No se pudo crear el pedido: ${Array.isArray(msg) ? msg.join(", ") : msg}`);
         }
-        return;
+        return null;
       }
 
       const createdOrder = await res.json();
@@ -1012,15 +1045,17 @@ export const usePosStore = create<PosStore>((set, get) => ({
       };
       set((state) => ({ pedidos: [normalizado, ...state.pedidos] }));
       get().fetchInsumos();
+      return normalizado;
     } catch (error) {
       console.error("Error al crear pedido:", error);
       alert("No se pudo crear el pedido. Revisa tu conexión e intenta de nuevo.");
+      return null;
     }
   },
 
   completeOrder: async (orderId) => {
     try {
-      await fetch(`${API_URL}/pedidos/${orderId}/status`, {
+      await authFetch(`${API_URL}/pedidos/${orderId}/status`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify({ status: "ENTREGADO" }),
@@ -1034,7 +1069,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   updateOrderStatus: async (orderId, newStatus) => {
     try {
-      await fetch(`${API_URL}/pedidos/${orderId}/status`, {
+      await authFetch(`${API_URL}/pedidos/${orderId}/status`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify({ status: statusToBackend(newStatus) }),
@@ -1049,7 +1084,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
   },
   updateOrderItemKitchenStatus: async (orderId, itemId, kitchenStatus) => {
     try {
-      const res = await fetch(`${API_URL}/pedidos/${orderId}/items/${itemId}/kitchen-status`, {
+      const res = await authFetch(`${API_URL}/pedidos/${orderId}/items/${itemId}/kitchen-status`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify({ kitchenStatus }),
@@ -1076,7 +1111,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   fetchCierres: async () => {
     try {
-      const res = await fetch(`${API_URL}/caja/cierres`, {
+      const res = await authFetch(`${API_URL}/caja/cierres`, {
         headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Error obteniendo cierres");
@@ -1089,7 +1124,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   fetchCajaEstado: async () => {
     try {
-      const res = await fetch(`${API_URL}/caja/estado`, {
+      const res = await authFetch(`${API_URL}/caja/estado`, {
         headers: getAuthHeaders(),
       });
       if (!res.ok) return null;
@@ -1104,7 +1139,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   fetchCajaSesiones: async () => {
     try {
-      const res = await fetch(`${API_URL}/caja/sesiones`, {
+      const res = await authFetch(`${API_URL}/caja/sesiones`, {
         headers: getAuthHeaders(),
       });
       if (!res.ok) return;
@@ -1117,7 +1152,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   abrirCaja: async (montoInicial: number, notas?: string) => {
     try {
-      const res = await fetch(`${API_URL}/caja/abrir`, {
+      const res = await authFetch(`${API_URL}/caja/abrir`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ montoInicial, notas }),
@@ -1139,7 +1174,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   cerrarCajaSesion: async (efectivoReal?: number, notas?: string) => {
     try {
-      const res = await fetch(`${API_URL}/caja/cerrar`, {
+      const res = await authFetch(`${API_URL}/caja/cerrar`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ efectivoReal, notas }),
@@ -1166,7 +1201,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
 
   cerrarCaja: async (_usuario = "Administrador", notas = "Cierre de caja") => {
     try {
-      const res = await fetch(`${API_URL}/caja/cierre`, {
+      const res = await authFetch(`${API_URL}/caja/cierre`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ notas }),

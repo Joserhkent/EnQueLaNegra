@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { usePosStore, type Mesa, type Producto, type Order, type OrderItem } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
+import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import {
   Users,
@@ -20,15 +21,6 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-
-const AGREGADOS_DISPONIBLES = [
-  { nombre: "Queso Amarillo", precio: 0.75 },
-  { nombre: "Plátano Maduro", precio: 0.75 },
-  { nombre: "Carne Mechada", precio: 1.50 },
-  { nombre: "Pollo Desmechado", precio: 1.50 },
-  { nombre: "Tocineta", precio: 1.00 },
-  { nombre: "Chicharrón", precio: 1.00 },
-];
 
 type CartLine = { product: Producto; quantity: number; notes: string; agregados: string[] };
 
@@ -81,6 +73,7 @@ export default function MesasPage() {
   const [mainJoinTableId, setMainJoinTableId] = useState<string | null>(null);
 
   const { tabs: CATEGORIES, activeCategory: selectedCategory, setSelectedCategory } = useMenuCategories(productos);
+  const agregadosVisibles = useMemo(() => agregadosConInsumo(insumos), [insumos]);
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [customizingProduct, setCustomizingProduct] = useState<Producto | null>(null);
   const [customizingQuantity, setCustomizingQuantity] = useState(1);
@@ -927,7 +920,7 @@ export default function MesasPage() {
                               <div>
                                 <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">Agregados</div>
                                 <div className="flex flex-wrap gap-1.5">
-                                  {AGREGADOS_DISPONIBLES.map((agregado) => {
+                                  {agregadosVisibles.map((agregado) => {
                                     const activo = item.agregados.includes(agregado.nombre);
                                     return (
                                       <button
@@ -1207,7 +1200,7 @@ export default function MesasPage() {
               <div>
                 <div className="text-[10px] font-bold text-slate-500 uppercase mb-1.5">Agregados</div>
                 <div className="flex flex-wrap gap-1.5">
-                  {AGREGADOS_DISPONIBLES.map((agregado) => (
+                  {agregadosVisibles.map((agregado) => (
                     <button key={agregado.nombre} type="button" onClick={() => toggleCustomizationAgregado(agregado.nombre)} className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition ${customizingAgregados.includes(agregado.nombre) ? "bg-blue-500 text-white border-blue-500" : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>
                       {agregado.nombre} +S/{agregado.precio.toFixed(2)}
                     </button>

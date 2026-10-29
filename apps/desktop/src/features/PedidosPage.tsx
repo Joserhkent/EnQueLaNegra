@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { usePosStore, type Order, type Producto } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
 import OrderDetailModal from "../components/OrderDetailModal";
+import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import {
   ShoppingBag,
@@ -26,15 +27,6 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-
-const AGREGADOS_DISPONIBLES = [
-  { nombre: "Queso Amarillo", precio: 0.75 },
-  { nombre: "Plátano Maduro", precio: 0.75 },
-  { nombre: "Carne Mechada", precio: 1.50 },
-  { nombre: "Pollo Desmechado", precio: 1.50 },
-  { nombre: "Tocineta", precio: 1.00 },
-  { nombre: "Chicharrón", precio: 1.00 },
-];
 
 
 function formatElapsed(startIso?: string | null): string {
@@ -73,6 +65,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [montoEfectivo, setMontoEfectivo] = useState<string>("");
   const [montoDigital, setMontoDigital] = useState<string>("");
   const { tabs: menuTabs, activeCategory: selectedCategory, setSelectedCategory } = useMenuCategories(productos);
+  const agregadosVisibles = useMemo(() => agregadosConInsumo(insumos), [insumos]);
   const [selectedPrintOrder, setSelectedPrintOrder] = useState<Order | null>(null);
   const [selectedKitchenOrder, setSelectedKitchenOrder] = useState<Order | null>(null);
   const [selectedDetailOrder, setSelectedDetailOrder] = useState<Order | null>(null);
@@ -274,16 +267,16 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         hora: horaStr,
       };
 
-      await addOrder(newOrder);
+      // Usa el pedido tal como lo devolvió el backend (ya con insumo.nombre resuelto
+      // para cada crema/agregado y su código final). Si fue rechazado, el modal y el
+      // carrito se mantienen para corregir y reintentar, y no se imprime nada.
+      const createdOrder = await addOrder(newOrder);
+      if (!createdOrder) return;
       setIsModalOpen(false);
       setCart({});
       setCustomerName("");
       setMontoEfectivo("");
       setMontoDigital("");
-      // Usa el pedido tal como lo devolvió el backend (ya con insumo.nombre resuelto
-      // para cada crema/agregado), no el objeto local: ese solo tenía el insumoId,
-      // así que la boleta mostraba "Crema/Aderezo" genérico en vez del nombre real.
-      const createdOrder = usePosStore.getState().pedidos.find((o) => o.code === newOrder.code) || newOrder;
       setSelectedPrintOrder(createdOrder);
       setSelectedKitchenOrder(createdOrder);
     } catch (error: unknown) {
@@ -901,7 +894,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                                   Agregados
                                 </div>
                                 <div className="flex flex-wrap gap-1.5">
-                                  {AGREGADOS_DISPONIBLES.map((agregado) => {
+                                  {agregadosVisibles.map((agregado) => {
                                     const activo = item.agregados.includes(agregado.nombre);
                                     return (
                                       <button

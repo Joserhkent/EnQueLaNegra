@@ -10,7 +10,7 @@ import HistorialPage from "./features/HistorialPage";
 import LoginPage from "./features/LoginPage";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PwaInstallBanner from "./components/PwaInstallBanner";
-import { usePosStore, type UserAccount } from "./store/usePosStore";
+import { API_URL, usePosStore, type UserAccount } from "./store/usePosStore";
 import KitchenPage from "./features/kitchenPage";
 
 const pages = {
@@ -28,9 +28,10 @@ type PageKey = keyof typeof pages;
 
 async function loginWithApi(username: string, password: string) {
   let response: Response;
-  const apiBase = import.meta.env.VITE_API_URL || "";
   try {
-    response = await fetch(`${apiBase}/api/auth/login`, {
+    // Misma base que el resto de la app (VITE_API_URL ya incluye /api): antes el login
+    // agregaba "/api" por su cuenta y quedaba desalineado si se definía VITE_API_URL.
+    response = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -113,12 +114,16 @@ export default function App() {
     }
   }, []);
 
-  // 2. 🔥 EFECTO CLAVE: Apenas 'isLoggedIn' cambie a TRUE, cargamos TODOS los datos inmediatamente
+  // Si la sesión expira, authFetch (store) limpia currentUser: sin usuario se vuelve
+  // al login aunque isLoggedIn siga en true, y al entrar de nuevo se recarga todo.
+  const sesionActiva = isLoggedIn && !!currentUser;
+
+  // 2. 🔥 EFECTO CLAVE: Apenas la sesión quede activa, cargamos TODOS los datos inmediatamente
   useEffect(() => {
-    if (isLoggedIn) {
+    if (sesionActiva) {
       cargarTodaLaBaseDeDatos();
     }
-  }, [isLoggedIn]);
+  }, [sesionActiva]);
 
   const handleLogin = async (username: string, password: string): Promise<boolean> => {
     setAuthError("");
@@ -183,7 +188,7 @@ export default function App() {
     setActivePage("dashboard");
   };
 
-  if (!isLoggedIn) {
+  if (!sesionActiva) {
     return (
       <>
         <LoginPage onLogin={handleLogin} authError={authError} />

@@ -22,6 +22,7 @@ import { JoinTablesDto } from './dto/join-tables.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { formatFecha, formatHora } from '../common/date';
 import { itemLineTotal, round2, splitIgv } from '../common/order-totals';
+import { resolverProductos } from '../common/productos';
 
 const ORDER_INCLUDE = {
   items: {
@@ -337,16 +338,9 @@ export class MesasService {
 
   async addItems(tableId: string, dto: AddItemsDto, userId?: string) {
     await this.assertCajaAbierta('enviar pedidos a cocina');
-    // Todo lo que no depende de un resultado previo se dispara junto: traer la
-    // mesa (con su orden actual y el último ítem, para calcular la ronda) y
-    // resolver los sku->productoId que falten (caso raro; el frontend ya manda
-    // productoId casi siempre, así que esto normalmente no hace ninguna consulta).
-    const skusToResolve = [
-      ...new Set(
-        dto.items.filter((i) => !i.productoId && i.sku).map((i) => i.sku),
-      ),
-    ];
-    const [table, resolvedBySku] = await Promise.all([
+    // La mesa (con su orden actual y el último ítem, para calcular la ronda) y los
+    // productos del catálogo (con su precio real) se consultan a la vez.
+    const [table, itemsWithProductoId] = await Promise.all([
       this.prisma.table.findUnique({
         where: { id: tableId },
         include: {
@@ -355,32 +349,13 @@ export class MesasService {
           },
         },
       }),
-      skusToResolve.length
-        ? this.prisma.producto.findMany({
-            where: { sku: { in: skusToResolve } },
-            select: { id: true, sku: true },
-          })
-        : Promise.resolve<{ id: string; sku: string }[]>([]),
+      resolverProductos(this.prisma, dto.items),
     ]);
 
     if (!table) throw new NotFoundException('Mesa no encontrada');
     if (!table.currentOrderId || !table.currentOrder) {
       throw new BadRequestException(
         `La mesa ${table.number} no tiene una cuenta abierta`,
-      );
-    }
-
-    const skuToId = new Map<string, string>(
-      resolvedBySku.map((p) => [p.sku, p.id]),
-    );
-    const itemsWithProductoId = dto.items.map((item) => ({
-      ...item,
-      productoId: item.productoId || skuToId.get(item.sku) || '',
-    }));
-    const sinProducto = itemsWithProductoId.find((i) => !i.productoId);
-    if (sinProducto) {
-      throw new BadRequestException(
-        `El producto "${sinProducto.nombre}" (${sinProducto.sku}) no existe en el catálogo`,
       );
     }
 

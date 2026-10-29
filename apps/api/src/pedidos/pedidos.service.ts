@@ -15,6 +15,15 @@ import {
 } from '@prisma/client';
 import { formatFecha, formatHora } from '../common/date';
 import { itemLineTotal, splitIgv } from '../common/order-totals';
+import { resolverProductos } from '../common/productos';
+
+function esCodigoDuplicado(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2002' &&
+    JSON.stringify(error.meta ?? {}).includes('code')
+  );
+}
 
 const ORDER_INCLUDE = {
   items: { include: { extras: { include: { insumo: true } } } },
@@ -68,29 +77,8 @@ export class PedidosService {
     const fecha = formatFecha(now);
     const hora = formatHora(now);
 
-    // Resuelve todos los productoId faltantes en UNA sola consulta (antes se hacía
-    // una por ítem, dos veces — una para descontar inventario y otra para guardar).
-    const skusToResolve = dto.items
-      .filter((i) => !i.productoId && i.sku)
-      .map((i) => i.sku);
-    const resolvedBySku = skusToResolve.length
-      ? await this.prisma.producto.findMany({
-          where: { sku: { in: skusToResolve } },
-          select: { id: true, sku: true },
-        })
-      : [];
-    const skuToId = new Map(resolvedBySku.map((p) => [p.sku, p.id]));
-    const itemsWithProductoId = dto.items.map((item) => ({
-      ...item,
-      productoId: item.productoId || skuToId.get(item.sku) || '',
-    }));
-
-    const sinProducto = itemsWithProductoId.find((i) => !i.productoId);
-    if (sinProducto) {
-      throw new BadRequestException(
-        `El producto "${sinProducto.nombre}" (${sinProducto.sku}) no existe en el catálogo`,
-      );
-    }
+    // Productos resueltos contra el catálogo en UNA sola consulta, con su precio real.
+    const itemsWithProductoId = await resolverProductos(this.prisma, dto.items);
 
     // Insumo -> cantidad total a descontar, calculado en memoria (1 sola consulta
     // para todas las recetas involucradas, agrupando ítems repetidos).
@@ -160,43 +148,49 @@ export class PedidosService {
         : undefined,
     }));
 
-    const codeLabel = dto.code ?? 'Nuevo Pedido';
-
     // Pedido e inventario van en una sola transacción: si algo falla no queda un
     // pedido sin descontar stock (ni stock descontado sin pedido).
-    const [order] = await this.prisma.$transaction([
-      this.prisma.order.create({
-        data: {
-          code: dto.code ?? `#ORD-${Date.now()}`,
-          customer: dto.customer ?? 'Cliente Mostrador',
-          type: orderType,
-          status: OrderStatus.PREPARACION,
-          paymentMethod,
-          montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
-          montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
-          subtotal,
-          igv,
-          total,
-          userId,
-          fecha,
-          hora,
-          items: {
-            create: itemsFormatted,
+    const crear = (code: string) =>
+      this.prisma.$transaction([
+        this.prisma.order.create({
+          data: {
+            code,
+            customer: dto.customer ?? 'Cliente Mostrador',
+            type: orderType,
+            status: OrderStatus.PREPARACION,
+            paymentMethod,
+            montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
+            montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
+            subtotal,
+            igv,
+            total,
+            userId,
+            fecha,
+            hora,
+            items: {
+              create: itemsFormatted,
+            },
+            pagos: {
+              create: pagosData,
+            },
           },
-          pagos: {
-            create: pagosData,
-          },
-        },
-        include: ORDER_INCLUDE,
-      }),
-      ...this.buildInventoryOps(
-        deducciones,
-        userId,
-        `Venta comanda ${codeLabel}`,
-      ),
-    ]);
+          include: ORDER_INCLUDE,
+        }),
+        ...this.buildInventoryOps(deducciones, userId, `Venta comanda ${code}`),
+      ]);
 
-    return order;
+    // El código lo propone el navegador a partir de los pedidos que tiene cargados;
+    // con dos dispositivos a la vez puede repetirse. En ese caso se usa uno único
+    // en vez de perder el pedido (la transacción anterior no dejó nada a medias).
+    const codigoPropuesto = dto.code ?? `#ORD-${Date.now()}`;
+    try {
+      const [order] = await crear(codigoPropuesto);
+      return order;
+    } catch (error) {
+      if (!esCodigoDuplicado(error)) throw error;
+      const [order] = await crear(`#ORD-${Date.now()}`);
+      return order;
+    }
   }
 
   async updateStatus(id: string, newStatus: OrderStatus) {
@@ -204,6 +198,18 @@ export class PedidosService {
 
     if (order.status === newStatus) {
       return order;
+    }
+    // Las cuentas de mesa se cierran solo con el cobro (libera la mesa y registra
+    // los pagos); cambiarlas desde aquí dejaría la mesa ocupada con una orden cerrada.
+    if (order.status === OrderStatus.OPEN || newStatus === OrderStatus.OPEN) {
+      throw new BadRequestException(
+        'Las cuentas de mesa abiertas se gestionan desde Mesas (cobrar o liberar)',
+      );
+    }
+    if (order.status === OrderStatus.CANCELADO) {
+      throw new BadRequestException(
+        `El pedido ${order.code} ya fue cancelado y no se puede reabrir`,
+      );
     }
 
     // El inventario ya se descuenta al CREAR el pedido, no al marcarlo como entregado.
