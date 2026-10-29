@@ -168,7 +168,7 @@ export default function PagosPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gestión de Pagos & Caja POS</h1>
             {isCajaOpen ? (
               <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full flex items-center gap-1.5">
@@ -703,7 +703,7 @@ export default function PagosPage() {
                 </div>
                 <div className="flex justify-between items-center border-t border-slate-200 pt-2 font-black text-slate-900 text-sm">
                   <span>(=) Efectivo Total Esperado en Gaveta:</span>
-                  <span className="text-emerald-700">S/ {expectedCashInDrawer.toFixed(2)}</span>
+                  <span className="text-emerald-700 whitespace-nowrap">S/ {expectedCashInDrawer.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center text-slate-500 pt-1 border-t border-slate-200">
                   <span>Ventas Yape / Plin / Tarjeta:</span>

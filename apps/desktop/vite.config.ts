@@ -43,41 +43,9 @@ export default defineConfig({
         "logo.jpg",
         "mesa.svg",
       ],
-      manifest: {
-        name: "En que la Negra - Sistema POS",
-        short_name: "La Negra POS",
-        description: "Sistema POS y Punto de Venta para En que la Negra",
-        theme_color: "#09090b",
-        background_color: "#09090b",
-        display: "standalone",
-        orientation: "any",
-        start_url: "/",
-        scope: "/",
-        icons: [
-          {
-            src: "/pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-maskable-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable",
-          },
-          {
-            src: "/pwa-maskable-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
-        ],
-      },
+      // El manifest vive en public/manifest.webmanifest (lo usan dev y build por igual);
+      // si el plugin generara otro, la build saldría con dos <link rel="manifest">.
+      manifest: false,
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,woff,woff2}"],
         navigateFallback: "/index.html",

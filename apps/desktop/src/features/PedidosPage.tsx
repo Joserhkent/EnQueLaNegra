@@ -399,7 +399,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Pedidos para Llevar / Delivery</h1>
             <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full flex items-center gap-1">
               <ShoppingBag className="w-3.5 h-3.5" />
@@ -849,7 +849,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                   <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
                     {Object.keys(cart).length === 0 ? (
                       <div className="text-center py-8 text-slate-400 text-xs font-medium">
-                        Selecciona ítems del menú a la izquierda.
+                        Selecciona ítems de la carta.
                       </div>
                     ) : (
                       Object.entries(cart).map(([lineId, item]) => (

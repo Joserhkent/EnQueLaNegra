@@ -3,7 +3,6 @@ const CACHE_NAME = 'en-que-la-negra-pwa-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/manifest.json',
   '/manifest.webmanifest',
   '/favicon.svg',
   '/favicon-64x64.png',

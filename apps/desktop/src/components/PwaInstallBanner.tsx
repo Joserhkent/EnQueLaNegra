@@ -6,7 +6,7 @@ import {
   PlusSquare,
   X,
   Zap,
-  Bell,
+  Maximize2,
   CheckCircle2,
   Info,
   Loader2,
@@ -16,6 +16,9 @@ interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
+
+// Días que el banner queda oculto después de cerrarlo con la X
+const DIAS_OCULTO = 7;
 
 export default function PwaInstallBanner() {
   // Si index.html ya capturó el evento antes de montar React, se usa desde el inicio.
@@ -35,10 +38,15 @@ export default function PwaInstallBanner() {
         true ||
       document.referrer.includes("android-app://"),
   );
-  // 3. ¿El usuario lo descartó previamente en esta sesión?
-  const [isDismissed, setIsDismissed] = useState(
-    () => sessionStorage.getItem("pwa_banner_dismissed") === "true",
-  );
+  // 3. ¿El usuario lo cerró en los últimos días? (si no, reaparecería en cada apertura)
+  const [isDismissed, setIsDismissed] = useState(() => {
+    try {
+      const hasta = Number(localStorage.getItem("pwa_banner_oculto_hasta"));
+      return hasta > Date.now();
+    } catch {
+      return false;
+    }
+  });
   const [showGuideModal, setShowGuideModal] = useState(false);
   // 2. ¿Está en iOS (iPhone / iPad)?
   const [isIos] = useState(() => {
@@ -127,7 +135,14 @@ export default function PwaInstallBanner() {
 
   const handleDismiss = () => {
     setIsDismissed(true);
-    sessionStorage.setItem("pwa_banner_dismissed", "true");
+    try {
+      localStorage.setItem(
+        "pwa_banner_oculto_hasta",
+        String(Date.now() + DIAS_OCULTO * 24 * 60 * 60 * 1000),
+      );
+    } catch {
+      // sin almacenamiento (modo privado): se oculta solo hasta recargar
+    }
   };
 
   return (
@@ -135,13 +150,13 @@ export default function PwaInstallBanner() {
       {/* Alerta flotante idéntica a PANCA para PC y Móviles */}
       <aside
         aria-label="Instalación de la aplicación"
-        className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm z-[9999] animate-in fade-in slide-in-from-bottom-6 duration-300"
+        className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm z-40 animate-in fade-in slide-in-from-bottom-6 duration-300"
       >
-        <div className="relative overflow-hidden rounded-3xl bg-zinc-950/95 border border-zinc-800 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-xl p-5 text-white">
+        <div className="relative overflow-hidden rounded-3xl bg-zinc-950/95 border border-zinc-800 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-xl p-3 sm:p-5 text-white">
           {/* Botón cerrar X en esquina superior derecha */}
           <button
             onClick={handleDismiss}
-            className="absolute top-4 right-4 p-1 rounded-lg text-zinc-500 hover:text-white transition active:scale-95"
+            className="absolute top-2 right-2 sm:top-4 sm:right-4 p-1 rounded-lg text-zinc-500 hover:text-white transition active:scale-95"
             aria-label="Cerrar notificación"
             title="Cerrar"
           >
@@ -163,23 +178,38 @@ export default function PwaInstallBanner() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              {/* Header: Logo + Título + Subtítulo */}
-              <div className="flex items-start gap-3.5 pr-6">
+            <div className="sm:space-y-4">
+              {/* Header: Logo + Título + Subtítulo (en celular, una sola fila compacta) */}
+              <div className="flex items-center sm:items-start gap-3 sm:gap-3.5 pr-6">
                 <img
                   src="/pwa-192x192.png"
                   alt="Logo En que la Negra"
                   className="w-11 h-11 rounded-2xl bg-black border border-zinc-800 object-contain shadow-md shrink-0"
                 />
 
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 min-w-0 flex-1">
                   <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight">
-                    Instalar En que la Negra
+                    <span className="sm:hidden">Instalar la app</span>
+                    <span className="hidden sm:inline">Instalar En que la Negra</span>
                   </h3>
-                  <p className="text-xs text-zinc-400 leading-snug">
-                    Accede más rápido y recibe notificaciones de nuevas órdenes
+                  <p className="text-xs text-zinc-400 leading-snug truncate sm:whitespace-normal">
+                    Ábrela desde tu inicio, a pantalla completa
                   </p>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleInstallClick}
+                  disabled={isPrompting}
+                  className="sm:hidden shrink-0 flex items-center gap-1.5 py-2 px-3 rounded-xl bg-amber-500 active:scale-98 text-zinc-950 font-black text-xs disabled:opacity-60"
+                >
+                  {isPrompting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4 stroke-[2.5]" />
+                  )}
+                  Instalar
+                </button>
               </div>
 
               {/* Botón de acción principal grande */}
@@ -187,7 +217,7 @@ export default function PwaInstallBanner() {
                 type="button"
                 onClick={handleInstallClick}
                 disabled={isPrompting}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-98 text-zinc-950 font-black text-xs sm:text-sm shadow-md transition transform cursor-pointer disabled:opacity-60"
+                className="hidden w-full sm:flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-98 text-zinc-950 font-black text-xs sm:text-sm shadow-md transition transform cursor-pointer disabled:opacity-60"
               >
                 {isPrompting ? (
                   <>
@@ -203,7 +233,7 @@ export default function PwaInstallBanner() {
               </button>
 
               {/* Footer con 3 beneficios exactos a PANCA */}
-              <div className="flex items-center justify-between pt-1 border-t border-zinc-900 text-[11px] text-zinc-400 font-medium px-1">
+              <div className="hidden sm:flex items-center justify-between pt-1 border-t border-zinc-900 text-[11px] text-zinc-400 font-medium px-1">
                 <span className="flex items-center gap-1">
                   <Zap className="w-3.5 h-3.5 text-amber-400" /> Más rápida
                 </span>
@@ -211,7 +241,7 @@ export default function PwaInstallBanner() {
                   <Smartphone className="w-3.5 h-3.5 text-emerald-400" /> En tu pantalla
                 </span>
                 <span className="flex items-center gap-1">
-                  <Bell className="w-3.5 h-3.5 text-blue-400" /> Notificaciones
+                  <Maximize2 className="w-3.5 h-3.5 text-blue-400" /> Pantalla completa
                 </span>
               </div>
             </div>

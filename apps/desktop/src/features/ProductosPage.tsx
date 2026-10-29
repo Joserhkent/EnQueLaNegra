@@ -348,8 +348,8 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         </div>
 
         {/* Categorías Pills */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none flex-1">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none flex-1 min-w-0">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -367,7 +367,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           {isJefe && (
             <button
               onClick={() => setIsCategoriaModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20 hover:bg-amber-500/20 transition shrink-0"
+              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20 hover:bg-amber-500/20 transition shrink-0"
               title="Crear nueva categoría"
             >
               <Tags className="w-3.5 h-3.5" />
@@ -712,7 +712,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                       {formData.iconoEmoji}
                     </span>
                     <span className="text-[11px] font-bold text-amber-600">
-                      Cambiar ▾
+                      <span className="hidden sm:inline">Cambiar </span>▾
                     </span>
                   </button>
 

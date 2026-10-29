@@ -205,7 +205,7 @@ export default function InventarioPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gestión de Inventario & Insumos</h1>
             <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full flex items-center gap-1.5">
               <Boxes className="w-3.5 h-3.5 text-slate-500" />
@@ -218,7 +218,7 @@ export default function InventarioPage() {
         </div>
 
         {isJefe && (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsCategoriasModalOpen(true)}
               className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold px-5 py-3 rounded-2xl text-xs shadow-sm transition active:scale-95"

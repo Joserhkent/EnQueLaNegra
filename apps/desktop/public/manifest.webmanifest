@@ -2,6 +2,8 @@
   "name": "En que la Negra - Sistema POS",
   "short_name": "La Negra POS",
   "description": "Gestiona tu restaurante: mesas, comandas, inventario, cocina y caja en tiempo real",
+  "id": "/",
+  "lang": "es",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
