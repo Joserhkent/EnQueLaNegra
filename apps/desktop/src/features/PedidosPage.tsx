@@ -324,8 +324,13 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   };
 
   const range = getDateRange();
+  // En "Hoy" también salen los pedidos de días anteriores que siguen en preparación
+  // o listos: si no, quedan escondidos y solo se ven en el contador del menú.
   const dateFilteredOrders = pedidos.filter(
-    (order) => order.fecha >= range.start && order.fecha <= range.end
+    (order) =>
+      (order.fecha >= range.start && order.fecha <= range.end) ||
+      (dateFilter === "hoy" &&
+        (order.status === "preparacion" || order.status === "listo"))
   );
 
   const filteredOrders = dateFilteredOrders
