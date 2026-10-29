@@ -233,234 +233,234 @@
       "nombre": "Agua Personal",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 24,
+      "stockMinimo": 12,
+      "costoUnitario": 1
     },
     {
       "id": "carta_beb_coca_1500",
       "nombre": "Coca Cola 1.5 litros",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 12,
+      "stockMinimo": 4,
+      "costoUnitario": 5.5
     },
     {
       "id": "carta_beb_coca_500",
       "nombre": "Coca Cola 500 ml",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 18,
+      "stockMinimo": 6,
+      "costoUnitario": 2.2
     },
     {
       "id": "carta_beb_coca_personal",
       "nombre": "Coca Cola Personal",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 36,
+      "stockMinimo": 12,
+      "costoUnitario": 1.5
     },
     {
       "id": "carta_beb_fanta",
       "nombre": "Fanta Personal",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 24,
+      "stockMinimo": 12,
+      "costoUnitario": 1.5
     },
     {
       "id": "carta_beb_frescolita",
       "nombre": "Frescolita Lata",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 24,
+      "stockMinimo": 12,
+      "costoUnitario": 2.5
     },
     {
       "id": "carta_beb_inca_1500",
       "nombre": "Inca Kola 1.5 litros",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 12,
+      "stockMinimo": 4,
+      "costoUnitario": 5.5
     },
     {
       "id": "carta_beb_inca_500",
       "nombre": "Inca Kola 500 ml",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 18,
+      "stockMinimo": 6,
+      "costoUnitario": 2.2
     },
     {
       "id": "carta_beb_inca_personal",
       "nombre": "Inca Kola Personal",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 36,
+      "stockMinimo": 12,
+      "costoUnitario": 1.5
     },
     {
       "id": "carta_beb_malta",
       "nombre": "Malta Lata",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 24,
+      "stockMinimo": 12,
+      "costoUnitario": 2.5
     },
     {
       "id": "carta_beb_sporade",
       "nombre": "Sporade Personal",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 18,
+      "stockMinimo": 6,
+      "costoUnitario": 2
     },
     {
       "id": "carta_beb_sprite",
       "nombre": "Sprite Personal",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 24,
+      "stockMinimo": 12,
+      "costoUnitario": 1.5
     },
     {
       "id": "carta_chorizo",
       "nombre": "Chorizo",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 20,
+      "stockMinimo": 10,
+      "costoUnitario": 1.5
     },
     {
       "id": "carta_diablito",
       "nombre": "Diablito",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 15,
+      "stockMinimo": 6,
+      "costoUnitario": 1.2
     },
     {
       "id": "carta_fresa",
       "nombre": "Fresa",
       "categoria": "Frutas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 4000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.012
     },
     {
       "id": "carta_guayaba",
       "nombre": "Guayaba",
       "categoria": "Frutas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 3000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.006
     },
     {
       "id": "carta_leche",
       "nombre": "Leche",
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "ml",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 6000,
+      "stockMinimo": 2000,
+      "costoUnitario": 0.0045
     },
     {
       "id": "carta_limon",
       "nombre": "Limón",
       "categoria": "Frutas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 2000,
+      "stockMinimo": 500,
+      "costoUnitario": 0.005
     },
     {
       "id": "carta_mango",
       "nombre": "Mango",
       "categoria": "Frutas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 4000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.006
     },
     {
       "id": "carta_maracuya",
       "nombre": "Maracuyá",
       "categoria": "Frutas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 5000,
+      "stockMinimo": 1500,
+      "costoUnitario": 0.008
     },
     {
       "id": "carta_melon",
       "nombre": "Melón",
       "categoria": "Frutas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 4000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.003
     },
     {
       "id": "carta_papaya",
       "nombre": "Papaya",
       "categoria": "Frutas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 4000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.003
     },
     {
       "id": "carta_papelon",
       "nombre": "Papelón",
       "categoria": "Abarrotes para bebidas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 3000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.008
     },
     {
       "id": "carta_pina",
       "nombre": "Piña",
       "categoria": "Frutas",
       "unidadMedida": "g",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 4000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.004
     },
     {
       "id": "carta_salchicha_ahumada",
       "nombre": "Salchicha ahumada",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "unidad",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 30,
+      "stockMinimo": 15,
+      "costoUnitario": 1.2
     },
     {
       "id": "carta_tallarin",
       "nombre": "Tallarín",
       "categoria": "Panes y Masas",
       "unidadMedida": "porción",
-      "stockActual": 0,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 15,
+      "stockMinimo": 8,
+      "costoUnitario": 0.8
     },
     {
       "id": "chicharron",
@@ -494,99 +494,99 @@
       "nombre": "Aceituna",
       "categoria": "Cremas",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 40,
+      "stockMinimo": 15,
+      "costoUnitario": 0.4
     },
     {
       "id": "crema_aji_esp",
       "nombre": "Ají Especial",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 2000,
+      "stockMinimo": 500,
+      "costoUnitario": 0.01
     },
     {
       "id": "crema_bbq",
       "nombre": "BBQ",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 2000,
+      "stockMinimo": 500,
+      "costoUnitario": 0.01
     },
     {
       "id": "crema_golf",
       "nombre": "Golf",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 3000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.01
     },
     {
       "id": "crema_huancaina",
       "nombre": "Huancaina",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 2000,
+      "stockMinimo": 500,
+      "costoUnitario": 0.012
     },
     {
       "id": "crema_maiz",
       "nombre": "Maíz",
       "categoria": "Cremas",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 60,
+      "stockMinimo": 20,
+      "costoUnitario": 0.3
     },
     {
       "id": "crema_queso",
       "nombre": "Queso",
       "categoria": "Cremas",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 40,
+      "stockMinimo": 15,
+      "costoUnitario": 0.5
     },
     {
       "id": "crema_rocoto",
       "nombre": "Rocoto",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 2000,
+      "stockMinimo": 500,
+      "costoUnitario": 0.01
     },
     {
       "id": "crema_tartara",
       "nombre": "Tártara",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 2000,
+      "stockMinimo": 500,
+      "costoUnitario": 0.012
     },
     {
       "id": "crema_tocino",
       "nombre": "Tocino",
       "categoria": "Cremas",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 40,
+      "stockMinimo": 15,
+      "costoUnitario": 0.5
     },
     {
       "id": "crema_vinagreta",
       "nombre": "Vinagreta",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 2000,
+      "stockMinimo": 500,
+      "costoUnitario": 0.008
     },
     {
       "id": "ensalada_rusa",
@@ -620,8 +620,8 @@
       "nombre": "Ketchup",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 10000,
-      "stockMinimo": 0,
+      "stockActual": 3000,
+      "stockMinimo": 1000,
       "costoUnitario": 0.01
     },
     {
@@ -665,8 +665,8 @@
       "nombre": "Mayonesa",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 10002,
-      "stockMinimo": 0,
+      "stockActual": 4000,
+      "stockMinimo": 1000,
       "costoUnitario": 0.01
     },
     {
@@ -683,8 +683,8 @@
       "nombre": "Mostaza",
       "categoria": "Cremas",
       "unidadMedida": "ml",
-      "stockActual": 9999,
-      "stockMinimo": 0,
+      "stockActual": 2000,
+      "stockMinimo": 500,
       "costoUnitario": 0.01
     },
     {
@@ -791,45 +791,45 @@
       "nombre": "Queso Cheddar",
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 60,
+      "stockMinimo": 20,
+      "costoUnitario": 0.8
     },
     {
       "id": "queso_de_mano",
       "nombre": "Queso de Mano",
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 40,
+      "stockMinimo": 15,
+      "costoUnitario": 1.5
     },
     {
       "id": "queso_edam",
       "nombre": "Queso Edam",
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 30,
+      "stockMinimo": 10,
+      "costoUnitario": 1.2
     },
     {
       "id": "queso_fresquito",
       "nombre": "Queso Fresco",
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 50,
+      "stockMinimo": 20,
+      "costoUnitario": 1
     },
     {
       "id": "queso_rallar",
       "nombre": "Queso para Rallar",
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "porción",
-      "stockActual": 9999,
-      "stockMinimo": 0,
-      "costoUnitario": 0
+      "stockActual": 80,
+      "stockMinimo": 30,
+      "costoUnitario": 0.8
     },
     {
       "id": "repollo",
@@ -879,7 +879,16 @@
       "isPopular": false,
       "descripcion": "Salchicha ahumada.",
       "iconoEmoji": "🌭",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_salchicha_ahumada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "AR05",
@@ -891,7 +900,20 @@
       "isPopular": false,
       "descripcion": "Frijol negro y queso.",
       "iconoEmoji": "⚫",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "caraotas_negras",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_arepa_diablito_01",
@@ -903,7 +925,20 @@
       "isPopular": false,
       "descripcion": "Diablito, salsa rosada y queso.",
       "iconoEmoji": "🥫",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_diablito",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "AR07",
@@ -915,7 +950,20 @@
       "isPopular": false,
       "descripcion": "Jamón y queso.",
       "iconoEmoji": "🧈",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_arepa_mechada_01",
@@ -927,7 +975,16 @@
       "isPopular": false,
       "descripcion": "Carne mechada.",
       "iconoEmoji": "🥩",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_mechada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "AR02",
@@ -939,7 +996,20 @@
       "isPopular": false,
       "descripcion": "Carne mechada y queso.",
       "iconoEmoji": "🧀",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_mechada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_arepa_molida_01",
@@ -951,7 +1021,16 @@
       "isPopular": false,
       "descripcion": "Carne molida.",
       "iconoEmoji": "🥩",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_molida",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_arepa_molida_02",
@@ -963,7 +1042,20 @@
       "isPopular": false,
       "descripcion": "Carne molida y queso.",
       "iconoEmoji": "🧀",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_molida",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_arepa_pollo_01",
@@ -975,7 +1067,16 @@
       "isPopular": false,
       "descripcion": "Pollo.",
       "iconoEmoji": "🐔",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "AR04",
@@ -987,7 +1088,20 @@
       "isPopular": false,
       "descripcion": "Pollo y queso.",
       "iconoEmoji": "🐔",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_arepa_queso_01",
@@ -999,7 +1113,16 @@
       "isPopular": false,
       "descripcion": "Queso.",
       "iconoEmoji": "🧀",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_arepa_tajada_01",
@@ -1011,7 +1134,20 @@
       "isPopular": false,
       "descripcion": "Plátano frito y queso.",
       "iconoEmoji": "🍌",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_arepa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 0.5
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_fresa_01",
@@ -1023,7 +1159,16 @@
       "isPopular": false,
       "descripcion": "Fresa y leche.",
       "iconoEmoji": "🍓",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_fresa",
+          "cantidad": 200
+        },
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_fresa_02",
@@ -1035,7 +1180,16 @@
       "isPopular": false,
       "descripcion": "Fresa y leche.",
       "iconoEmoji": "🍓",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_fresa",
+          "cantidad": 200
+        },
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_mango_01",
@@ -1047,7 +1201,16 @@
       "isPopular": false,
       "descripcion": "Mango y leche.",
       "iconoEmoji": "🥭",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        },
+        {
+          "insumoId": "carta_mango",
+          "cantidad": 200
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_mango_02",
@@ -1059,7 +1222,16 @@
       "isPopular": false,
       "descripcion": "Mango y leche.",
       "iconoEmoji": "🥭",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        },
+        {
+          "insumoId": "carta_mango",
+          "cantidad": 200
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_papaya_01",
@@ -1071,7 +1243,16 @@
       "isPopular": false,
       "descripcion": "Papaya y leche.",
       "iconoEmoji": "🥤",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        },
+        {
+          "insumoId": "carta_papaya",
+          "cantidad": 200
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_papaya_02",
@@ -1083,7 +1264,16 @@
       "isPopular": false,
       "descripcion": "Papaya y leche.",
       "iconoEmoji": "🥤",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        },
+        {
+          "insumoId": "carta_papaya",
+          "cantidad": 200
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_pina_01",
@@ -1095,7 +1285,16 @@
       "isPopular": false,
       "descripcion": "Piña y leche.",
       "iconoEmoji": "🍍",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        },
+        {
+          "insumoId": "carta_pina",
+          "cantidad": 200
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_pina_02",
@@ -1107,7 +1306,16 @@
       "isPopular": false,
       "descripcion": "Piña y leche.",
       "iconoEmoji": "🍍",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        },
+        {
+          "insumoId": "carta_pina",
+          "cantidad": 200
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_platano_01",
@@ -1119,7 +1327,16 @@
       "isPopular": false,
       "descripcion": "Plátano y leche.",
       "iconoEmoji": "🍌",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_batido_platano_02",
@@ -1131,7 +1348,16 @@
       "isPopular": false,
       "descripcion": "Plátano y leche.",
       "iconoEmoji": "🍌",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_leche",
+          "cantidad": 250
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_bebida_agua_01",
@@ -1347,7 +1573,20 @@
       "isPopular": false,
       "descripcion": "Queso y chicharrón.",
       "iconoEmoji": "🥓",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "chicharron",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_cachapa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_de_mano",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_cachapa_extra_01",
@@ -1359,7 +1598,16 @@
       "isPopular": false,
       "descripcion": "Extra queso.",
       "iconoEmoji": "🌽",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_cachapa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_de_mano",
+          "cantidad": 2
+        }
+      ]
     },
     {
       "id": "CH03",
@@ -1371,7 +1619,20 @@
       "isPopular": false,
       "descripcion": "Queso y carne mechada.",
       "iconoEmoji": "🥩",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_mechada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_cachapa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_de_mano",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "CH01",
@@ -1383,7 +1644,16 @@
       "isPopular": true,
       "descripcion": "Queso.",
       "iconoEmoji": "🌽",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_cachapa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_de_mano",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "CH04",
@@ -1395,7 +1665,20 @@
       "isPopular": false,
       "descripcion": "Queso y tocino.",
       "iconoEmoji": "🥓",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_cachapa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_de_mano",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "FS01",
@@ -1407,7 +1690,24 @@
       "isPopular": false,
       "descripcion": "Chuleta ahumada, arroz blanco, plátano frito y ensalada rusa. Disponible los sábados.",
       "iconoEmoji": "🍖",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "arroz",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "chuleta_cerdo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "ensalada_rusa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 0.5
+        }
+      ]
     },
     {
       "id": "FS02",
@@ -1419,7 +1719,32 @@
       "isPopular": true,
       "descripcion": "Arroz blanco, carne mechada, plátano frito, frijol negro, palta y huevo. Disponible los sábados.",
       "iconoEmoji": "🇻🇪",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "aguacate",
+          "cantidad": 0.5
+        },
+        {
+          "insumoId": "arroz",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "caraotas_negras",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "carne_mechada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "huevo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 0.5
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_criolla_tallarin_01",
@@ -1431,7 +1756,24 @@
       "isPopular": false,
       "descripcion": "Tallarín, carne molida, plátano frito y queso rallado o parmesano. Disponible los sábados.",
       "iconoEmoji": "🍝",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_molida",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "carta_tallarin",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 0.5
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "EP04",
@@ -1443,7 +1785,20 @@
       "isPopular": false,
       "descripcion": "Jamón y queso.",
       "iconoEmoji": "🥟",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_empanada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_fresquito",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_emp_mechada_01",
@@ -1455,7 +1810,16 @@
       "isPopular": false,
       "descripcion": "Carne mechada.",
       "iconoEmoji": "🥟",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_mechada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_empanada",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "EP01",
@@ -1467,7 +1831,16 @@
       "isPopular": true,
       "descripcion": "Carne molida.",
       "iconoEmoji": "🥟",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_molida",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_empanada",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "EP02",
@@ -1479,7 +1852,16 @@
       "isPopular": false,
       "descripcion": "Pollo.",
       "iconoEmoji": "🥟",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_empanada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "EP03",
@@ -1491,7 +1873,16 @@
       "isPopular": false,
       "descripcion": "Queso.",
       "iconoEmoji": "🧀",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_empanada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_fresquito",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "EP06",
@@ -1503,7 +1894,16 @@
       "isPopular": false,
       "descripcion": "Salchicha.",
       "iconoEmoji": "🌭",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_empanada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "salchicha",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "HB02",
@@ -1515,7 +1915,40 @@
       "isPopular": true,
       "descripcion": "Pollo, huevo, jamón, tocino, queso cheddar, chorizo, ensalada y cremas al gusto.",
       "iconoEmoji": "🍔",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_chorizo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "huevo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_hamburguesa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_chedar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "HB03",
@@ -1527,7 +1960,48 @@
       "isPopular": false,
       "descripcion": "Carne, pollo, queso cheddar, doble huevo, jamón, tocino, chorizo, papas fritas, ensalada y cremas al gusto.",
       "iconoEmoji": "🍔",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_hamburguesa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "carta_chorizo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "huevo",
+          "cantidad": 2
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_hamburguesa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "papas_fritas",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_chedar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "HB01",
@@ -1539,7 +2013,32 @@
       "isPopular": false,
       "descripcion": "Carne molida, queso cheddar, huevo, papas fritas, ensalada y cremas al gusto.",
       "iconoEmoji": "🍔",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_hamburguesa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "huevo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_hamburguesa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "papas_fritas",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_chedar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_jugo_fresa_01",
@@ -1551,7 +2050,12 @@
       "isPopular": false,
       "descripcion": "Fresa.",
       "iconoEmoji": "🍓",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_fresa",
+          "cantidad": 200
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_jugo_guayaba_01",
@@ -1563,7 +2067,12 @@
       "isPopular": false,
       "descripcion": "Guayaba.",
       "iconoEmoji": "🧃",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_guayaba",
+          "cantidad": 200
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_jugo_melon_01",
@@ -1575,7 +2084,12 @@
       "isPopular": false,
       "descripcion": "Melón.",
       "iconoEmoji": "🍈",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_melon",
+          "cantidad": 250
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_jugo_pina_01",
@@ -1587,7 +2101,12 @@
       "isPopular": false,
       "descripcion": "Piña.",
       "iconoEmoji": "🍍",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_pina",
+          "cantidad": 250
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_pastel_jamon_01",
@@ -1599,7 +2118,20 @@
       "isPopular": false,
       "descripcion": "Jamón y queso.",
       "iconoEmoji": "🥐",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_pastelito",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_fresquito",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_pastel_mechada_01",
@@ -1611,7 +2143,16 @@
       "isPopular": false,
       "descripcion": "Carne mechada.",
       "iconoEmoji": "🥐",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_mechada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_pastelito",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "HO01",
@@ -1623,7 +2164,16 @@
       "isPopular": false,
       "descripcion": "Carne molida.",
       "iconoEmoji": "🥐",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_molida",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "masa_pastelito",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "HO02",
@@ -1635,7 +2185,16 @@
       "isPopular": false,
       "descripcion": "Pollo.",
       "iconoEmoji": "🥐",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_pastelito",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "HO03",
@@ -1647,7 +2206,16 @@
       "isPopular": false,
       "descripcion": "Queso.",
       "iconoEmoji": "🥐",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "masa_pastelito",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_fresquito",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PT01",
@@ -1659,7 +2227,32 @@
       "isPopular": true,
       "descripcion": "Plátano verde, carne mechada, ensalada rallada, jamón, tocino, queso y cremas al gusto.",
       "iconoEmoji": "🍌",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_mechada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "platano_verde",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PT03",
@@ -1671,7 +2264,32 @@
       "isPopular": false,
       "descripcion": "Plátano verde, carne molida, ensalada rallada, jamón, tocino, queso y cremas al gusto.",
       "iconoEmoji": "🍌",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_molida",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "platano_verde",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PT02",
@@ -1683,7 +2301,32 @@
       "isPopular": false,
       "descripcion": "Plátano verde, pollo, ensalada rallada, jamón, tocino, queso y cremas al gusto.",
       "iconoEmoji": "🍌",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "platano_verde",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PP02",
@@ -1695,7 +2338,40 @@
       "isPopular": true,
       "descripcion": "Pollo, chorizo, jamón, queso rallado, maíz, ensalada, papas al hilo y cremas al gusto.",
       "iconoEmoji": "🥖",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_chorizo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "crema_maiz",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_pepito",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "papas_ralladas",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PP03",
@@ -1707,7 +2383,44 @@
       "isPopular": false,
       "descripcion": "Carne, pollo, chorizo, jamón, tocino, queso rallado, papas al hilo, ensalada y cremas al gusto.",
       "iconoEmoji": "🥖",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_shawarma",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "carta_chorizo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_pepito",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "papas_ralladas",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PC02",
@@ -1719,7 +2432,32 @@
       "isPopular": false,
       "descripcion": "Pan fresco, ensalada rallada, queso rallado, salchicha ahumada, jamón, maíz dulce y cremas al gusto.",
       "iconoEmoji": "🌭",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_salchicha_ahumada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "crema_maiz",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_perro",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PC03",
@@ -1731,7 +2469,36 @@
       "isPopular": true,
       "descripcion": "Pan fresco, ensalada rallada, queso rallado, pollo, salchicha ahumada, jamón, maíz dulce y cremas al gusto.",
       "iconoEmoji": "🌭",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_salchicha_ahumada",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "crema_maiz",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_perro",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_desmechado",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PC01",
@@ -1743,7 +2510,24 @@
       "isPopular": false,
       "descripcion": "Pan fresco, ensalada rallada, queso rallado, hot dog de pollo y cremas al gusto.",
       "iconoEmoji": "🌭",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "pan_perro",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "salchicha_perro",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "PF01",
@@ -1755,7 +2539,12 @@
       "isPopular": false,
       "descripcion": "Papas fritas.",
       "iconoEmoji": "🍟",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "papas_fritas",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "AGX01",
@@ -1767,7 +2556,12 @@
       "isPopular": false,
       "descripcion": "Solo para empanadas y pasteles. Cantidad de queso por confirmar.",
       "iconoEmoji": "🧀",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "queso_fresquito",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_refresco_maracuya_01",
@@ -1779,7 +2573,12 @@
       "isPopular": false,
       "descripcion": "Maracuyá.",
       "iconoEmoji": "🍹",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_maracuya",
+          "cantidad": 80
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_refresco_maracuya_02",
@@ -1791,7 +2590,12 @@
       "isPopular": false,
       "descripcion": "Maracuyá.",
       "iconoEmoji": "🍹",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_maracuya",
+          "cantidad": 120
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_refresco_maracuya_03",
@@ -1803,7 +2607,12 @@
       "isPopular": false,
       "descripcion": "Maracuyá.",
       "iconoEmoji": "🍹",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_maracuya",
+          "cantidad": 250
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_refresco_papelon_01",
@@ -1815,7 +2624,16 @@
       "isPopular": false,
       "descripcion": "Papelón y limón.",
       "iconoEmoji": "🍋",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_limon",
+          "cantidad": 40
+        },
+        {
+          "insumoId": "carta_papelon",
+          "cantidad": 60
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_refresco_papelon_02",
@@ -1827,7 +2645,16 @@
       "isPopular": false,
       "descripcion": "Papelón y limón.",
       "iconoEmoji": "🍋",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_limon",
+          "cantidad": 60
+        },
+        {
+          "insumoId": "carta_papelon",
+          "cantidad": 90
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_refresco_papelon_03",
@@ -1839,7 +2666,16 @@
       "isPopular": false,
       "descripcion": "Papelón y limón.",
       "iconoEmoji": "🍋",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carta_limon",
+          "cantidad": 120
+        },
+        {
+          "insumoId": "carta_papelon",
+          "cantidad": 180
+        }
+      ]
     },
     {
       "id": "SH02",
@@ -1851,7 +2687,44 @@
       "isPopular": true,
       "descripcion": "Carne, pollo, ensalada, papas al hilo, maíz, tocino, queso rallado, jamón y cremas al gusto.",
       "iconoEmoji": "🌯",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "carne_shawarma",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "crema_maiz",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_arabe",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "papas_ralladas",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_shawarma",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "SH01",
@@ -1863,7 +2736,36 @@
       "isPopular": false,
       "descripcion": "Pollo, ensalada, papas al hilo, maíz, queso, jamón y cremas al gusto.",
       "iconoEmoji": "🌯",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "crema_maiz",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_arabe",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "papas_ralladas",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pollo_shawarma",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "queso_rallar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "repollo",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_sopa_costilla_01",
@@ -1875,7 +2777,12 @@
       "isPopular": false,
       "descripcion": "Costillas. Disponible los domingos.",
       "iconoEmoji": "🍲",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "costillas",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_sopa_costilla_02",
@@ -1887,7 +2794,12 @@
       "isPopular": false,
       "descripcion": "Costillas. Disponible los domingos.",
       "iconoEmoji": "🍲",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "costillas",
+          "cantidad": 2
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_sopa_mondongo_01",
@@ -1899,7 +2811,12 @@
       "isPopular": false,
       "descripcion": "Mondongo. Disponible los domingos.",
       "iconoEmoji": "🍲",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "mondongo",
+          "cantidad": 1
+        }
+      ]
     },
     {
       "id": "carta_prod_carta_sopa_mondongo_02",
@@ -1911,7 +2828,12 @@
       "isPopular": false,
       "descripcion": "Mondongo. Disponible los domingos.",
       "iconoEmoji": "🍲",
-      "receta": []
+      "receta": [
+        {
+          "insumoId": "mondongo",
+          "cantidad": 2
+        }
+      ]
     }
   ]
 }
