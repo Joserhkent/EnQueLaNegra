@@ -12,6 +12,7 @@ import { InsumosService } from './insumos.service';
 import { CreateInsumoDto } from './dto/create-insumo.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { MovimientoLoteDto } from './dto/movimiento-lote.dto';
+import { UpdateInsumoDto } from './dto/update-insumo.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { JefeGuard } from '../auth/jefe.guard';
 import { GetUser } from '../auth/get-user.decorator';
@@ -69,6 +70,12 @@ export class InsumosController {
     @GetUser('id') userId?: string,
   ) {
     return this.insumosService.updateStock(id, dto, userId);
+  }
+
+  @UseGuards(JefeGuard)
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateInsumoDto) {
+    return this.insumosService.update(id, dto);
   }
 
   @UseGuards(JefeGuard)

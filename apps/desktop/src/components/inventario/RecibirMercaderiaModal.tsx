@@ -1,13 +1,21 @@
 import { useMemo, useState } from "react";
 import { Loader2, Search, Trash2, X } from "lucide-react";
 import { usePosStore, type Insumo } from "../../store/usePosStore";
-import { formatCantidad, leerNumero, unidadGrande } from "../../lib/cantidades";
+import {
+  factorDe,
+  formatConPresentacion,
+  formatCosto,
+  leerNumero,
+  opcionPreferida,
+  opcionesUnidad,
+  type OpcionUnidad,
+} from "../../lib/cantidades";
 import CantidadInput from "./CantidadInput";
 
 type Linea = {
   insumo: Insumo;
   cantidad: string;
-  enGrande: boolean;
+  clave: OpcionUnidad["clave"];
   costoTotal: string;
 };
 
@@ -41,9 +49,9 @@ export default function RecibirMercaderiaModal({ onClose, onGuardado }: Props) {
   }, [busqueda, insumos, lineas]);
 
   const agregar = (insumo: Insumo) => {
-    // Lo que se pesa se suele comprar por kilo o litro
+    // Se compra por presentación (latas, bolsas) o, si no tiene, por kilo o litro
     setLineas((prev) => [
-      { insumo, cantidad: "", enGrande: Boolean(unidadGrande(insumo.unidadMedida)), costoTotal: "" },
+      { insumo, cantidad: "", clave: opcionPreferida(insumo), costoTotal: "" },
       ...prev,
     ]);
     setBusqueda("");
@@ -56,9 +64,7 @@ export default function RecibirMercaderiaModal({ onClose, onGuardado }: Props) {
   // Cantidad en la unidad del sistema (g, ml, unidad…)
   const cantidadBase = (l: Linea) => {
     const n = leerNumero(l.cantidad);
-    if (n === null) return null;
-    const grande = unidadGrande(l.insumo.unidadMedida);
-    return l.enGrande && grande ? n * grande.factor : n;
+    return n === null ? null : n * factorDe(l.insumo, l.clave);
   };
 
   const listas = lineas.filter((l) => (cantidadBase(l) ?? 0) > 0);
@@ -127,7 +133,7 @@ export default function RecibirMercaderiaModal({ onClose, onGuardado }: Props) {
                   >
                     <span className="text-sm font-semibold text-slate-900">{i.nombre}</span>
                     <span className="text-xs text-slate-500 shrink-0">
-                      hay {formatCantidad(i.stockActual, i.unidadMedida)}
+                      hay {formatConPresentacion(i.stockActual, i)}
                     </span>
                   </button>
                 </li>
@@ -157,8 +163,8 @@ export default function RecibirMercaderiaModal({ onClose, onGuardado }: Props) {
                       <div className="min-w-0">
                         <p className="text-sm font-bold text-slate-900">{l.insumo.nombre}</p>
                         <p className="text-xs text-slate-500">
-                          Hay {formatCantidad(l.insumo.stockActual, l.insumo.unidadMedida)}
-                          {base ? ` · quedará ${formatCantidad(l.insumo.stockActual + base, l.insumo.unidadMedida)}` : ""}
+                          Hay {formatConPresentacion(l.insumo.stockActual, l.insumo)}
+                          {base ? ` · quedará ${formatConPresentacion(l.insumo.stockActual + base, l.insumo)}` : ""}
                         </p>
                       </div>
                       <button
@@ -174,11 +180,11 @@ export default function RecibirMercaderiaModal({ onClose, onGuardado }: Props) {
                       <label className="space-y-1">
                         <span className="block text-[11px] font-bold text-slate-600">Llegó</span>
                         <CantidadInput
-                          unidad={l.insumo.unidadMedida}
+                          opciones={opcionesUnidad(l.insumo)}
+                          clave={l.clave}
                           valor={l.cantidad}
-                          enGrande={l.enGrande}
                           onValor={(cantidad) => cambiar(l.insumo.id, { cantidad })}
-                          onEnGrande={(enGrande) => cambiar(l.insumo.id, { enGrande })}
+                          onClave={(clave) => cambiar(l.insumo.id, { clave })}
                           autoFocus
                         />
                       </label>
@@ -198,14 +204,7 @@ export default function RecibirMercaderiaModal({ onClose, onGuardado }: Props) {
                       </label>
                     </div>
                     {base && total ? (
-                      <p className="text-[11px] text-slate-500 text-right">
-                        {(() => {
-                          const grande = unidadGrande(l.insumo.unidadMedida);
-                          return grande
-                            ? `S/ ${((total / base) * grande.factor).toFixed(2)} por ${grande.nombre}`
-                            : `S/ ${(total / base).toFixed(2)} c/u`;
-                        })()}
-                      </p>
+                      <p className="text-[11px] text-slate-500 text-right">{formatCosto(total / base, l.insumo)}</p>
                     ) : null}
                   </li>
                 );

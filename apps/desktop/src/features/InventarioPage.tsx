@@ -3,6 +3,8 @@ import { usePosStore, type Insumo } from "../store/usePosStore";
 import { formatUnidad } from "../lib/utils";
 import RecibirMercaderiaModal from "../components/inventario/RecibirMercaderiaModal";
 import ConteoInventarioModal from "../components/inventario/ConteoInventarioModal";
+import EditarInsumoModal from "../components/inventario/EditarInsumoModal";
+import { formatConPresentacion, formatCosto } from "../lib/cantidades";
 import {
   Boxes,
   PlusCircle,
@@ -16,6 +18,7 @@ import {
   Trash2,
   PackagePlus,
   ClipboardCheck,
+  Pencil,
 } from "lucide-react";
 
 // Helper de seguridad para extraer texto si viene como objeto o string
@@ -33,6 +36,7 @@ export default function InventarioPage() {
   const isJefe = currentUser?.role === "jefe";
   const [isRecibirOpen, setIsRecibirOpen] = useState(false);
   const [isConteoOpen, setIsConteoOpen] = useState(false);
+  const [editando, setEditando] = useState<Insumo | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
   useEffect(() => {
@@ -274,6 +278,13 @@ export default function InventarioPage() {
           onGuardado={(m) => { setIsConteoOpen(false); setAviso(m); }}
         />
       )}
+      {editando && (
+        <EditarInsumoModal
+          insumo={editando}
+          onClose={() => setEditando(null)}
+          onGuardado={(m) => { setEditando(null); setAviso(m); }}
+        />
+      )}
 
       {/* Cifras del inventario */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 border border-slate-200 rounded-lg overflow-hidden">
@@ -438,14 +449,14 @@ export default function InventarioPage() {
                           </td>
                           <td className="py-3 px-4">
                             <div className={`text-base font-extrabold ${isLow ? "text-rose-600" : "text-slate-900"}`}>
-                              {item.stockActual} <span className="text-xs font-normal text-slate-500">{formatUnidad(item.unidadMedida, item.stockActual)}</span>
+                              {formatConPresentacion(item.stockActual, item)}
                             </div>
                           </td>
                           <td className="py-3 px-4 font-semibold text-slate-600">
-                            {item.stockMinimo} {formatUnidad(item.unidadMedida, item.stockMinimo)}
+                            {formatConPresentacion(item.stockMinimo, item)}
                           </td>
                           <td className="py-3 px-4 font-semibold text-slate-700">
-                            S/ {Number(item.costoUnitario || 0).toFixed(2)}
+                            {formatCosto(Number(item.costoUnitario || 0), item)}
                           </td>
                           <td className="py-3 px-4 font-bold text-slate-900">
                             S/ {(item.stockActual * item.costoUnitario).toFixed(2)}
@@ -454,6 +465,15 @@ export default function InventarioPage() {
                             {getStatusBadge(status)}
                           </td>
                           <td className="py-3 px-4 text-right">
+                            {isJefe && (
+                              <button
+                                onClick={() => setEditando(item)}
+                                className="p-2 mr-2 rounded-md bg-white border border-slate-200 text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition"
+                                title="Editar presentación, mínimo y costo"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                             {isJefe && (
                               <button
                                 onClick={() => handleDeleteInsumo(item)}

@@ -20,6 +20,9 @@ export interface Insumo {
   stockMinimo: number;
   costoUnitario: number;
   categoria?: string;
+  // Presentación de compra: "lata" que trae 130 (en unidadMedida)
+  presentacionNombre?: string | null;
+  presentacionCantidad?: number | null;
 }
 
 export interface Producto {
@@ -244,6 +247,16 @@ interface PosStore {
     motivo?: string
   ) => Promise<string | null>;
   updateInsumoMinimo: (insumoId: string, stockMinimo: number) => Promise<void>;
+  // Ajustes del insumo (mínimo, costo, presentación). Devuelve null o el error.
+  updateInsumo: (
+    insumoId: string,
+    cambios: {
+      stockMinimo?: number;
+      costoUnitario?: number;
+      presentacionNombre?: string | null;
+      presentacionCantidad?: number | null;
+    }
+  ) => Promise<string | null>;
 
   addProduct: (producto: ProductoPayload) => Promise<void>;
   updateProduct: (producto: ProductoPayload) => Promise<void>;
@@ -896,6 +909,21 @@ export const usePosStore = create<PosStore>((set, get) => ({
       });
       if (!res.ok) return await mensajeError(res, "No se pudo guardar");
       await Promise.all([get().fetchInsumos(), get().fetchMovimientos()]);
+      return null;
+    } catch {
+      return "No se pudo conectar con el servidor";
+    }
+  },
+
+  updateInsumo: async (insumoId, cambios) => {
+    try {
+      const res = await authFetch(`${API_URL}/insumos/${insumoId}`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(cambios),
+      });
+      if (!res.ok) return await mensajeError(res, "No se pudo guardar el insumo");
+      await get().fetchInsumos();
       return null;
     } catch {
       return "No se pudo conectar con el servidor";

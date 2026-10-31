@@ -1,10 +1,18 @@
 import { useMemo, useState } from "react";
 import { Loader2, Search, X } from "lucide-react";
-import { usePosStore } from "../../store/usePosStore";
-import { formatCantidad, leerNumero, unidadGrande } from "../../lib/cantidades";
+import { usePosStore, type Insumo } from "../../store/usePosStore";
+import {
+  factorDe,
+  formatCantidad,
+  formatConPresentacion,
+  leerNumero,
+  opcionPreferida,
+  opcionesUnidad,
+  type OpcionUnidad,
+} from "../../lib/cantidades";
 import CantidadInput from "./CantidadInput";
 
-type Conteo = { valor: string; enGrande: boolean };
+type Conteo = { valor: string; clave: OpcionUnidad["clave"] };
 
 const sinTildes = (s: string) =>
   s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -40,23 +48,19 @@ export default function ConteoInventarioModal({ onClose, onGuardado }: Props) {
       .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }, [insumos, categoria, busqueda]);
 
-  const conteoDe = (id: string, unidad: string): Conteo =>
-    // Lo que se pesa se cuenta más fácil en kg o L
-    conteos[id] ?? { valor: "", enGrande: Boolean(unidadGrande(unidad)) };
+  const conteoDe = (i: Insumo): Conteo =>
+    // Se cuenta en latas o bolsas si tiene presentación; si no, en kg o L
+    conteos[i.id] ?? { valor: "", clave: opcionPreferida(i) };
 
-  const contado = (id: string, unidad: string) => {
-    const c = conteos[id];
+  const contado = (i: Insumo) => {
+    const c = conteos[i.id];
     if (!c) return null;
     const n = leerNumero(c.valor);
-    if (n === null) return null;
-    const grande = unidadGrande(unidad);
-    return c.enGrande && grande ? n * grande.factor : n;
+    return n === null ? null : n * factorDe(i, c.clave);
   };
 
-  const llenos = insumos.filter((i) => contado(i.id, i.unidadMedida) !== null);
-  const conDiferencia = llenos.filter(
-    (i) => Math.abs((contado(i.id, i.unidadMedida) ?? 0) - i.stockActual) > 1e-9
-  );
+  const llenos = insumos.filter((i) => contado(i) !== null);
+  const conDiferencia = llenos.filter((i) => Math.abs((contado(i) ?? 0) - i.stockActual) > 1e-9);
 
   const guardar = async () => {
     if (llenos.length === 0) {
@@ -67,7 +71,7 @@ export default function ConteoInventarioModal({ onClose, onGuardado }: Props) {
     setError(null);
     const fallo = await registrarLoteStock(
       "ajuste",
-      llenos.map((i) => ({ insumoId: i.id, cantidad: contado(i.id, i.unidadMedida)! }))
+      llenos.map((i) => ({ insumoId: i.id, cantidad: contado(i)! }))
     );
     setGuardando(false);
     if (fallo) {
@@ -131,15 +135,15 @@ export default function ConteoInventarioModal({ onClose, onGuardado }: Props) {
           ) : (
             <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg">
               {visibles.map((i) => {
-                const c = conteoDe(i.id, i.unidadMedida);
-                const n = contado(i.id, i.unidadMedida);
+                const c = conteoDe(i);
+                const n = contado(i);
                 const diff = n === null ? null : n - i.stockActual;
                 return (
                   <li key={i.id} className="p-3 grid grid-cols-[1fr_9.5rem] sm:grid-cols-[1fr_11rem] items-center gap-3">
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-slate-900 truncate">{i.nombre}</p>
                       <p className="text-xs text-slate-500">
-                        Sistema: {formatCantidad(i.stockActual, i.unidadMedida)}
+                        Sistema: {formatConPresentacion(i.stockActual, i)}
                         {diff !== null && Math.abs(diff) > 1e-9 && (
                           <span className={`ml-1.5 font-bold ${diff < 0 ? "text-rose-600" : "text-emerald-700"}`}>
                             {diff < 0 ? "falta " : "sobra "}
@@ -152,11 +156,11 @@ export default function ConteoInventarioModal({ onClose, onGuardado }: Props) {
                       </p>
                     </div>
                     <CantidadInput
-                      unidad={i.unidadMedida}
+                      opciones={opcionesUnidad(i)}
+                      clave={c.clave}
                       valor={c.valor}
-                      enGrande={c.enGrande}
                       onValor={(valor) => setConteos((prev) => ({ ...prev, [i.id]: { ...c, valor } }))}
-                      onEnGrande={(enGrande) => setConteos((prev) => ({ ...prev, [i.id]: { ...c, enGrande } }))}
+                      onClave={(clave) => setConteos((prev) => ({ ...prev, [i.id]: { ...c, clave } }))}
                       placeholder="—"
                     />
                   </li>

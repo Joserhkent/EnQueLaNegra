@@ -139,6 +139,10 @@ model Insumo {
   stockActual   Float    @default(0)
   stockMinimo   Float    @default(0)
   costoUnitario Float    @default(0)
+  // Presentación de compra (opcional): cómo llega y se cuenta, ej. "lata" que trae
+  // 130 (g). Las recetas y el stock siguen en unidadMedida; esto solo convierte.
+  presentacionNombre   String?
+  presentacionCantidad Float?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

@@ -8,6 +8,7 @@ import { PrismaService } from '../prisma.service';
 import { CreateInsumoDto } from './dto/create-insumo.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { MovimientoLoteDto } from './dto/movimiento-lote.dto';
+import { UpdateInsumoDto } from './dto/update-insumo.dto';
 
 @Injectable()
 export class InsumosService {
@@ -151,6 +152,36 @@ export class InsumosService {
         registrados++;
       }
       return { registrados };
+    });
+  }
+
+  async update(id: string, dto: UpdateInsumoDto) {
+    await this.findOne(id);
+    // La presentación va completa (nombre y cuánto trae) o no va
+    const tocaPresentacion =
+      dto.presentacionNombre !== undefined ||
+      dto.presentacionCantidad !== undefined;
+    const nombrePres = dto.presentacionNombre?.trim() || null;
+    const cantidadPres = dto.presentacionCantidad ?? null;
+    if (tocaPresentacion && (nombrePres === null) !== (cantidadPres === null)) {
+      throw new BadRequestException(
+        'La presentación necesita nombre y cuánto trae (ej. lata de 130 g).',
+      );
+    }
+    return this.prisma.insumo.update({
+      where: { id },
+      data: {
+        nombre: dto.nombre?.trim(),
+        stockMinimo: dto.stockMinimo,
+        costoUnitario: dto.costoUnitario,
+        ...(tocaPresentacion
+          ? {
+              presentacionNombre: nombrePres,
+              presentacionCantidad: cantidadPres,
+            }
+          : {}),
+      },
+      include: { categoria: true },
     });
   }
 

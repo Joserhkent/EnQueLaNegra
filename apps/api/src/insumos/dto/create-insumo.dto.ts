@@ -37,4 +37,13 @@ export class CreateInsumoDto {
   @Min(0)
   @IsOptional()
   costoUnitario = 0;
+
+  @IsString()
+  @IsOptional()
+  presentacionNombre?: string;
+
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  presentacionCantidad?: number;
 }
