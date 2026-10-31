@@ -32,11 +32,11 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="p-8 bg-white rounded-3xl border border-rose-200 shadow-xl max-w-xl mx-auto my-12 text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center mx-auto text-rose-500">
+        <div className="p-8 bg-white rounded-lg border border-rose-200 max-w-xl mx-auto my-12 text-center space-y-4">
+          <div className="w-14 h-14 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center mx-auto text-rose-500">
             <AlertTriangle className="w-7 h-7" />
           </div>
-          <h2 className="text-lg font-black text-slate-900">
+          <h2 className="text-lg font-bold text-slate-900">
             {this.props.fallbackTitle || "Ocurrió un problema al mostrar este módulo"}
           </h2>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="pt-2">
             <button
               onClick={this.handleReset}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition active:scale-95"
             >
               <RefreshCw className="w-4 h-4" />
               Reintentar / Recargar Módulo

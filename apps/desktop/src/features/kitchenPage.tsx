@@ -150,24 +150,24 @@ export default function KitchenPage() {
   const isAllReady = (items: OrderItem[]) => items.length > 0 && items.every((i) => i.kitchenStatus === "DELIVERED");
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
-      <div className="flex items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+    <div className="space-y-6 max-w-[1600px] mx-auto pb-12">
+      <div className="flex items-end justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <ChefHat className="w-6 h-6 text-amber-500" /> Cocina
+          <h1 className="text-3xl text-slate-900 flex items-center gap-2">
+            <ChefHat className="w-7 h-7 text-slate-900" /> Cocina
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            Toca un ítem para avanzar su estado: pendiente → en preparación → listo. O marca toda la tanda de una vez.
+            Toca un plato para pasarlo a preparación y otra vez para marcarlo listo.
           </p>
         </div>
-        <span className="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+        <span className="px-2.5 py-1 rounded bg-slate-900 text-white text-sm font-bold whitespace-nowrap">
           {tickets.filter((t) => !isAllReady(t.items)).length} pendientes
         </span>
       </div>
 
       {tickets.length === 0 ? (
-        <div className="text-center py-16 text-slate-400 text-sm font-medium bg-white rounded-3xl border border-slate-200/80">
-          No hay tandas pendientes en este momento.
+        <div className="text-center py-16 text-slate-500 text-sm bg-white rounded-lg border border-dashed border-slate-300">
+          Sin comandas pendientes.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
@@ -179,16 +179,16 @@ export default function KitchenPage() {
             return (
               <div
                 key={ticket.ticketId}
-                className={`min-w-0 p-4 rounded-3xl border-2 shadow-sm transition ${
+                className={`min-w-0 p-4 rounded-lg border border-t-4 transition-colors ${
                   allReady
-                    ? "bg-emerald-50 border-emerald-300"
+                    ? "bg-emerald-50 border-emerald-200 border-t-emerald-500"
                     : isSlow
-                    ? "bg-rose-50 border-rose-300"
-                    : "bg-white border-slate-200"
+                    ? "bg-white border-rose-200 border-t-rose-600"
+                    : "bg-white border-slate-200 border-t-slate-900"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3 mb-1">
-                  <div className="flex min-w-0 items-center gap-1.5 font-black text-slate-900 text-sm">
+                  <div className="flex min-w-0 items-center gap-1.5 font-display text-xl text-slate-900">
                     {ticket.kind === "mesa" ? (
                       <UtensilsCrossed className="w-4 h-4 text-amber-500" />
                     ) : (
@@ -197,14 +197,14 @@ export default function KitchenPage() {
                     <span className="break-words">{ticket.title}</span>
                   </div>
                   <span
-                    className={`flex items-center gap-1 text-[10px] font-bold ${
-                      isSlow && !allReady ? "text-rose-600" : "text-slate-400"
+                    className={`flex items-center gap-1 text-xs font-semibold whitespace-nowrap ${
+                      isSlow && !allReady ? "text-rose-600" : "text-slate-500"
                     }`}
                   >
                     <Clock className="w-3 h-3" /> {elapsed}
                   </span>
                 </div>
-                <div className="mb-3 break-words text-[11px] font-semibold text-slate-500">{ticket.subtitle}</div>
+                <div className="mb-3 break-words text-xs text-slate-500">{ticket.subtitle}</div>
 
                 <div className="space-y-1.5">
                   {ticket.items.map((item) => {
@@ -216,7 +216,7 @@ export default function KitchenPage() {
                         key={item.id}
                         type="button"
                         onClick={() => toggleItem(ticket, item)}
-                        className={`flex w-full min-w-0 items-start gap-2 rounded-xl p-2 text-left transition ${
+                        className={`flex w-full min-w-0 items-start gap-2 rounded-md p-2 text-left transition ${
                           ready ? "bg-emerald-100/60" : cooking ? "bg-amber-100/60" : "bg-slate-50 hover:bg-slate-100"
                         }`}
                       >
@@ -229,19 +229,19 @@ export default function KitchenPage() {
                         )}
                         <div className="min-w-0 flex-1">
                           <div
-                            className={`break-words whitespace-normal text-xs font-bold ${
+                            className={`break-words whitespace-normal text-sm font-semibold ${
                               ready ? "text-emerald-700 line-through" : cooking ? "text-amber-700" : "text-slate-800"
                             }`}
                           >
                             {item.cantidad}x {item.nombre}
                           </div>
                           {item.notas && (
-                            <div className="mt-1 break-words whitespace-pre-wrap text-[11px] leading-relaxed text-slate-600 italic">
+                            <div className="mt-1 break-words whitespace-pre-wrap text-xs leading-relaxed text-slate-700">
                               "{item.notas}"
                             </div>
                           )}
                           {item.extras && item.extras.length > 0 && (
-                            <div className="mt-1 break-words whitespace-normal text-[11px] leading-relaxed text-slate-500">
+                            <div className="mt-1 break-words whitespace-normal text-xs leading-relaxed text-slate-600">
                               + {item.extras.map((e) => e.insumo?.nombre).filter(Boolean).join(", ")}
                             </div>
                           )}
@@ -252,17 +252,17 @@ export default function KitchenPage() {
                 </div>
 
                 {allReady ? (
-                  <div className="mt-3 pt-3 border-t border-emerald-200 text-center text-[11px] font-extrabold text-emerald-700 flex items-center justify-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" /> Todo Listo
+                  <div className="mt-3 pt-3 border-t border-emerald-200 text-center text-xs font-bold text-emerald-700 flex items-center justify-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" /> Todo listo
                   </div>
                 ) : (
                   <button
                     type="button"
                     onClick={() => markTicketReady(ticket)}
-                    className="mt-3 w-full py-2.5 bg-slate-900 hover:bg-emerald-600 text-white font-extrabold rounded-xl text-[11px] transition active:scale-95 flex items-center justify-center gap-1.5"
+                    className="mt-3 w-full py-2.5 bg-slate-900 hover:bg-emerald-600 text-white font-bold rounded-md text-sm transition-colors active:scale-95 flex items-center justify-center gap-1.5"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    {ticket.kind === "mesa" ? "Marcar Ronda Lista" : "Pedido Listo"}
+                    {ticket.kind === "mesa" ? "Tanda lista" : "Pedido listo"}
                   </button>
                 )}
               </div>

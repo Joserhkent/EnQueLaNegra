@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Archivo con eje de ancho: normal para texto, condensada para títulos y cifras.
+   Va empaquetada (no Google Fonts) para que la PWA la tenga sin conexión. */
+@import "@fontsource-variable/archivo/wdth.css";
 
 /*
  * Paleta de marca "En que la Negra", extraída por muestreo de píxeles del
@@ -46,4 +49,35 @@
 
   --color-slate-900: #0a0a0a;
   --color-slate-950: #000000;
+
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    /* Montos, cantidades y horas alineados en columna para leerlos de un vistazo */
+    font-variant-numeric: tabular-nums;
+  }
+  h1 {
+    font-stretch: 78%;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Títulos de sección, números de mesa y totales: condensada y gruesa, estilo pizarra */
+@utility font-display {
+  font-stretch: 78%;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* Franja de los colores del logo (amarillo, azul, rojo) */
+@utility franja-marca {
+  background: linear-gradient(
+    to right,
+    var(--color-amber-500) 0 33.33%,
+    var(--color-blue-500) 33.33% 66.66%,
+    var(--color-rose-600) 66.66% 100%
+  );
 }

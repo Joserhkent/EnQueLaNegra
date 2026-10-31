@@ -286,7 +286,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-display text-slate-900 tracking-tight">
             Gestión de Productos POS
           </h1>
           <p className="text-xs text-slate-500 font-medium">
@@ -297,7 +297,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         {isJefe && (
           <button
             onClick={() => handleOpenModal()}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition-all active:scale-95 shrink-0"
+            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition-all active:scale-95 shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             Nuevo Producto
@@ -306,7 +306,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
       </div>
 
       {/* Bar Search & Categorías & Vista */}
-      <div className="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
+      <div className="bg-white p-4 rounded-lg border border-slate-200/80 space-y-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-3">
           {/* Buscador */}
           <div className="relative w-full md:w-80">
@@ -316,17 +316,17 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               placeholder="Buscar por nombre o SKU..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
             />
           </div>
 
           {/* Selector de Vistas */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200/60 self-end md:self-auto">
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/60 self-end md:self-auto">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+              className={`p-2 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
                 viewMode === "grid"
-                  ? "bg-white text-slate-900 shadow-sm"
+                  ? "bg-white text-slate-900"
                   : "text-slate-500 hover:text-slate-900"
               }`}
             >
@@ -335,9 +335,9 @@ export function ProductosPageContent(props?: ProductosPageProps) {
             </button>
             <button
               onClick={() => setViewMode("table")}
-              className={`p-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+              className={`p-2 rounded-md text-xs font-bold transition flex items-center gap-1.5 ${
                 viewMode === "table"
-                  ? "bg-white text-slate-900 shadow-sm"
+                  ? "bg-white text-slate-900"
                   : "text-slate-500 hover:text-slate-900"
               }`}
             >
@@ -354,9 +354,9 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition shrink-0 ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition shrink-0 ${
                   selectedCategory === cat
-                    ? "bg-slate-900 text-white shadow-sm"
+                    ? "bg-slate-900 text-white"
                     : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/60"
                 }`}
               >
@@ -367,7 +367,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           {isJefe && (
             <button
               onClick={() => setIsCategoriaModalOpen(true)}
-              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20 hover:bg-amber-500/20 transition shrink-0"
+              className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20 hover:bg-amber-500/20 transition shrink-0"
               title="Crear nueva categoría"
             >
               <Tags className="w-3.5 h-3.5" />
@@ -379,7 +379,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
       {/* Product Content Display */}
       {filteredProducts.length === 0 ? (
-        <div className="bg-white p-12 rounded-3xl border border-slate-200/80 text-center space-y-3">
+        <div className="bg-white p-12 rounded-lg border border-slate-200/80 text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-amber-50 text-amber-500 mx-auto flex items-center justify-center text-2xl">
             🔍
           </div>
@@ -396,7 +396,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           {filteredProducts.map((prod) => (
             <div
               key={prod.id}
-              className={`bg-white rounded-3xl border transition-all duration-200 overflow-hidden flex flex-col justify-between group hover:shadow-lg ${
+              className={`bg-white rounded-lg border transition-all duration-200 overflow-hidden flex flex-col justify-between group ${
                 !prod.isAvailable
                   ? "border-slate-200 opacity-75"
                   : "border-slate-200/80 hover:border-amber-400/60"
@@ -405,20 +405,20 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               {/* Product Header Card */}
               <div className="p-6 space-y-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                  <div className="w-14 h-14 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-3xl shrink-0 transition-transform">
                     {prod.iconoEmoji}
                   </div>
 
                   <div className="flex flex-col items-end gap-1.5">
                     {prod.isPopular && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 border border-amber-500/20 text-[10px] font-extrabold flex items-center gap-1">
+                      <span className="px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-700 border border-amber-500/20 text-[10px] font-extrabold flex items-center gap-1">
                         <Flame className="w-3 h-3 text-amber-500" /> Popular
                       </span>
                     )}
 
                     <button
                       onClick={() => toggleProductAvailability(prod.id)}
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition ${
+                      className={`px-2.5 py-0.5 rounded text-[10px] font-bold border transition ${
                         prod.isAvailable
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                           : "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"
@@ -432,7 +432,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                 {/* Info */}
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-extrabold text-slate-400 tracking-wider font-mono">
+                    <span className="text-[10px] font-extrabold text-slate-400 font-mono">
                       {prod.sku}
                     </span>
                     <span className="text-slate-300">•</span>
@@ -469,7 +469,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               {/* Card Footer: Price & Actions */}
               <div className="p-4 px-6 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">
+                  <span className="text-[10px] text-slate-400 font-semibold block">
                     Precio POS
                   </span>
                   <span className="text-lg font-extrabold text-slate-900">
@@ -481,14 +481,14 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenModal(prod)}
-                      className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition shadow-sm"
+                      className="p-2 rounded-md bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
                       title="Editar Producto"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(prod)}
-                      className="p-2 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition shadow-sm"
+                      className="p-2 rounded-md bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
                       title="Eliminar"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -501,11 +501,11 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         </div>
       ) : (
         /* TABLE VIEW */
-        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-lg border border-slate-200/80 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold text-[10px]">
                   <th className="py-4 px-6">Producto</th>
                   <th className="py-4 px-4">SKU / Categoría</th>
                   <th className="py-4 px-4">Receta (Insumos que descuenta)</th>
@@ -522,7 +522,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                   >
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl p-2 bg-amber-50 rounded-2xl border border-amber-100">
+                        <span className="text-2xl p-2 bg-amber-50 rounded-lg border border-amber-100">
                           {prod.iconoEmoji}
                         </span>
                         <div>
@@ -567,7 +567,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                     <td className="py-4 px-4 text-center">
                       <button
                         onClick={() => toggleProductAvailability(prod.id)}
-                        className={`px-3 py-1 rounded-full text-[11px] font-bold border transition ${
+                        className={`px-3 py-1 rounded text-[11px] font-bold border transition ${
                           prod.isAvailable
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                             : "bg-rose-50 text-rose-700 border-rose-200"
@@ -581,14 +581,14 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleOpenModal(prod)}
-                            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                            className="p-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
                             title="Editar"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(prod)}
-                            className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition"
+                            className="p-2 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 transition"
                             title="Eliminar"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -606,12 +606,12 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
       {/* CREATE / EDIT PRODUCT MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-xl rounded-lg shadow-xl border border-slate-200 overflow-hidden my-8">
             {/* Modal Header */}
             <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
                   {formData.iconoEmoji}
                 </div>
                 <div>
@@ -625,7 +625,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+                className="p-2 rounded-md bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -636,7 +636,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* SKU */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Código SKU
                   </label>
                   <input
@@ -646,14 +646,14 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                     onChange={(e) =>
                       setFormData({ ...formData, sku: e.target.value })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                     placeholder="HC01"
                   />
                 </div>
 
                 {/* Categoría */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Categoría
                   </label>
                   <select
@@ -661,7 +661,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                     onChange={(e) =>
                       setFormData({ ...formData, categoria: e.target.value })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   >
                     {(categoriasProducto.includes(formData.categoria) || formData.categoria === "General"
                       ? categoriasProducto
@@ -684,7 +684,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               {/* Nombre & Emoji */}
               <div className="grid grid-cols-4 gap-3">
                 <div className="col-span-3">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Nombre del Producto
                   </label>
                   <input
@@ -694,19 +694,19 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                     onChange={(e) =>
                       setFormData({ ...formData, nombre: e.target.value })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                     placeholder="Ej: Reina Pepiada"
                   />
                 </div>
 
                 <div className="relative">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Icono Carta
                   </label>
                   <button
                     type="button"
                     onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
-                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between hover:bg-slate-100 transition"
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between hover:bg-slate-100 transition"
                   >
                     <span className="text-xl leading-none">
                       {formData.iconoEmoji}
@@ -718,7 +718,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
                   {/* Floating Popover Picker */}
                   {isEmojiPickerOpen && (
-                    <div className="absolute right-0 top-full mt-2 z-50 p-2.5 bg-white border border-slate-200 shadow-2xl rounded-2xl grid grid-cols-4 gap-1.5 w-48 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 top-full mt-2 z-50 p-2.5 bg-white border border-slate-200 shadow-xl rounded-lg grid grid-cols-4 gap-1.5 w-48">
                       {[
                         "🌽", "🥑", "🧀", "🥟", "🍖", "🍗", "🥓", "🍌",
                         "🍟", "🌭", "🌯", "🍝", "🍲", "👑", "🔥", "🥤"
@@ -730,9 +730,9 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                             setFormData({ ...formData, iconoEmoji: emoji });
                             setIsEmojiPickerOpen(false);
                           }}
-                          className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all ${
+                          className={`w-9 h-9 rounded-md text-lg flex items-center justify-center transition-all ${
                             formData.iconoEmoji === emoji
-                              ? "bg-amber-500 text-slate-950 scale-110 shadow-md ring-2 ring-amber-500/40"
+                              ? "bg-amber-500 text-slate-950 scale-110 ring-2 ring-amber-500/40"
                               : "bg-slate-50 border border-slate-200 text-slate-800 hover:bg-slate-100"
                           }`}
                         >
@@ -747,7 +747,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               {/* Precio & Opciones */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Precio (S/.)
                   </label>
                   <input
@@ -761,7 +761,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                         precio: parseFloat(e.target.value) || 0,
                       })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   />
                 </div>
 
@@ -800,10 +800,10 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
               {/* Receta (BOM) Insumos Selection Organized by Category */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Receta BOM (Insumos que descontará del inventario al venderse)
                 </label>
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 max-h-48 overflow-y-auto space-y-3">
+                <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 max-h-48 overflow-y-auto space-y-3">
                   {(() => {
                     const safeInsumos = (Array.isArray(insumos) ? insumos : []).filter(
                       (i): i is Insumo & { id: string } => Boolean(i && i.id)
@@ -832,7 +832,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
                       return (
                         <div key={catName} className="space-y-1">
-                          <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-1">
+                          <div className="text-[10px] font-extrabold text-slate-400 px-1">
                             {catName}
                           </div>
                           <div className="grid grid-cols-2 gap-1.5">
@@ -844,7 +844,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                               return (
                                 <div
                                   key={ins.id}
-                                  className={`flex items-center gap-1.5 rounded-xl border px-1.5 py-1 transition ${
+                                  className={`flex items-center gap-1.5 rounded-md border px-1.5 py-1 transition ${
                                     isChecked
                                       ? "bg-amber-500/10 border-amber-500"
                                       : "bg-white border-slate-200"
@@ -893,13 +893,13 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
+                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
+                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition active:scale-95"
                 >
                   {editingProduct ? "Guardar Cambios" : "Crear Producto"}
                 </button>
@@ -911,11 +911,11 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
       {/* NUEVA CATEGORIA MODAL */}
       {isCategoriaModalOpen && (
-        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[60] bg-slate-900/60 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-sm rounded-lg shadow-xl border border-slate-200 overflow-hidden">
             <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
                   <Tags className="w-5 h-5" />
                 </div>
                 <div>
@@ -925,7 +925,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
               </div>
               <button
                 onClick={() => setIsCategoriaModalOpen(false)}
-                className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+                className="p-2 rounded-md bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -933,7 +933,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
             <form onSubmit={handleCreateCategoria} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Nombre de la categoría
                 </label>
                 <input
@@ -942,15 +942,15 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                   autoFocus
                   value={nuevaCategoria}
                   onChange={(e) => setNuevaCategoria(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   placeholder="Ej: Bebidas"
                 />
               </div>
               <div className="flex items-center justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setIsCategoriaModalOpen(false)} className="px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                <button type="button" onClick={() => setIsCategoriaModalOpen(false)} className="px-5 py-2.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
                   Cancelar
                 </button>
-                <button type="submit" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition">
+                <button type="submit" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition">
                   Crear Categoría
                 </button>
               </div>

@@ -93,19 +93,19 @@ export default function InventarioPage() {
     switch (status) {
       case "critico":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-rose-500/10 text-rose-600 border border-rose-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-extrabold bg-rose-500/10 text-rose-600 border border-rose-500/20">
             <ShieldAlert className="w-3.5 h-3.5" /> Stock Crítico
           </span>
         );
       case "bajo":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20">
             <AlertTriangle className="w-3.5 h-3.5" /> Reordenar
           </span>
         );
       case "optimo":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
             <CheckCircle2 className="w-3.5 h-3.5" /> Óptimo
           </span>
         );
@@ -203,11 +203,11 @@ export default function InventarioPage() {
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-lg border border-slate-200/80">
         <div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gestión de Inventario & Insumos</h1>
-            <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full flex items-center gap-1.5">
+            <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded flex items-center gap-1.5">
               <Boxes className="w-3.5 h-3.5 text-slate-500" />
               {totalInsumos} Insumos Base
             </span>
@@ -221,21 +221,21 @@ export default function InventarioPage() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsCategoriasModalOpen(true)}
-              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold px-5 py-3 rounded-2xl text-xs shadow-sm transition active:scale-95"
+              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold px-5 py-3 rounded-lg text-xs transition active:scale-95"
             >
               <Tags className="w-4 h-4 text-slate-500" />
               Categorías
             </button>
             <button
               onClick={handleOpenInsumoModal}
-              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-3 rounded-2xl text-xs shadow-md shadow-slate-900/20 transition active:scale-95"
+              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlusCircle className="w-4 h-4" />
               Nuevo Insumo
             </button>
             <button
               onClick={() => handleOpenMovementModal()}
-              className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95"
+              className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-lg text-xs transition active:scale-95"
             >
               <PlusCircle className="w-4 h-4" />
               Registrar Entrada / Reabastecimiento
@@ -246,61 +246,61 @@ export default function InventarioPage() {
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-6 rounded-lg border border-slate-200/80 flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Insumos</span>
+            <span className="text-xs font-semibold text-slate-400">Total Insumos</span>
             <div className="text-3xl font-extrabold text-slate-900 mt-1">{totalInsumos} items</div>
             <span className="text-[11px] text-slate-500 mt-1 block">Registrados en el sistema</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-700">
+          <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
             <Boxes className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-rose-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-6 rounded-lg border border-rose-200 flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-rose-600">Stock Crítico</span>
+            <span className="text-xs font-semibold text-rose-600">Stock Crítico</span>
             <div className="text-3xl font-extrabold text-rose-600 mt-1">{criticalCount} Insumos</div>
             <span className="text-[11px] text-rose-500 mt-1 block font-medium">Urgente reordenar</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600">
+          <div className="w-12 h-12 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
             <ShieldAlert className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl border border-amber-200 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-6 rounded-lg border border-amber-200 flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-amber-600">Bajo Mínimo</span>
+            <span className="text-xs font-semibold text-amber-600">Bajo Mínimo</span>
             <div className="text-3xl font-extrabold text-amber-600 mt-1">{lowCount} Insumos</div>
             <span className="text-[11px] text-amber-600 mt-1 block font-medium">Cerca del umbral</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
+          <div className="w-12 h-12 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
             <AlertTriangle className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-lg flex items-center justify-between">
+        <div className="bg-slate-900 text-white p-6 rounded-lg flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Valorización Stock</span>
+            <span className="text-xs font-semibold text-slate-400">Valorización Stock</span>
             <div className="text-3xl font-extrabold text-amber-400 mt-1">S/ {totalInventoryValue.toFixed(2)}</div>
             <span className="text-[11px] text-slate-400 mt-1 block">Costo total acumulado</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-amber-400 backdrop-blur-md">
+          <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center text-amber-400">
             <Coins className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* Main Container with Tabs */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+      <div className="bg-white p-6 rounded-lg border border-slate-200/80 space-y-6">
         {/* Navigation Tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab("insumos")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold transition ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-bold transition ${
                 activeTab === "insumos"
-                  ? "bg-slate-900 text-white shadow-md shadow-slate-900/10"
+                  ? "bg-slate-900 text-white"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
@@ -309,9 +309,9 @@ export default function InventarioPage() {
             </button>
             <button
               onClick={() => setActiveTab("historial")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold transition ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-bold transition ${
                 activeTab === "historial"
-                  ? "bg-slate-900 text-white shadow-md shadow-slate-900/10"
+                  ? "bg-slate-900 text-white"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
@@ -321,27 +321,27 @@ export default function InventarioPage() {
           </div>
 
           {activeTab === "insumos" && (
-            <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200/60 text-xs font-semibold">
+            <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200/60 text-xs font-semibold">
               <button
                 onClick={() => setStatusFilter("all")}
-                className={`px-3 py-1.5 rounded-xl transition ${
-                  statusFilter === "all" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                className={`px-3 py-1.5 rounded-md transition ${
+                  statusFilter === "all" ? "bg-white text-slate-900" : "text-slate-500 hover:text-slate-900"
                 }`}
               >
                 Todos
               </button>
               <button
                 onClick={() => setStatusFilter("critico")}
-                className={`px-3 py-1.5 rounded-xl transition ${
-                  statusFilter === "critico" ? "bg-rose-500 text-white shadow-sm" : "text-slate-500 hover:text-slate-900"
+                className={`px-3 py-1.5 rounded-md transition ${
+                  statusFilter === "critico" ? "bg-rose-500 text-white" : "text-slate-500 hover:text-slate-900"
                 }`}
               >
                 Críticos ({criticalCount})
               </button>
               <button
                 onClick={() => setStatusFilter("bajo")}
-                className={`px-3 py-1.5 rounded-xl transition ${
-                  statusFilter === "bajo" ? "bg-amber-500 text-slate-950 shadow-sm" : "text-slate-500 hover:text-slate-900"
+                className={`px-3 py-1.5 rounded-md transition ${
+                  statusFilter === "bajo" ? "bg-amber-500 text-slate-950" : "text-slate-500 hover:text-slate-900"
                 }`}
               >
                 Bajos ({lowCount})
@@ -359,9 +359,9 @@ export default function InventarioPage() {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold transition whitespace-nowrap ${
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                       selectedCategory === cat
-                        ? "bg-amber-500 text-slate-950 shadow-sm"
+                        ? "bg-amber-500 text-slate-950"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
                     }`}
                   >
@@ -377,7 +377,7 @@ export default function InventarioPage() {
                   placeholder="Buscar insumo (ej: Pan Brioche, Cheddar, Tocino)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 />
               </div>
             </div>
@@ -386,7 +386,7 @@ export default function InventarioPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold text-[10px]">
                     <th className="py-4 px-4">Insumo</th>
                     <th className="py-4 px-4">Categoría</th>
                     <th className="py-4 px-4">Stock Actual</th>
@@ -448,7 +448,7 @@ export default function InventarioPage() {
                             {isJefe && (
                               <button
                                 onClick={() => handleDeleteInsumo(item)}
-                                className="p-2 mr-2 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition shadow-sm"
+                                className="p-2 mr-2 rounded-md bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
                                 title="Eliminar insumo"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -456,7 +456,7 @@ export default function InventarioPage() {
                             )}
                             <button
                               onClick={() => handleOpenMovementModal(item.id)}
-                              className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-[11px] shadow-sm transition active:scale-95"
+                              className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-md text-[11px] transition active:scale-95"
                             >
                               + Recargar
                             </button>
@@ -480,7 +480,7 @@ export default function InventarioPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                  <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold text-[10px]">
                     <th className="py-4 px-4">Fecha / Hora</th>
                     <th className="py-4 px-4">Insumo</th>
                     <th className="py-4 px-4">Tipo</th>
@@ -512,7 +512,7 @@ export default function InventarioPage() {
                         </td>
                         <td className="py-3 px-4">
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            className={`px-2.5 py-0.5 rounded text-[10px] font-bold ${
                               mov.tipo === "entrada"
                                 ? "bg-emerald-100 text-emerald-800"
                                 : mov.tipo === "salida"
@@ -542,11 +542,11 @@ export default function InventarioPage() {
 
       {/* REABASTECIMIENTO MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-lg rounded-lg shadow-xl border border-slate-200 overflow-hidden">
             <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
                   <Boxes className="w-5 h-5" />
                 </div>
                 <div>
@@ -556,7 +556,7 @@ export default function InventarioPage() {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+                className="p-2 rounded-md bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -564,13 +564,13 @@ export default function InventarioPage() {
 
             <form onSubmit={handleSubmitMovement} className="p-6 space-y-5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Seleccionar Insumo
                 </label>
                 <select
                   value={selectedInsumoId}
                   onChange={(e) => setSelectedInsumoId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 >
                   {insumos.map((i) => (
                     <option key={i.id} value={i.id}>
@@ -581,7 +581,7 @@ export default function InventarioPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Tipo de Operación
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -596,7 +596,7 @@ export default function InventarioPage() {
                       type="button"
                       key={t.key}
                       onClick={() => setMovementType(t.key)}
-                      className={`py-2 rounded-xl text-xs font-bold transition ${
+                      className={`py-2 rounded-md text-xs font-bold transition ${
                         movementType === t.key
                           ? `${t.color} text-white shadow-sm`
                           : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -609,7 +609,7 @@ export default function InventarioPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Cantidad a ingresar / descontar
                 </label>
                 <input
@@ -619,12 +619,12 @@ export default function InventarioPage() {
                   required
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Motivo u Origen
                 </label>
                 <input
@@ -632,7 +632,7 @@ export default function InventarioPage() {
                   required
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   placeholder="Ej: Factura Proveedor #F001-2940"
                 />
               </div>
@@ -641,13 +641,13 @@ export default function InventarioPage() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
+                  className="px-5 py-2.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition"
+                  className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition"
                 >
                   Guardar Movimiento
                 </button>
@@ -659,11 +659,11 @@ export default function InventarioPage() {
 
       {/* NUEVO INSUMO MODAL */}
       {isInsumoModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-lg rounded-lg shadow-xl border border-slate-200 overflow-hidden">
             <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-2xl bg-slate-700 text-white flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-lg bg-slate-700 text-white flex items-center justify-center font-bold">
                   <Boxes className="w-5 h-5" />
                 </div>
                 <div>
@@ -673,7 +673,7 @@ export default function InventarioPage() {
               </div>
               <button
                 onClick={() => setIsInsumoModalOpen(false)}
-                className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+                className="p-2 rounded-md bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -681,24 +681,24 @@ export default function InventarioPage() {
 
             <form onSubmit={handleCreateInsumo} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nombre del insumo</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Nombre del insumo</label>
                 <input
                   type="text"
                   required
                   value={nuevoInsumo.nombre}
                   onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, nombre: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   placeholder="Ej: Queso Mozzarella"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Categoría</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Categoría</label>
                   <select
                     value={nuevoInsumo.categoria}
                     onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, categoria: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   >
                     {categories.filter((c) => c !== "Todos").map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -706,11 +706,11 @@ export default function InventarioPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Unidad de medida</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Unidad de medida</label>
                   <select
                     value={nuevoInsumo.unidadMedida}
                     onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, unidadMedida: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   >
                     <option value="unidad">unidad</option>
                     <option value="porción">porción</option>
@@ -724,22 +724,22 @@ export default function InventarioPage() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Stock inicial</label>
-                  <input type="number" min="0" step="any" value={nuevoInsumo.stockActual} onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, stockActual: e.target.value })} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Stock inicial</label>
+                  <input type="number" min="0" step="any" value={nuevoInsumo.stockActual} onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, stockActual: e.target.value })} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Stock mínimo</label>
-                  <input type="number" min="0" step="any" value={nuevoInsumo.stockMinimo} onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, stockMinimo: e.target.value })} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Stock mínimo</label>
+                  <input type="number" min="0" step="any" value={nuevoInsumo.stockMinimo} onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, stockMinimo: e.target.value })} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Costo unit. (S/)</label>
-                  <input type="number" min="0" step="any" value={nuevoInsumo.costoUnitario} onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, costoUnitario: e.target.value })} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Costo unit. (S/)</label>
+                  <input type="number" min="0" step="any" value={nuevoInsumo.costoUnitario} onChange={(e) => setNuevoInsumo({ ...nuevoInsumo, costoUnitario: e.target.value })} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500" />
                 </div>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                <button type="button" onClick={() => setIsInsumoModalOpen(false)} className="px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">Cancelar</button>
-                <button type="submit" className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl text-xs shadow-md shadow-slate-900/20 transition">Crear Insumo</button>
+                <button type="button" onClick={() => setIsInsumoModalOpen(false)} className="px-5 py-2.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition">Cancelar</button>
+                <button type="submit" className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs transition">Crear Insumo</button>
               </div>
             </form>
           </div>
@@ -748,11 +748,11 @@ export default function InventarioPage() {
 
       {/* CATEGORIAS MODAL */}
       {isCategoriasModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-lg shadow-xl border border-slate-200 overflow-hidden">
             <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
                   <Tags className="w-5 h-5" />
                 </div>
                 <div>
@@ -762,7 +762,7 @@ export default function InventarioPage() {
               </div>
               <button
                 onClick={() => setIsCategoriasModalOpen(false)}
-                className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+                className="p-2 rounded-md bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -775,10 +775,10 @@ export default function InventarioPage() {
                   required
                   value={nuevaCategoria}
                   onChange={(e) => setNuevaCategoria(e.target.value)}
-                  className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                  className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   placeholder="Ej: Bebidas"
                 />
-                <button type="submit" className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition shrink-0">
+                <button type="submit" className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition shrink-0">
                   Crear
                 </button>
               </form>
@@ -788,7 +788,7 @@ export default function InventarioPage() {
                   <p className="text-center text-xs text-slate-400 py-4">No hay categorías registradas aún.</p>
                 ) : (
                   categorias.filter((c) => c.tipo === "INSUMO").map((cat) => (
-                    <div key={cat.id} className="flex items-center justify-between px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                    <div key={cat.id} className="flex items-center justify-between px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg">
                       <span className="text-xs font-bold text-slate-800">{cat.nombre}</span>
                       <button
                         onClick={() => handleDeleteCategoria(cat)}

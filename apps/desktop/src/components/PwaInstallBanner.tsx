@@ -152,7 +152,7 @@ export default function PwaInstallBanner() {
         aria-label="Instalación de la aplicación"
         className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm z-40 animate-in fade-in slide-in-from-bottom-6 duration-300"
       >
-        <div className="relative overflow-hidden rounded-3xl bg-zinc-950/95 border border-zinc-800 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-xl p-3 sm:p-5 text-white">
+        <div className="relative overflow-hidden rounded-lg bg-zinc-950/95 border border-zinc-800 p-3 sm:p-5 text-white">
           {/* Botón cerrar X en esquina superior derecha */}
           <button
             onClick={handleDismiss}
@@ -165,7 +165,7 @@ export default function PwaInstallBanner() {
 
           {isInstalled ? (
             <div className="flex items-center gap-3 py-1">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+              <div className="w-11 h-11 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div>
@@ -184,7 +184,7 @@ export default function PwaInstallBanner() {
                 <img
                   src="/pwa-192x192.png"
                   alt="Logo En que la Negra"
-                  className="w-11 h-11 rounded-2xl bg-black border border-zinc-800 object-contain shadow-md shrink-0"
+                  className="w-11 h-11 rounded-lg bg-black border border-zinc-800 object-contain shrink-0"
                 />
 
                 <div className="space-y-0.5 min-w-0 flex-1">
@@ -201,7 +201,7 @@ export default function PwaInstallBanner() {
                   type="button"
                   onClick={handleInstallClick}
                   disabled={isPrompting}
-                  className="sm:hidden shrink-0 flex items-center gap-1.5 py-2 px-3 rounded-xl bg-amber-500 active:scale-98 text-zinc-950 font-black text-xs disabled:opacity-60"
+                  className="sm:hidden shrink-0 flex items-center gap-1.5 py-2 px-3 rounded-md bg-amber-500 active:scale-98 text-zinc-950 font-bold text-xs disabled:opacity-60"
                 >
                   {isPrompting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -217,7 +217,7 @@ export default function PwaInstallBanner() {
                 type="button"
                 onClick={handleInstallClick}
                 disabled={isPrompting}
-                className="hidden w-full sm:flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-98 text-zinc-950 font-black text-xs sm:text-sm shadow-md transition transform cursor-pointer disabled:opacity-60"
+                className="hidden w-full sm:flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-amber-500 hover:bg-amber-400 active:scale-98 text-zinc-950 font-bold text-xs sm:text-sm transition transform cursor-pointer disabled:opacity-60"
               >
                 {isPrompting ? (
                   <>
@@ -251,18 +251,18 @@ export default function PwaInstallBanner() {
 
       {/* Modal Guía Paso a Paso (para iOS o si no se abre nativo) */}
       {showGuideModal && (
-        <div className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-zinc-950 border border-zinc-800 text-white w-full max-w-md rounded-3xl p-6 shadow-2xl relative space-y-5 animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[10000] bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-zinc-950 border border-zinc-800 text-white w-full max-w-md rounded-lg p-6 shadow-xl relative space-y-5">
             <button
               onClick={() => setShowGuideModal(false)}
-              className="absolute top-4 right-4 p-2 rounded-xl bg-zinc-900 text-zinc-400 hover:text-white transition"
+              className="absolute top-4 right-4 p-2 rounded-md bg-zinc-900 text-zinc-400 hover:text-white transition"
               aria-label="Cerrar modal"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+              <div className="w-12 h-12 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
                 {isIos ? (
                   <Smartphone className="w-6 h-6" />
                 ) : (
@@ -282,9 +282,9 @@ export default function PwaInstallBanner() {
             </div>
 
             {isIos ? (
-              <div className="space-y-3 bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800 text-xs text-zinc-200">
+              <div className="space-y-3 bg-zinc-900/60 p-4 rounded-lg border border-zinc-800 text-xs text-zinc-200">
                 <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-amber-500 text-zinc-950 font-black flex items-center justify-center text-xs shrink-0 mt-0.5">
+                  <span className="w-6 h-6 rounded-full bg-amber-500 text-zinc-950 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
                     1
                   </span>
                   <div>
@@ -301,7 +301,7 @@ export default function PwaInstallBanner() {
                 <div className="h-px bg-zinc-800" />
 
                 <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-amber-500 text-zinc-950 font-black flex items-center justify-center text-xs shrink-0 mt-0.5">
+                  <span className="w-6 h-6 rounded-full bg-amber-500 text-zinc-950 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
                     2
                   </span>
                   <div>
@@ -316,9 +316,9 @@ export default function PwaInstallBanner() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-3 bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800 text-xs text-zinc-200">
+              <div className="space-y-3 bg-zinc-900/60 p-4 rounded-lg border border-zinc-800 text-xs text-zinc-200">
                 <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-amber-500 text-zinc-950 font-black flex items-center justify-center text-xs shrink-0 mt-0.5">
+                  <span className="w-6 h-6 rounded-full bg-amber-500 text-zinc-950 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
                     1
                   </span>
                   <div>
@@ -334,7 +334,7 @@ export default function PwaInstallBanner() {
                 <div className="h-px bg-zinc-800" />
 
                 <div className="flex items-start gap-3">
-                  <span className="w-6 h-6 rounded-full bg-amber-500 text-zinc-950 font-black flex items-center justify-center text-xs shrink-0 mt-0.5">
+                  <span className="w-6 h-6 rounded-full bg-amber-500 text-zinc-950 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
                     2
                   </span>
                   <div>
@@ -352,7 +352,7 @@ export default function PwaInstallBanner() {
             <button
               type="button"
               onClick={() => setShowGuideModal(false)}
-              className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-xl text-xs transition"
+              className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-md text-xs transition"
             >
               ¡Entendido!
             </button>

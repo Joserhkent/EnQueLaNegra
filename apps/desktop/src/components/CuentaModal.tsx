@@ -60,11 +60,11 @@ export default function CuentaModal({ onClose }: Props) {
   };
 
   const input =
-    "w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:border-amber-500";
+    "w-full px-3 py-2.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:outline-none focus:border-amber-500";
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden my-auto">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white w-full max-w-md rounded-lg shadow-xl overflow-hidden my-auto">
         <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <KeyRound className="w-5 h-5 text-amber-400" />
@@ -77,7 +77,7 @@ export default function CuentaModal({ onClose }: Props) {
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+            className="p-1.5 rounded-md bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
             aria-label="Cerrar"
           >
             <X className="w-4 h-4" />
@@ -85,7 +85,7 @@ export default function CuentaModal({ onClose }: Props) {
         </div>
 
         <form onSubmit={handleCambiar} className="p-6 space-y-3">
-          <h4 className="text-xs font-bold text-slate-500 uppercase">Cambiar mi contraseña</h4>
+          <h4 className="text-xs font-bold text-slate-500">Cambiar mi contraseña</h4>
           <input
             type="password"
             autoComplete="current-password"
@@ -122,7 +122,7 @@ export default function CuentaModal({ onClose }: Props) {
           <button
             type="submit"
             disabled={guardando}
-            className="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-md bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {guardando && <Loader2 className="w-4 h-4 animate-spin" />}
             Guardar contraseña
@@ -132,7 +132,7 @@ export default function CuentaModal({ onClose }: Props) {
         {isJefe && (
           <div className="px-6 pb-6 space-y-3 border-t border-slate-100 pt-5">
             <div>
-              <h4 className="text-xs font-bold text-slate-500 uppercase">Restablecer contraseña de un usuario</h4>
+              <h4 className="text-xs font-bold text-slate-500">Restablecer contraseña de un usuario</h4>
               <p className="text-[11px] text-slate-400 mt-0.5">
                 Si alguien olvidó la suya, ponle una nueva y díselo en persona.
               </p>
@@ -146,7 +146,7 @@ export default function CuentaModal({ onClose }: Props) {
               {usuarios
                 .filter((u) => u.id !== currentUser?.id)
                 .map((u) => (
-                  <div key={u.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-3 space-y-2">
+                  <div key={u.id} className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">
                         {u.role === "jefe" ? (
@@ -186,7 +186,7 @@ export default function CuentaModal({ onClose }: Props) {
                         <button
                           type="button"
                           onClick={() => handleRestablecer(u)}
-                          className="text-[11px] font-bold bg-slate-900 text-white rounded-xl px-3 hover:bg-slate-800 transition shrink-0"
+                          className="text-[11px] font-bold bg-slate-900 text-white rounded-md px-3 hover:bg-slate-800 transition shrink-0"
                         >
                           Guardar
                         </button>

@@ -163,7 +163,7 @@ export default function Sidebar({
           <img
             src="/logo.jpg"
             alt="En que la Negra"
-            className="w-full max-h-16 rounded-2xl object-contain bg-black"
+            className="w-full max-h-16 rounded-lg object-contain bg-black"
           />
           {isMobile && (
             <button
@@ -184,10 +184,10 @@ export default function Sidebar({
             setIsCuentaOpen(true);
           }}
           title="Mi cuenta: cambiar contraseña"
-          className="w-full text-left bg-slate-800/60 border border-slate-700/50 hover:border-amber-500/60 hover:bg-slate-800 p-3.5 rounded-2xl flex items-center gap-3 transition"
+          className="w-full text-left bg-slate-800/60 border border-slate-700/50 hover:border-amber-500/60 hover:bg-slate-800 p-3.5 rounded-lg flex items-center gap-3 transition"
         >
           <div
-            className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm ${
+            className={`w-9 h-9 rounded-md flex items-center justify-center font-bold text-sm ${
               isJefe
                 ? "bg-amber-500/20 text-amber-400"
                 : "bg-emerald-500/20 text-emerald-400"
@@ -201,17 +201,17 @@ export default function Sidebar({
           </div>
           <div className="overflow-hidden flex-1">
             <p className="text-xs font-bold text-white truncate">
-              {currentUser?.name || "Usuario POS"}
+              {currentUser?.name || "Usuario"}
             </p>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span
-                className={`px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${
+                className={`px-2 py-0.5 rounded text-[9px] font-extrabold ${
                   isJefe
                     ? "bg-amber-500 text-slate-950"
                     : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                 }`}
               >
-                {isJefe ? "Rol Jefe" : "Rol Empleado"}
+                {isJefe ? "Jefe" : "Mesonero"}
               </span>
             </div>
             <p className="text-[10px] text-slate-400 font-medium mt-0.5">
@@ -223,9 +223,6 @@ export default function Sidebar({
 
         {/* Navigation Menu */}
         <nav className="space-y-1.5">
-          <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
-            Menú Principal
-          </p>
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.key === activePage;
@@ -237,9 +234,9 @@ export default function Sidebar({
                   onChangePage(item.key);
                   if (isMobile) setIsMobileOpen(false);
                 }}
-                className={`flex w-full items-center justify-between px-3.5 py-3 rounded-2xl text-xs font-semibold transition-all duration-200 ${
+                className={`flex w-full items-center justify-between px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20 translate-x-1"
+                    ? "bg-amber-500 text-slate-950 font-semibold"
                     : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                 }`}
               >
@@ -254,7 +251,7 @@ export default function Sidebar({
 
                 {item.badge && (
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                    className={`px-2 py-0.5 rounded text-[10px] font-extrabold ${
                       isActive
                         ? "bg-slate-950 text-amber-400"
                         : "bg-amber-500/20 text-amber-400"
@@ -276,10 +273,10 @@ export default function Sidebar({
         {installPrompt && (
           <button
             onClick={handleInstallClick}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 hover:brightness-110 transition active:scale-95"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-md bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition active:scale-95"
           >
             <Download className="w-4 h-4" />
-            <span>Instalar Aplicación PWA</span>
+            <span>Instalar app</span>
           </button>
         )}
       </div>
@@ -288,11 +285,11 @@ export default function Sidebar({
       <div className="pt-4 border-t border-slate-800 space-y-3 shrink-0">
         <button
           onClick={onLogout}
-          className="flex w-full items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition"
+          className="flex w-full items-center justify-between px-3 py-2.5 rounded-md text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition"
         >
           <span className="flex items-center gap-2">
             <LogOut className="w-4 h-4" />
-            Cerrar Sesión
+            Cerrar sesión
           </span>
         </button>
 
@@ -319,10 +316,11 @@ export default function Sidebar({
     <>
       {/* Mobile Top Bar */}
       <header className="lg:hidden sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+        <div className="franja-marca absolute inset-x-0 top-0 h-[3px]" aria-hidden="true" />
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsMobileOpen(true)}
-            className="p-2 rounded-xl bg-slate-800 text-white hover:bg-slate-700 transition"
+            className="p-2 rounded-md bg-slate-800 text-white hover:bg-slate-700 transition"
             aria-label="Abrir menú"
           >
             <Menu className="w-5 h-5" />
@@ -363,17 +361,18 @@ export default function Sidebar({
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            className="fixed inset-0 bg-black/60"
             onClick={() => setIsMobileOpen(false)}
           />
-          <aside className="fixed inset-y-0 left-0 w-[280px] bg-slate-900 text-white p-5 border-r border-slate-800 shadow-2xl z-50">
+          <aside className="fixed inset-y-0 left-0 w-[280px] bg-slate-900 text-white p-5 border-r border-slate-800 shadow-xl z-50">
             {renderNavContent(true)}
           </aside>
         </div>
       )}
 
       {/* Desktop Persistent Sidebar */}
-      <aside className="hidden lg:flex h-screen w-[280px] bg-slate-900 text-white flex-col justify-between p-5 border-r border-slate-800 shrink-0 sticky top-0">
+      <aside className="hidden lg:flex h-screen w-[260px] bg-slate-900 text-white flex-col justify-between p-4 pt-5 border-r border-slate-800 shrink-0 sticky top-0">
+        <div className="franja-marca absolute inset-x-0 top-0 h-[3px]" aria-hidden="true" />
         {renderNavContent(false)}
       </aside>
 

@@ -84,12 +84,12 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             <img
               src="/pwa-192x192.png"
               alt="Logo"
-              className="w-11 h-11 rounded-2xl bg-black border border-zinc-800 object-contain shadow-lg"
+              className="w-11 h-11 rounded-lg bg-black border border-zinc-800 object-contain"
             />
             <div>
               <h2 className="font-extrabold text-base text-white tracking-tight flex items-center gap-2">
                 En que la Negra
-                <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-black uppercase">
+                <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-bold">
                   POS
                 </span>
               </h2>
@@ -98,19 +98,19 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
           </div>
 
           {/* Banner Fotográfico con Overlay */}
-          <div className="relative rounded-3xl overflow-hidden border border-zinc-800/80 shadow-2xl group max-h-56 sm:max-h-64 bg-black">
+          <div className="relative rounded-lg overflow-hidden border border-zinc-800/80 shadow-xl group max-h-56 sm:max-h-64 bg-black">
             <img
               src="/logo.jpg"
               alt="En que la Negra Especialidades"
-              className="w-full h-full object-cover opacity-90 group-hover:scale-102 transition duration-700"
+              className="w-full h-full object-cover opacity-90 transition duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
             <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between text-xs text-zinc-300">
-              <span className="flex items-center gap-1.5 font-bold text-amber-400 bg-black/60 px-3 py-1 rounded-full backdrop-blur-md border border-amber-500/20">
+              <span className="flex items-center gap-1.5 font-bold text-amber-400 bg-black/60 px-3 py-1 rounded border border-amber-500/20">
                 <Sparkles className="w-3.5 h-3.5" />
                 Arepas, Cachapas & Comida Venezolana
               </span>
-              <span className="text-[11px] text-zinc-400 bg-black/40 px-2.5 py-1 rounded-full backdrop-blur-sm">
+              <span className="text-[11px] text-zinc-400 bg-black/40 px-2.5 py-1 rounded">
                 Lima, Perú
               </span>
             </div>
@@ -118,10 +118,10 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
 
           {/* Mensaje de Bienvenida */}
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-black tracking-wider uppercase">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-bold">
               <span>{formattedDate}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display text-white tracking-tight">
               Todo listo para abrir el turno
             </h1>
             <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">
@@ -131,8 +131,8 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
 
           {/* Tarjetas de Funcionalidades en 2x2 */}
           <div className="grid grid-cols-2 gap-3 pt-2">
-            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+            <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-md bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
                 <UtensilsCrossed className="w-5 h-5" />
               </div>
               <div>
@@ -141,8 +141,8 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0 border border-orange-500/20">
+            <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-md bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0 border border-orange-500/20">
                 <ChefHat className="w-5 h-5" />
               </div>
               <div>
@@ -151,8 +151,8 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+            <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-md bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
                 <Boxes className="w-5 h-5" />
               </div>
               <div>
@@ -161,8 +161,8 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
+            <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-md bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
                 <CreditCard className="w-5 h-5" />
               </div>
               <div>
@@ -191,12 +191,12 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             <img
               src="/pwa-192x192.png"
               alt="Logo"
-              className="w-10 h-10 rounded-2xl bg-black border border-zinc-800 object-contain shadow-md shrink-0"
+              className="w-10 h-10 rounded-lg bg-black border border-zinc-800 object-contain shrink-0"
             />
             <div>
               <h2 className="font-extrabold text-sm text-white flex items-center gap-1.5">
                 En que la Negra
-                <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 text-[9px] font-black uppercase">
+                <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 text-[9px] font-bold">
                   POS
                 </span>
               </h2>
@@ -205,10 +205,10 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
           </div>
 
           <header className="space-y-1">
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">
+            <span className="text-[10px] font-bold text-amber-500">
               ACCESO AL SISTEMA
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-display text-white tracking-tight">
               Inicia sesión
             </h2>
             <p className="text-xs text-zinc-400">
@@ -221,15 +221,15 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
           {/* Acceso rápido SOLO en desarrollo (npm run dev): en el build de producción
               Vite reemplaza import.meta.env.DEV por false y este bloque no existe */}
           {import.meta.env.DEV && (
-          <div className="space-y-1.5 bg-zinc-900/60 p-2.5 rounded-2xl border border-zinc-800/80">
-            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider px-1">
+          <div className="space-y-1.5 bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/80">
+            <p className="text-[10px] font-bold text-zinc-400 px-1">
               Perfil rápido con 1 clic:
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => handleSelectDemo("admin", "123456")}
-                className={`p-2 rounded-xl border text-left transition flex items-center gap-2 ${
+                className={`p-2 rounded-md border text-left transition flex items-center gap-2 ${
                   username === "admin"
                     ? "bg-amber-500/20 border-amber-500 text-amber-300 font-bold"
                     : "bg-zinc-800/60 border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs"
@@ -245,7 +245,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               <button
                 type="button"
                 onClick={() => handleSelectDemo("empleado", "123456")}
-                className={`p-2 rounded-xl border text-left transition flex items-center gap-2 ${
+                className={`p-2 rounded-md border text-left transition flex items-center gap-2 ${
                   username === "empleado"
                     ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold"
                     : "bg-zinc-800/60 border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs"
@@ -280,7 +280,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                   placeholder="admin o empleado"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                  className="w-full rounded-md border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 />
               </div>
             </div>
@@ -303,7 +303,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-11 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                  className="w-full rounded-md border border-zinc-800 bg-zinc-900/90 pl-10 pr-11 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 />
                 <button
                   type="button"
@@ -335,7 +335,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
 
             {/* Alerta de Error si ocurre */}
             {authError && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+              <div className="rounded-md border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
                 {authError}
               </div>
             )}
@@ -344,7 +344,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             <button
               type="submit"
               disabled={isSubmitting || !username.trim() || !password.trim()}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-950 font-black text-sm shadow-lg shadow-amber-500/20 active:scale-98 transition transform cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-950 font-bold text-sm active:scale-98 transition transform cursor-pointer"
             >
               {isSubmitting ? (
                 <>

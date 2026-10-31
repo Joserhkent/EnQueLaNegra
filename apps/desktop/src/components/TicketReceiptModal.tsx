@@ -55,7 +55,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 overflow-y-auto">
       {/* Thermal Printer Media Styles */}
       <style>{`
         @media print {
@@ -87,7 +87,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
       `}</style>
 
       {/* Modal Container */}
-      <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200 print:shadow-none print:border-none print:w-full print:max-w-none print:p-0">
+      <div className="bg-white w-full max-w-sm rounded-lg shadow-xl border border-slate-200 overflow-hidden my-auto print:shadow-none print:border-none print:w-full print:max-w-none print:p-0">
 
         {/* Screen Header (Hidden on Print) */}
         <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between print:hidden">
@@ -97,7 +97,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+            className="p-1.5 rounded-md bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -109,7 +109,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
           {/* Header & Logo */}
           <div className="text-center space-y-1 pb-3 border-b border-dashed border-slate-400">
             <img src="/logo.jpg" alt="En que la Negra" className="w-32 mx-auto mb-1 print:hidden" />
-            <h2 className="font-black text-base tracking-tight text-slate-900 uppercase">En que la Negra</h2>
+            <h2 className="font-bold text-base tracking-tight text-slate-900 uppercase">En que la Negra</h2>
             <p className="text-[10px] font-sans text-slate-600 font-medium">Sabor Venezolano de Siempre</p>
             <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wide">{meta.title}</p>
           </div>
@@ -128,7 +128,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
             {isComanda && numeroMesa ? (
               <div className="text-center py-2 bg-slate-900 text-white rounded-lg -mx-1">
                 <div className="text-[9px] uppercase tracking-widest text-amber-400 font-bold">MESA</div>
-                <div className="text-2xl font-black leading-none">N° {numeroMesa}</div>
+                <div className="text-2xl font-display leading-none">N° {numeroMesa}</div>
                 {soloRonda != null && (
                   <div className="text-[9px] uppercase tracking-widest text-amber-300 font-bold mt-0.5">
                     TANDA {soloRonda} · SOLO ESTOS ÍTEMS
@@ -232,7 +232,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
           {/* Payment & Totals Breakdown (oculto en la comanda de cocina) */}
           {!isComanda && (
             <div className="space-y-1.5 pt-1 text-[11px]">
-              <div className="flex justify-between items-center text-sm font-black pt-1">
+              <div className="flex justify-between items-center text-sm font-bold pt-1">
                 <span>{mode === "precuenta" ? "TOTAL ESTIMADO:" : "TOTAL A PAGAR:"}</span>
                 <span className="text-slate-950 text-base font-extrabold">S/ {order.total.toFixed(2)}</span>
               </div>
@@ -241,7 +241,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
                 const pagado = (order.pagos || []).reduce((sum, pago) => sum + Number(pago.monto || 0), 0);
                 const saldo = Math.max(0, order.total - pagado);
                 return (
-                  <div className="bg-blue-50 p-2 rounded-xl text-[10px] space-y-0.5 mt-1 border-blue-200">
+                  <div className="bg-blue-50 p-2 rounded-md text-[10px] space-y-0.5 mt-1 border-blue-200">
                     <div className="flex justify-between text-emerald-700"><span>• Pagado:</span><span className="font-bold">S/ {pagado.toFixed(2)}</span></div>
                     <div className="flex justify-between text-blue-800"><span>• Saldo pendiente:</span><span className="font-bold">S/ {saldo.toFixed(2)}</span></div>
                   </div>
@@ -256,7 +256,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
                   </div>
 
                   {order.paymentMethod === "Mixto" && (
-                    <div className="bg-slate-100 p-2 rounded-xl text-[10px] space-y-0.5 mt-1 border border-slate-300">
+                    <div className="bg-slate-100 p-2 rounded-md text-[10px] space-y-0.5 mt-1 border border-slate-300">
                       <div className="flex justify-between text-slate-700">
                         <span>• En Yape / Plin:</span>
                         <span className="font-bold">S/ {(order.montoDigital || 0).toFixed(2)}</span>
@@ -296,13 +296,13 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center gap-2 print:hidden">
           <button
             onClick={handlePrint}
-            className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition flex items-center justify-center gap-2 active:scale-95"
+            className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-lg text-xs transition flex items-center justify-center gap-2 active:scale-95"
           >
             <Printer className="w-4 h-4" /> {meta.printLabel}
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl text-xs transition"
+            className="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-xs transition"
           >
             Cerrar
           </button>

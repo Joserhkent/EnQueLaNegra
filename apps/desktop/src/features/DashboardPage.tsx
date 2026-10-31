@@ -137,25 +137,25 @@ export default function DashboardPage() {
     switch (status) {
       case "preparacion":
         return (
-          <span className="px-2.5 py-1 bg-blue-500/10 text-blue-600 rounded-full text-[11px] font-bold border border-blue-500/20 flex items-center gap-1 w-max">
+          <span className="px-2.5 py-1 bg-blue-500/10 text-blue-600 rounded text-[11px] font-bold border border-blue-500/20 flex items-center gap-1 w-max">
             <Flame className="w-3 h-3 animate-pulse" /> En Cocina
           </span>
         );
       case "listo":
         return (
-          <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 rounded-full text-[11px] font-bold border border-emerald-500/20 flex items-center gap-1 w-max">
+          <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 rounded text-[11px] font-bold border border-emerald-500/20 flex items-center gap-1 w-max">
             <PackageCheck className="w-3 h-3" /> Listo
           </span>
         );
       case "entregado":
         return (
-          <span className="px-2.5 py-1 bg-slate-500/10 text-slate-600 rounded-full text-[11px] font-semibold border border-slate-500/20 flex items-center gap-1 w-max">
+          <span className="px-2.5 py-1 bg-slate-500/10 text-slate-600 rounded text-[11px] font-semibold border border-slate-500/20 flex items-center gap-1 w-max">
             <CheckCircle2 className="w-3 h-3" /> Entregado
           </span>
         );
       case "cancelado":
         return (
-          <span className="px-2.5 py-1 bg-rose-500/10 text-rose-600 rounded-full text-[11px] font-semibold border border-rose-500/20 flex items-center gap-1 w-max">
+          <span className="px-2.5 py-1 bg-rose-500/10 text-rose-600 rounded text-[11px] font-semibold border border-rose-500/20 flex items-center gap-1 w-max">
             <XCircle className="w-3 h-3" /> Cancelado
           </span>
         );
@@ -168,29 +168,29 @@ export default function DashboardPage() {
         return (
           <button
             onClick={() => updateOrderStatus(order.id, "listo")}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 border border-blue-500/20 hover:bg-blue-500/20 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-blue-500/10 text-blue-600 border border-blue-500/20 hover:bg-blue-500/20 transition"
           >
-            <Flame className="w-3.5 h-3.5 animate-pulse" /> En Cocina (Marcar Listo)
+            <Flame className="w-3.5 h-3.5" /> En cocina
           </button>
         );
       case "listo":
         return (
           <button
             onClick={() => updateOrderStatus(order.id, "entregado")}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 transition"
           >
             <PackageCheck className="w-3.5 h-3.5" /> Listo (Entregar & Descontar)
           </button>
         );
       case "entregado":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-600 border border-slate-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-slate-500/10 text-slate-600 border border-slate-500/20">
             <CheckCircle2 className="w-3.5 h-3.5" /> Entregado
           </span>
         );
       case "cancelado":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 border border-rose-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-rose-500/10 text-rose-600 border border-rose-500/20">
             <XCircle className="w-3.5 h-3.5" /> Cancelado
           </span>
         );
@@ -200,24 +200,24 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-10">
       {/* Top Banner Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-lg border border-slate-200/80">
         <div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
               Dashboard de Operaciones POS
             </h1>
             {cajaEstado?.isOpen ? (
-              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 Caja Abierta (Base: S/ {(cajaEstado.sesion?.montoInicial ?? 0).toFixed(2)})
               </span>
             ) : (
-              <span className="px-3 py-1 bg-rose-100 text-rose-800 text-xs font-semibold rounded-full flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-rose-100 text-rose-800 text-xs font-semibold rounded flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-rose-500" />
                 Caja Cerrada
               </span>
             )}
-            <span className="px-3 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-full border border-amber-200">
+            <span className="px-3 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded border border-amber-200">
               ☀️ Lun - Dom (Turno Completo)
             </span>
           </div>
@@ -228,7 +228,7 @@ export default function DashboardPage() {
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Real-time Clock */}
-          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 px-4 py-2.5 rounded-2xl text-xs font-medium text-slate-700">
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 px-4 py-2.5 rounded-lg text-xs font-medium text-slate-700">
             <Clock className="w-4 h-4 text-amber-500" />
             <span>
               {currentTime.toLocaleDateString("es-PE", { weekday: "short", day: "numeric", month: "short" })} •{" "}
@@ -237,18 +237,18 @@ export default function DashboardPage() {
           </div>
 
           {/* Time Filter */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200/60">
+          <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200/60">
             {(["today", "week", "month"] as TimeRange[]).map((range) => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
-                className={`px-3.5 py-1.5 text-xs font-semibold rounded-xl transition-all ${
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-all ${
                   timeRange === range
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-slate-900"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                {range === "today" ? "Hoy" : range === "week" ? "Esta Semana" : "Este Mes"}
+                {range === "today" ? "Hoy" : range === "week" ? "Esta semana" : "Este mes"}
               </button>
             ))}
           </div>
@@ -258,58 +258,58 @@ export default function DashboardPage() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Sales Card */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-6 rounded-lg border border-slate-200/80 flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Ventas Totales</span>
-            <div className="text-3xl font-black text-slate-900 mt-1">S/ {totalSales.toFixed(2)}</div>
+            <span className="text-xs font-semibold text-slate-400">Ventas Totales</span>
+            <div className="text-3xl font-display text-slate-900 mt-1">S/ {totalSales.toFixed(2)}</div>
             <span className="text-[11px] font-semibold text-emerald-600 mt-1 flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5" /> En tiempo real
             </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold">
             <Coins className="w-6 h-6" />
           </div>
         </div>
 
         {/* Orders Count Card */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-6 rounded-lg border border-slate-200/80 flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Pedidos del Día</span>
-            <div className="text-3xl font-black text-slate-900 mt-1">{totalOrdersCount} comandas</div>
+            <span className="text-xs font-semibold text-slate-400">Pedidos del Día</span>
+            <div className="text-3xl font-display text-slate-900 mt-1">{totalOrdersCount} comandas</div>
             <span className="text-[11px] font-medium text-slate-500 mt-1 block">
               {inPreparationCount} en cocina • {completedCount} entregados
             </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center font-bold">
             <ShoppingBag className="w-6 h-6" />
           </div>
         </div>
 
         {/* Top Seller Card */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-6 rounded-lg border border-slate-200/80 flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Producto Estrella</span>
+            <span className="text-xs font-semibold text-slate-400">Producto Estrella</span>
             <div className="text-lg font-bold text-slate-900 mt-1 truncate max-w-[170px]">{starProduct.name}</div>
             <span className="text-[11px] font-medium text-amber-600 mt-1 block">
               {starProduct.count} unidades vendidas (S/ {starProduct.revenue.toFixed(2)})
             </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
             <Award className="w-6 h-6" />
           </div>
         </div>
 
         {/* Stock Alert Card */}
-        <div className={`p-6 rounded-3xl border shadow-sm flex items-center justify-between ${
+        <div className={`p-6 rounded-lg border flex items-center justify-between ${
           criticalInsumos.length > 0 ? "bg-rose-50/50 border-rose-200" : "bg-white border-slate-200/80"
         }`}>
           <div>
-            <span className={`text-xs font-semibold uppercase tracking-wider ${
+            <span className={`text-xs font-semibold ${
               criticalInsumos.length > 0 ? "text-rose-600" : "text-slate-400"
             }`}>
               Stock Crítico
             </span>
-            <div className={`text-3xl font-black mt-1 ${criticalInsumos.length > 0 ? "text-rose-600" : "text-slate-900"}`}>
+            <div className={`text-3xl font-display mt-1 ${criticalInsumos.length > 0 ? "text-rose-600" : "text-slate-900"}`}>
               {criticalInsumos.length} {criticalInsumos.length === 1 ? "Insumo" : "Insumos"}
             </div>
             <span className={`text-[11px] mt-1 block truncate max-w-[170px] ${
@@ -318,7 +318,7 @@ export default function DashboardPage() {
               {criticalInsumos.length > 0 ? criticalInsumosNames : "Todos los insumos óptimos"}
             </span>
           </div>
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold ${
+          <div className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold ${
             criticalInsumos.length > 0 ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-600"
           }`}>
             <ShieldAlert className="w-6 h-6" />
@@ -329,13 +329,13 @@ export default function DashboardPage() {
       {/* Hourly Sales Chart & Top Selling Products */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Hourly Chart (2 cols) */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-200/80 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="font-bold text-slate-900 text-base">Ventas por Hora</h3>
               <p className="text-xs text-slate-500">Distribución de ingresos durante el servicio</p>
             </div>
-            <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full">
+            <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded">
               Pico: 12:00 PM - 2:00 PM
             </span>
           </div>
@@ -352,12 +352,12 @@ export default function DashboardPage() {
                   onMouseLeave={() => setActiveHourlyBar(null)}
                 >
                   {isHovered && (
-                    <div className="absolute -top-10 bg-slate-900 text-white px-2 py-1 rounded-lg text-[10px] font-bold shadow-lg z-10 whitespace-nowrap">
+                    <div className="absolute -top-10 bg-slate-900 text-white px-2 py-1 rounded-lg text-[10px] font-bold z-10 whitespace-nowrap">
                       S/ {d.total.toFixed(2)}
                     </div>
                   )}
 
-                  <div className="w-full bg-slate-100 rounded-2xl h-full flex items-end overflow-hidden">
+                  <div className="w-full bg-slate-100 rounded-lg h-full flex items-end overflow-hidden">
                     <div
                       style={{ height: `${heightPercent}%` }}
                       className={`w-full rounded-t-2xl transition-all duration-300 ${
@@ -375,7 +375,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Top 4 Products Ranking (1 col) */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div className="bg-white p-6 rounded-lg border border-slate-200/80 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-slate-900 text-base">Más Vendidos</h3>
@@ -384,9 +384,9 @@ export default function DashboardPage() {
 
             <div className="space-y-4">
               {sortedTopProducts.slice(0, 4).map((p, idx) => (
-                <div key={p.name} className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl">
+                <div key={p.name} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-slate-900 text-amber-400 font-bold text-xs flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-md bg-slate-900 text-amber-400 font-bold text-xs flex items-center justify-center">
                       #{idx + 1}
                     </div>
                     <div>
@@ -405,7 +405,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Orders Live Feed Table */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+      <div className="bg-white p-6 rounded-lg border border-slate-200/80 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
             <h3 className="font-bold text-slate-900 text-base">Comanda de Pedidos Recientes</h3>
@@ -414,7 +414,7 @@ export default function DashboardPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             {/* Order Filter Tabs */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200/60 text-xs font-semibold">
+            <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200/60 text-xs font-semibold">
               {[
                 { key: "all", label: "Todos" },
                 { key: "preparacion", label: "En Cocina" },
@@ -424,9 +424,9 @@ export default function DashboardPage() {
                 <button
                   key={tab.key}
                   onClick={() => setOrderFilter(tab.key)}
-                  className={`px-3 py-1.5 rounded-xl transition ${
+                  className={`px-3 py-1.5 rounded-md transition ${
                     orderFilter === tab.key
-                      ? "bg-white text-slate-900 shadow-sm font-bold"
+                      ? "bg-white text-slate-900 font-bold"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
@@ -443,7 +443,7 @@ export default function DashboardPage() {
                 placeholder="Buscar pedido..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500"
+                className="pl-9 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
@@ -452,7 +452,7 @@ export default function DashboardPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+              <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold text-[10px]">
                 <th className="py-4 px-4">Código</th>
                 <th className="py-4 px-4">Cliente / Mesa</th>
                 <th className="py-4 px-4">Detalle de Productos</th>
@@ -488,7 +488,7 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setSelectedPrintOrder(order)}
-                        className="p-1.5 rounded-xl bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition"
+                        className="p-1.5 rounded-md bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition"
                         title="Imprimir Boleta POS"
                       >
                         <Printer className="w-3.5 h-3.5" />

@@ -354,29 +354,29 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         return (
           <button
             onClick={() => updateOrderStatus(order.id, "listo")}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 border border-blue-500/20 hover:bg-blue-500/20 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-blue-500/10 text-blue-600 border border-blue-500/20 hover:bg-blue-500/20 transition"
           >
-            <Flame className="w-3.5 h-3.5 animate-pulse" /> En Cocina (Marcar Listo)
+            <Flame className="w-3.5 h-3.5" /> En cocina
           </button>
         );
       case "listo":
         return (
           <button
             onClick={() => updateOrderStatus(order.id, "entregado")}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 transition"
           >
             <PackageCheck className="w-3.5 h-3.5" /> Listo (Entregar & Descontar)
           </button>
         );
       case "entregado":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-600 border border-slate-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-slate-500/10 text-slate-600 border border-slate-500/20">
             <CheckCircle2 className="w-3.5 h-3.5 text-slate-500" /> Entregado
           </span>
         );
       case "cancelado":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 border border-rose-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-rose-500/10 text-rose-600 border border-rose-500/20">
             <XCircle className="w-3.5 h-3.5" /> Cancelado
           </span>
         );
@@ -397,17 +397,17 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   return (
     <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-slate-200">
         <div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Pedidos para Llevar / Delivery</h1>
-            <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full flex items-center gap-1">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h1 className="text-3xl text-slate-900">Pedidos</h1>
+            <span className="text-sm text-slate-500 flex items-center gap-1">
               <ShoppingBag className="w-3.5 h-3.5" />
-              {pedidos.length} Registrados
+              {pedidos.length} registrados
             </span>
           </div>
           <p className="text-slate-500 text-sm mt-1">
-            Solo para llevar y delivery. El consumo en salón se abre y gestiona desde <strong>Mesas</strong> — acá se ve también, de solo lectura, para tener una sola cola.
+            Para llevar y delivery. Las mesas se atienden en <strong>Mesas</strong>; aquí solo se ven.
           </p>
         </div>
 
@@ -419,31 +419,31 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
             }
             setIsModalOpen(true);
           }}
-          className={`flex items-center gap-2 font-bold px-5 py-3 rounded-2xl text-xs shadow-md transition active:scale-95 shrink-0 ${
+          className={`flex items-center gap-2 font-bold px-5 py-3 rounded-lg text-xs transition active:scale-95 shrink-0 ${
             cajaEstado?.isOpen
-              ? "bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-amber-500/20"
+              ? "bg-amber-500 hover:bg-amber-600 text-slate-950"
               : "bg-slate-200 text-slate-500 cursor-not-allowed"
           }`}
           title={!cajaEstado?.isOpen ? "La caja está cerrada" : undefined}
         >
           <PlusCircle className="w-4 h-4" />
-          Nuevo Pedido (Llevar/Delivery)
+          Nuevo pedido
         </button>
       </div>
 
       {/* Alerta de caja cerrada */}
       {!cajaEstado?.isOpen && (
-        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4 flex items-center justify-between gap-3 text-amber-950 text-xs font-semibold">
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center justify-between gap-3 text-amber-950 text-xs font-semibold">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
-            <span>Caja cerrada actualmente: No se pueden registrar pedidos para llevar ni delivery hasta abrir la caja en el módulo de Pagos.</span>
+            <span>Caja cerrada. Ábrela en Pagos / Caja para registrar pedidos.</span>
           </div>
         </div>
       )}
 
       {/* Cola unificada: mesas activas (solo lectura, se gestionan en Mesas) */}
       {mesasActivas.length > 0 && (
-        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
+        <div className="bg-white p-5 rounded-lg border border-slate-200/80 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
               <UtensilsCrossed className="w-4 h-4 text-amber-500" />
@@ -461,16 +461,16 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
               <button
                 key={mesa.id}
                 onClick={onGoToMesas}
-                className={`p-3 rounded-2xl border text-left transition ${
+                className={`p-3 rounded-lg border text-left transition ${
                   mesa.status === "BILLING"
                     ? "bg-blue-50 border-blue-200 hover:border-blue-400"
                     : "bg-amber-50 border-amber-200 hover:border-amber-400"
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-black text-slate-900 text-sm">Mesa #{mesa.number}</span>
+                  <span className="font-bold text-slate-900 text-sm">Mesa #{mesa.number}</span>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${
+                    className={`px-2 py-0.5 rounded text-[9px] font-extrabold ${
                       mesa.status === "BILLING" ? "bg-blue-500 text-white" : "bg-amber-500 text-slate-950"
                     }`}
                   >
@@ -493,54 +493,54 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       )}
 
       {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-center justify-between">
+      <div className="grid grid-cols-3 bg-white border border-slate-200 rounded-lg divide-x divide-slate-200">
+        <div className="p-3 sm:p-4 flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Hoy</span>
-            <div className="text-2xl font-extrabold text-slate-900 mt-0.5">{dateFilteredOrders.length}</div>
+            <span className="text-xs font-medium text-slate-500">Hoy</span>
+            <div className="text-3xl font-display text-slate-900">{dateFilteredOrders.length}</div>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700">
+          <div className="hidden sm:flex w-9 h-9 rounded-md bg-slate-100 items-center justify-center text-slate-700">
             <ShoppingBag className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-blue-200 flex items-center justify-between">
+        <div className="p-3 sm:p-4 flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-semibold text-blue-600 uppercase tracking-wider">En Cocina</span>
-            <div className="text-2xl font-extrabold text-blue-600 mt-0.5">{prepCount}</div>
+            <span className="text-xs font-medium text-blue-700">En cocina</span>
+            <div className="text-3xl font-display text-blue-600">{prepCount}</div>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-            <Flame className="w-5 h-5 animate-pulse" />
+          <div className="hidden sm:flex w-9 h-9 rounded-md bg-blue-50 items-center justify-center text-blue-600">
+            <Flame className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-emerald-200 flex items-center justify-between">
+        <div className="p-3 sm:p-4 flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wider">Listos / Para Entregar</span>
-            <div className="text-2xl font-extrabold text-emerald-600 mt-0.5">{readyCount}</div>
+            <span className="text-xs font-medium text-emerald-700">Listos</span>
+            <div className="text-3xl font-display text-emerald-600">{readyCount}</div>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+          <div className="hidden sm:flex w-9 h-9 rounded-md bg-emerald-50 items-center justify-center text-emerald-600">
             <PackageCheck className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Main Table Container */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+      <div className="bg-white p-4 sm:p-5 rounded-lg border border-slate-200 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/60 text-xs font-semibold overflow-x-auto">
+          <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200/60 text-xs font-semibold overflow-x-auto">
             {[
               { key: "all", label: "Todos" },
-              { key: "preparacion", label: `En Cocina (${prepCount})` },
+              { key: "preparacion", label: `En cocina (${prepCount})` },
               { key: "listo", label: `Listos (${readyCount})` },
               { key: "entregado", label: "Entregados" },
             ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setOrderFilter(tab.key)}
-                className={`px-3.5 py-1.5 rounded-xl transition whitespace-nowrap ${
+                className={`px-3.5 py-1.5 rounded-md transition whitespace-nowrap ${
                   orderFilter === tab.key
-                    ? "bg-white text-slate-900 shadow-sm font-bold"
+                    ? "bg-white text-slate-900 font-bold"
                     : "text-slate-500 hover:text-slate-900"
                 }`}
               >
@@ -556,7 +556,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
               placeholder="Buscar comanda o cliente..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
             />
           </div>
         </div>
@@ -564,8 +564,8 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
           {[
             { key: "hoy", label: "Hoy" },
-            { key: "semana", label: "Esta Semana" },
-            { key: "mes", label: "Este Mes" },
+            { key: "semana", label: "Esta semana" },
+            { key: "mes", label: "Este mes" },
           ].map((f) => (
             <button
               key={f.key}
@@ -573,7 +573,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                 setDateFilter(f.key as "hoy" | "semana" | "mes");
                 setCustomDate("");
               }}
-              className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition border ${
+              className={`px-3 py-1.5 rounded-md text-[11px] font-bold transition border ${
                 dateFilter === f.key
                   ? "bg-slate-900 text-white border-slate-900"
                   : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"
@@ -595,7 +595,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
               onClick={(e) => {
                 (e.target as HTMLInputElement).showPicker?.();
               }}
-              className={`px-3 py-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-md text-[11px] font-bold border transition cursor-pointer ${
                 dateFilter === "custom"
                   ? "bg-slate-900 text-white border-slate-900"
                   : "bg-white text-slate-600 border-slate-200"
@@ -607,23 +607,23 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="py-4 px-4">N° Pedido</th>
-                <th className="py-4 px-4">Cliente</th>
-                <th className="py-4 px-4">Detalle de Productos</th>
-                <th className="py-4 px-4">Tipo / Pago</th>
-                <th className="py-4 px-4">Total (S/.)</th>
-                <th className="py-4 px-4 text-center">Estado / Avance Comanda</th>
-                <th className="py-4 px-4 text-center">Fecha</th>
-                <th className="py-4 px-4 text-center">Hora</th>
-                <th className="py-4 px-4 text-right">Acciones</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold text-xs">
+                <th className="py-3 px-4">Pedido</th>
+                <th className="py-3 px-4">Cliente</th>
+                <th className="py-3 px-4">Productos</th>
+                <th className="py-3 px-4">Tipo / pago</th>
+                <th className="py-3 px-4">Total (S/)</th>
+                <th className="py-3 px-4 text-center">Estado</th>
+                <th className="py-3 px-4 text-center">Fecha</th>
+                <th className="py-3 px-4 text-center">Hora</th>
+                <th className="py-3 px-4 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
               {filteredOrders.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="py-8 text-center text-slate-400 font-medium">
-                    No se encontraron pedidos en la categoría seleccionada.
+                    Sin pedidos en este filtro.
                   </td>
                 </tr>
               ) : (
@@ -666,7 +666,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                           {order.status !== "entregado" && order.status !== "cancelado" && (
                             <button
                               onClick={() => handleCancelOrder(order)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-rose-300 hover:bg-rose-50 text-rose-600 font-bold text-[11px] transition shadow-sm"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-rose-300 hover:bg-rose-50 text-rose-600 font-bold text-[11px] transition"
                               title="Cancelar Pedido"
                             >
                               <Ban className="w-3.5 h-3.5" /> Cancelar
@@ -674,21 +674,21 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                           )}
                           <button
                             onClick={() => setSelectedKitchenOrder(order)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-100 border border-orange-300 hover:bg-orange-500 hover:text-white text-orange-700 font-bold text-[11px] transition shadow-sm"
-                            title="Imprimir Comanda de Cocina"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-100 border border-orange-300 hover:bg-orange-500 hover:text-white text-orange-700 font-bold text-[11px] transition"
+                            title="Imprimir comanda de cocina"
                           >
-                            🔥 Cocina
+                            Comanda
                           </button>
                           <button
                             onClick={() => setSelectedDetailOrder(order)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-[11px] transition shadow-sm"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-[11px] transition"
                             title="Ver Detalle del Pedido"
                           >
                             <ClipboardList className="w-3.5 h-3.5" /> Detalle
                           </button>
                           <button
                             onClick={() => setSelectedPrintOrder(order)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-bold text-[11px] transition shadow-sm"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-bold text-[11px] transition"
                             title="Imprimir Boleta POS"
                           >
                             <Printer className="w-3.5 h-3.5" /> Boleta
@@ -706,21 +706,20 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
 
       {/* NEW ORDER MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-4xl rounded-lg shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
             <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
                   <PlusCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base">Crear Nueva Comanda POS</h3>
-                  <p className="text-xs text-slate-400">Selecciona productos de la carta e ingresa los datos del cliente</p>
+                  <h3 className="font-bold text-base">Nuevo pedido</h3>
                 </div>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
+                className="p-2 rounded-md bg-white/10 text-slate-400 hover:text-white hover:bg-white/20 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -730,7 +729,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
               <div className="md:col-span-3 p-6 space-y-4 overflow-y-auto border-r border-slate-100">
                 <div className="grid grid-cols-2 gap-3 pb-3 border-b border-slate-100">
                   <div>
-                    <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">Nombre del Cliente</label>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Cliente</label>
                     <div className="relative">
                       <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
@@ -738,19 +737,19 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                         placeholder="Ej: Juan Pérez"
-                        className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500"
+                        className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">Tipo de Servicio</label>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Servicio</label>
                     <select
                       value={orderType}
                       onChange={(e) => setOrderType(e.target.value as "Llevar" | "Delivery")}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md text-xs font-semibold text-slate-900 focus:outline-none focus:border-amber-500"
                     >
-                      <option value="Llevar">Para Llevar</option>
+                      <option value="Llevar">Para llevar</option>
                       <option value="Delivery">Delivery</option>
                     </select>
                   </div>
@@ -760,7 +759,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                   <button
                     type="button"
                     onClick={() => scrollCategories("left")}
-                    className="absolute left-0 z-10 p-1.5 rounded-full bg-white/95 shadow-md border border-slate-200 text-slate-700 hover:bg-amber-500 hover:text-slate-950 transition opacity-80 hover:opacity-100 backdrop-blur-md"
+                    className="absolute left-0 z-10 p-1.5 rounded-full bg-white/95 border border-slate-200 text-slate-700 hover:bg-amber-500 hover:text-slate-950 transition opacity-80 hover:opacity-100"
                     title="Anterior"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -776,9 +775,9 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                         key={cat}
                         type="button"
                         onClick={() => setSelectedCategory(cat)}
-                        className={`px-3.5 py-1.5 rounded-2xl text-[11px] font-extrabold transition-all duration-200 whitespace-nowrap border shrink-0 ${
+                        className={`px-3.5 py-1.5 rounded-lg text-[11px] font-extrabold transition-all duration-200 whitespace-nowrap border shrink-0 ${
                           selectedCategory === cat
-                            ? "bg-slate-900 text-amber-400 border-slate-900 shadow-md shadow-slate-900/20 scale-105"
+                            ? "bg-slate-900 text-amber-400 border-slate-900 scale-105"
                             : "bg-slate-100 text-slate-600 border-slate-200/80 hover:bg-slate-200 hover:text-slate-900"
                         }`}
                       >
@@ -790,7 +789,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                   <button
                     type="button"
                     onClick={() => scrollCategories("right")}
-                    className="absolute right-0 z-10 p-1.5 rounded-full bg-white/95 shadow-md border border-slate-200 text-slate-700 hover:bg-amber-500 hover:text-slate-950 transition opacity-80 hover:opacity-100 backdrop-blur-md"
+                    className="absolute right-0 z-10 p-1.5 rounded-full bg-white/95 border border-slate-200 text-slate-700 hover:bg-amber-500 hover:text-slate-950 transition opacity-80 hover:opacity-100"
                     title="Siguiente"
                   >
                     <ChevronRight className="w-4 h-4" />
@@ -813,7 +812,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                         type="button"
                         disabled={agotado}
                         onClick={() => handleAddToCart(prod)}
-                        className="p-3 bg-slate-50 hover:bg-amber-500/10 hover:border-amber-400 border border-slate-200/80 rounded-2xl text-left transition flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-50 disabled:hover:border-slate-200/80"
+                        className="p-3 bg-slate-50 hover:bg-amber-500/10 hover:border-amber-400 border border-slate-200/80 rounded-lg text-left transition flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-50 disabled:hover:border-slate-200/80"
                       >
                         <div>
                           <span className="text-xl">{prod.iconoEmoji}</span>
@@ -825,7 +824,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                             {agotado && <span className="ml-1.5 text-rose-600">· Sin stock</span>}
                           </div>
                         </div>
-                        <div className="w-7 h-7 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 group-hover:bg-amber-500 group-hover:text-slate-950 group-hover:border-amber-500 transition">
+                        <div className="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-700 group-hover:bg-amber-500 group-hover:text-slate-950 group-hover:border-amber-500 transition">
                           <Plus className="w-4 h-4" />
                         </div>
                       </button>
@@ -839,7 +838,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                       <ShoppingBasket className="w-4 h-4 text-amber-500" />
-                      Resumen Comanda
+                      Pedido
                     </h4>
                     <span className="text-xs text-slate-500 font-semibold">
                       {Object.keys(cart).length} items
@@ -855,7 +854,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                       Object.entries(cart).map(([lineId, item]) => (
                         <div
                           key={lineId}
-                          className="bg-white p-3 rounded-xl border border-slate-200/80 space-y-2"
+                          className="bg-white p-3 rounded-md border border-slate-200/80 space-y-2"
                         >
                           <div className="flex items-center justify-between">
                             <div className="overflow-hidden pr-2">
@@ -895,11 +894,11 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                                 value={item.notes}
                                 onChange={(e) => handleUpdateCartNotes(lineId, e.target.value)}
                                 placeholder="Ej: sin cebolla, con mayonesa, ketchup y queso cheddar..."
-                                className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-medium text-slate-900 focus:outline-none focus:border-amber-500 placeholder:text-slate-400 resize-y"
+                                className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-md text-base font-medium text-slate-900 focus:outline-none focus:border-amber-500 placeholder:text-slate-400 resize-y"
                               />
 
                               <div>
-                                <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">
+                                <div className="text-[10px] font-bold text-slate-500 mb-1">
                                   Agregados
                                 </div>
                                 <div className="flex flex-wrap gap-1.5">
@@ -932,7 +931,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
 
                 <div className="pt-4 border-t border-slate-200 space-y-4">
                   <div>
-                    <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">Método de Pago</label>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Pago</label>
                     <div className="grid grid-cols-3 gap-1.5">
                       {(
                         [
@@ -945,9 +944,9 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                           key={m.key}
                           type="button"
                           onClick={() => setPaymentMethod(m.key)}
-                          className={`py-2 rounded-xl text-[10px] font-bold transition border ${
+                          className={`py-2 rounded-md text-[10px] font-bold transition border ${
                             paymentMethod === m.key
-                              ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                              ? "bg-slate-900 text-white border-slate-900"
                               : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"
                           }`}
                         >
@@ -957,14 +956,14 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                     </div>
 
                     {paymentMethod === "Mixto" && (
-                      <div className="mt-3 p-3 bg-amber-50 rounded-2xl border border-amber-200 space-y-2 animate-in fade-in duration-200">
+                      <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200 space-y-2">
                         <div className="text-[11px] font-extrabold text-amber-900 flex items-center justify-between">
-                          <span>Desglose de Pago Dividido:</span>
+                          <span>Pago mixto</span>
                           <span className="text-amber-700 font-mono font-bold">Total: S/ {calculateCartTotal().toFixed(2)}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div>
-                            <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Yape / Plin (S/)</label>
+                            <label className="block text-[10px] font-bold text-slate-700 mb-0.5">Yape / Plin (S/)</label>
                             <input
                               type="number"
                               step="0.50"
@@ -977,11 +976,11 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                                 const tot = calculateCartTotal();
                                 setMontoEfectivo(num <= tot ? (tot - num).toFixed(2) : "0");
                               }}
-                              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500"
+                              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-[10px] font-bold text-slate-700 mb-0.5">En Efectivo (S/)</label>
+                            <label className="block text-[10px] font-bold text-slate-700 mb-0.5">Efectivo (S/)</label>
                             <input
                               type="number"
                               step="0.50"
@@ -994,7 +993,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                                 const tot = calculateCartTotal();
                                 setMontoDigital(num <= tot ? (tot - num).toFixed(2) : "0");
                               }}
-                              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500"
+                              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500"
                             />
                           </div>
                         </div>
@@ -1002,8 +1001,8 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between bg-amber-500/10 p-3 rounded-2xl border border-amber-500/20">
-                    <span className="text-xs font-bold text-amber-900">Total a Pagar</span>
+                  <div className="flex items-center justify-between bg-amber-500/10 p-3 rounded-lg border border-amber-500/20">
+                    <span className="text-xs font-bold text-amber-900">Total</span>
                     <span className="text-xl font-extrabold text-amber-900">
                       S/ {calculateCartTotal().toFixed(2)}
                     </span>
@@ -1013,7 +1012,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                     type="button"
                     onClick={handleCreateOrder}
                     disabled={!cajaEstado?.isOpen || isSubmittingOrder}
-                    className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-extrabold rounded-2xl text-xs shadow-md shadow-amber-500/20 transition active:scale-95 flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-extrabold rounded-lg text-xs transition active:scale-95 flex items-center justify-center gap-2"
                   >
                     {isSubmittingOrder ? (
                       <>
@@ -1021,9 +1020,9 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                         <span>Registrando comanda...</span>
                       </>
                     ) : !cajaEstado?.isOpen ? (
-                      "Caja Cerrada (Abre caja primero)"
+                      "Caja cerrada"
                     ) : (
-                      "Confirmar Comanda & Enviar a Cocina"
+                      "Enviar a cocina"
                     )}
                   </button>
                 </div>
