@@ -1,11 +1,6 @@
 {
   "categorias": [
     {
-      "nombre": "Arepas Tradicionales",
-      "tipo": "PRODUCTO",
-      "orden": 0
-    },
-    {
       "nombre": "Hamburguesas",
       "tipo": "PRODUCTO",
       "orden": 0
@@ -132,11 +127,6 @@
     },
     {
       "nombre": "Bebidas envasadas",
-      "tipo": "INSUMO",
-      "orden": 5
-    },
-    {
-      "nombre": "Salsas y Aderezos",
       "tipo": "INSUMO",
       "orden": 5
     },
@@ -428,7 +418,7 @@
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "ml",
       "stockActual": 6000,
-      "stockMinimo": 0,
+      "stockMinimo": 5000,
       "costoUnitario": 0.005,
       "presentacionNombre": null,
       "presentacionCantidad": null
@@ -3069,6 +3059,48 @@
           "cantidad": 200
         }
       ]
+    }
+  ],
+  "agregados": [
+    {
+      "nombre": "Plátano maduro",
+      "precio": 0.75,
+      "insumoId": "platano_maduro",
+      "consumo": 0.6,
+      "activo": false,
+      "orden": 1
+    },
+    {
+      "nombre": "Carne mechada",
+      "precio": 1.5,
+      "insumoId": "carne_mechada",
+      "consumo": 50,
+      "activo": false,
+      "orden": 2
+    },
+    {
+      "nombre": "Pollo desmechado",
+      "precio": 1.5,
+      "insumoId": "pollo_desmechado",
+      "consumo": 50,
+      "activo": false,
+      "orden": 3
+    },
+    {
+      "nombre": "Tocineta",
+      "precio": 1,
+      "insumoId": "tocino",
+      "consumo": 2,
+      "activo": false,
+      "orden": 4
+    },
+    {
+      "nombre": "Chicharrón",
+      "precio": 1,
+      "insumoId": "chicharron",
+      "consumo": 50,
+      "activo": false,
+      "orden": 5
     }
   ]
 }
