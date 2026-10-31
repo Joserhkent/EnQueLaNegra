@@ -172,7 +172,7 @@
       "unidadMedida": "g",
       "stockActual": 5250,
       "stockMinimo": 650,
-      "costoUnitario": 0.0467
+      "costoUnitario": 0.0538461538461538
     },
     {
       "id": "caraotas_negras",
@@ -225,7 +225,7 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "g",
       "stockActual": 3750,
-      "stockMinimo": 0,
+      "stockMinimo": 1500,
       "costoUnitario": 0.08
     },
     {
@@ -341,7 +341,7 @@
       "nombre": "Chorizo",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "tajada",
-      "stockActual": 72,
+      "stockActual": 73,
       "stockMinimo": 30,
       "costoUnitario": 0.75
     },
@@ -351,7 +351,7 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "g",
       "stockActual": 1800,
-      "stockMinimo": 0,
+      "stockMinimo": 600,
       "costoUnitario": 0.1
     },
     {
@@ -388,7 +388,7 @@
       "unidadMedida": "unidad",
       "stockActual": 90,
       "stockMinimo": 30,
-      "costoUnitario": 0
+      "costoUnitario": 0.266666666666667
     },
     {
       "id": "carta_mango",
@@ -406,7 +406,7 @@
       "unidadMedida": "unidad",
       "stockActual": 30,
       "stockMinimo": 10,
-      "costoUnitario": 0
+      "costoUnitario": 0.8
     },
     {
       "id": "carta_melon",
@@ -468,7 +468,7 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "g",
       "stockActual": 3000,
-      "stockMinimo": 0,
+      "stockMinimo": 750,
       "costoUnitario": 0.0667
     },
     {
@@ -593,7 +593,7 @@
       "nombre": "Lechuga, tomate y cebolla",
       "categoria": "Verduras y Legumbres",
       "unidadMedida": "g",
-      "stockActual": 3000,
+      "stockActual": 3050,
       "stockMinimo": 0,
       "costoUnitario": 0
     },
@@ -611,7 +611,7 @@
       "nombre": "Huevo",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "unidad",
-      "stockActual": 57,
+      "stockActual": 58,
       "stockMinimo": 30,
       "costoUnitario": 2
     },
@@ -620,7 +620,7 @@
       "nombre": "Jamón Cocido",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "tajada",
-      "stockActual": 112,
+      "stockActual": 113,
       "stockMinimo": 30,
       "costoUnitario": 1.25
     },
@@ -639,7 +639,7 @@
       "categoria": "Panes y Masas",
       "unidadMedida": "g",
       "stockActual": 14100,
-      "stockMinimo": 0,
+      "stockMinimo": 1500,
       "costoUnitario": 0.04
     },
     {
@@ -648,7 +648,7 @@
       "categoria": "Panes y Masas",
       "unidadMedida": "g",
       "stockActual": 12000,
-      "stockMinimo": 0,
+      "stockMinimo": 6000,
       "costoUnitario": 0.05
     },
     {
@@ -710,7 +710,7 @@
       "nombre": "Pan de Hamburguesa",
       "categoria": "Panes y Masas",
       "unidadMedida": "unidad",
-      "stockActual": 43,
+      "stockActual": 44,
       "stockMinimo": 20,
       "costoUnitario": 5
     },
@@ -737,7 +737,7 @@
       "nombre": "Papas Fritas",
       "categoria": "Papas",
       "unidadMedida": "g",
-      "stockActual": 15800,
+      "stockActual": 16000,
       "stockMinimo": 1000,
       "costoUnitario": 0.075
     },
@@ -747,7 +747,7 @@
       "categoria": "Papas",
       "unidadMedida": "g",
       "stockActual": 4000,
-      "stockMinimo": 0,
+      "stockMinimo": 1000,
       "costoUnitario": 0.03
     },
     {
@@ -791,7 +791,7 @@
       "nombre": "Pollo Picado",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "g",
-      "stockActual": 5000,
+      "stockActual": 5110,
       "stockMinimo": 0,
       "costoUnitario": 0
     },
@@ -801,7 +801,7 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "g",
       "stockActual": 3750,
-      "stockMinimo": 0,
+      "stockMinimo": 750,
       "costoUnitario": 0.0667
     },
     {
@@ -809,7 +809,7 @@
       "nombre": "Queso Cheddar",
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "lámina",
-      "stockActual": 58,
+      "stockActual": 59,
       "stockMinimo": 15,
       "costoUnitario": 5
     },
@@ -881,7 +881,7 @@
       "nombre": "Tocineta",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "tajada",
-      "stockActual": 72,
+      "stockActual": 73,
       "stockMinimo": 30,
       "costoUnitario": 1.75
     }
