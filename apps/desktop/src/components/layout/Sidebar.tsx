@@ -116,7 +116,7 @@ export default function Sidebar({
   const allMenuItems: MenuItem[] = [
     {
       key: "dashboard",
-      label: "Dashboard",
+      label: "Resumen",
       icon: LayoutDashboard,
       jefeOnly: true,
     },
@@ -138,8 +138,8 @@ export default function Sidebar({
       icon: ChefHat,
       badge: pendingKitchenItems > 0 ? String(pendingKitchenItems) : undefined,
     },
-    { key: "productos", label: "Productos", icon: UtensilsCrossed },
-    { key: "pagos", label: "Pagos / Caja", icon: CreditCard },
+    { key: "productos", label: "Carta", icon: UtensilsCrossed },
+    { key: "pagos", label: "Caja", icon: CreditCard },
     {
       key: "inventario",
       label: "Inventario",
@@ -352,7 +352,7 @@ export default function Sidebar({
                 : "bg-rose-500/20 text-rose-400 border border-rose-500/30"
             }`}
           >
-            {cajaEstado?.isOpen ? "Caja Abierta" : "Caja Cerrada"}
+            {cajaEstado?.isOpen ? "Caja abierta" : "Caja cerrada"}
           </span>
         </div>
       </header>

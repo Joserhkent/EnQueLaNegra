@@ -945,7 +945,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
 
 export default function ProductosPage(props?: ProductosPageProps) {
   return (
-    <ErrorBoundary fallbackTitle="Error en el módulo de Productos POS">
+    <ErrorBoundary fallbackTitle="La carta no se pudo cargar">
       <ProductosPageContent {...props} />
     </ErrorBoundary>
   );

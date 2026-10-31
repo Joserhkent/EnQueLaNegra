@@ -178,7 +178,7 @@ export default function App() {
     <div className="flex flex-col lg:flex-row min-h-screen bg-[#F4F5F7]">
       <Sidebar activePage={pageToRender} onChangePage={setActivePage} onLogout={handleLogout} />
       <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
-        <ErrorBoundary key={pageToRender} fallbackTitle="Error al cargar esta sección">
+        <ErrorBoundary key={pageToRender} fallbackTitle="Esta sección no se pudo cargar">
           {pageToRender === "pedidos" ? (
             <PedidosPage onGoToMesas={() => setActivePage("mesas")} />
           ) : (

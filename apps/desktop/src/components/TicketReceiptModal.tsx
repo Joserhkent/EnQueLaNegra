@@ -16,9 +16,9 @@ interface TicketReceiptModalProps {
 }
 
 const MODE_META: Record<TicketMode, { title: string; screenLabel: string; printLabel: string }> = {
-  boleta: { title: "BOLETA DE VENTA", screenLabel: "Boleta Térmica POS", printLabel: "Imprimir Boleta POS" },
-  precuenta: { title: "PRE-CUENTA", screenLabel: "Pre-Cuenta (no fiscal)", printLabel: "Imprimir Pre-Cuenta" },
-  comanda: { title: "COMANDA DE COCINA", screenLabel: "Comanda de Cocina", printLabel: "Imprimir Comanda" },
+  boleta: { title: "BOLETA DE VENTA", screenLabel: "Boleta", printLabel: "Imprimir boleta" },
+  precuenta: { title: "PRE-CUENTA", screenLabel: "Precuenta (no fiscal)", printLabel: "Imprimir precuenta" },
+  comanda: { title: "COMANDA DE COCINA", screenLabel: "Comanda de cocina", printLabel: "Imprimir comanda" },
 };
 
 export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero, soloRonda, onClose }: TicketReceiptModalProps) {
@@ -281,10 +281,10 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
           {/* Footer Message */}
           <div className="text-center pt-3 border-t border-dashed border-slate-400 space-y-1 text-[10px] text-slate-600">
             {isComanda ? (
-              <p className="font-bold text-slate-900">🔥 COMANDA DE COCINA — PREPARAR PEDIDO</p>
+              <p className="font-bold text-slate-900">COMANDA DE COCINA - PREPARAR PEDIDO</p>
             ) : (
               <>
-                <p className="font-bold text-slate-900">¡Gracias por su preferencia! 🌽</p>
+                <p className="font-bold text-slate-900">¡Gracias por su preferencia!</p>
                 <p className="text-[9px] text-slate-500">Conserve su comprobante de pago</p>
               </>
             )}

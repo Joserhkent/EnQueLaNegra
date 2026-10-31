@@ -268,7 +268,7 @@ export default function PagosPage() {
         </div>
 
         {/* Esperado en gaveta = fondo + efectivo */}
-        <div className="col-span-2 lg:col-span-1 bg-emerald-50 p-4">
+        <div className="bg-emerald-50 p-4">
           <span className="text-xs font-semibold text-emerald-800">Debe haber en gaveta</span>
           <div className="text-2xl font-display text-emerald-950">S/ {expectedCashInDrawer.toFixed(2)}</div>
           <span className="text-xs text-emerald-700">

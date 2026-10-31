@@ -71,7 +71,7 @@ export default function CuentaModal({ onClose }: Props) {
             <div>
               <h3 className="font-bold text-sm">Mi cuenta</h3>
               <p className="text-[11px] text-slate-400">
-                {currentUser?.name} · usuario <span className="font-mono">{currentUser?.username}</span>
+                {currentUser?.name}, usuario {currentUser?.username}
               </p>
             </div>
           </div>

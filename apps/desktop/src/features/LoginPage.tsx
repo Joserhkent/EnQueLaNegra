@@ -1,16 +1,10 @@
 import { useState, useMemo } from "react";
 import {
   Loader2,
-  UtensilsCrossed,
-  ChefHat,
-  Boxes,
-  CreditCard,
   User,
   Lock,
   Eye,
   EyeOff,
-  Sparkles,
-  ArrowRight,
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
@@ -72,111 +66,24 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
       {/* Columna Izquierda: Información del Restaurante & Módulos (Desktop: Visible en pantalla grande; Móvil: Oculto para que el Login esté arriba sin scroll) */}
       <section 
         aria-label="Información del restaurante y módulos"
-        className="hidden lg:flex lg:w-7/12 xl:w-8/12 p-8 lg:p-14 flex-col justify-between border-r border-zinc-800/80 bg-gradient-to-br from-zinc-900/90 via-zinc-950 to-black relative overflow-hidden"
+        className="hidden lg:flex lg:w-7/12 xl:w-8/12 p-14 flex-col justify-between bg-black relative overflow-hidden"
       >
-        {/* Glow de fondo */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="franja-marca absolute inset-x-0 top-0 h-1" aria-hidden="true" />
 
-        <div className="relative z-10 space-y-8 max-w-2xl">
-          {/* Header Marca */}
-          <div className="flex items-center gap-3">
-            <img
-              src="/pwa-192x192.png"
-              alt="Logo"
-              className="w-11 h-11 rounded-lg bg-black border border-zinc-800 object-contain"
-            />
-            <div>
-              <h2 className="font-extrabold text-base text-white tracking-tight flex items-center gap-2">
-                En que la Negra
-                <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-bold">
-                  POS
-                </span>
-              </h2>
-              <p className="text-xs text-zinc-400">Espacio de trabajo gastronómico</p>
-            </div>
-          </div>
+        <img
+          src="/logo.jpg"
+          alt="En que la Negra"
+          className="w-full max-w-xl object-contain"
+        />
 
-          {/* Banner Fotográfico con Overlay */}
-          <div className="relative rounded-lg overflow-hidden border border-zinc-800/80 shadow-xl group max-h-56 sm:max-h-64 bg-black">
-            <img
-              src="/logo.jpg"
-              alt="En que la Negra Especialidades"
-              className="w-full h-full object-cover opacity-90 transition duration-700"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
-            <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between text-xs text-zinc-300">
-              <span className="flex items-center gap-1.5 font-bold text-amber-400 bg-black/60 px-3 py-1 rounded border border-amber-500/20">
-                <Sparkles className="w-3.5 h-3.5" />
-                Arepas, Cachapas & Comida Venezolana
-              </span>
-              <span className="text-[11px] text-zinc-400 bg-black/40 px-2.5 py-1 rounded">
-                Lima, Perú
-              </span>
-            </div>
-          </div>
-
-          {/* Mensaje de Bienvenida */}
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-bold">
-              <span>{formattedDate}</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display text-white tracking-tight">
-              Todo listo para abrir el turno
-            </h1>
-            <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">
-              Salón, mesas, cocina (KDS), caja e inventario conectados en tiempo real. Inicia sesión y continúa justo donde lo dejaste.
-            </p>
-          </div>
-
-          {/* Tarjetas de Funcionalidades en 2x2 */}
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-md bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
-                <UtensilsCrossed className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-white">Punto de venta</h4>
-                <p className="text-xs text-zinc-400 mt-0.5">Mesas, comandas y cobros rápidos</p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-md bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0 border border-orange-500/20">
-                <ChefHat className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-white">Cocina (KDS)</h4>
-                <p className="text-xs text-zinc-400 mt-0.5">Tandas y pedidos en tiempo real</p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-md bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                <Boxes className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-white">Inventario</h4>
-                <p className="text-xs text-zinc-400 mt-0.5">Descuento automático de stock (BOM)</p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-md bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
-                <CreditCard className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-white">Caja & Turnos</h4>
-                <p className="text-xs text-zinc-400 mt-0.5">Apertura, arqueo y cierre seguro</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer Izquierdo */}
-        <div className="pt-8 text-xs text-zinc-500 flex items-center justify-between border-t border-zinc-900 mt-8">
-          <span>Powered by <strong>En que la Negra POS</strong></span>
-          <span>Sistema Gastronómico</span>
+        <div className="space-y-3 max-w-xl">
+          <p className="text-sm text-amber-400 font-semibold">{formattedDate}</p>
+          <h1 className="text-5xl xl:text-6xl text-white leading-none">
+            Todo listo para abrir el turno
+          </h1>
+          <p className="text-base text-zinc-400">
+            Arepas, cachapas y comida venezolana. Lima, Perú.
+          </p>
         </div>
       </section>
 
@@ -194,27 +101,20 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               className="w-10 h-10 rounded-lg bg-black border border-zinc-800 object-contain shrink-0"
             />
             <div>
-              <h2 className="font-extrabold text-sm text-white flex items-center gap-1.5">
+              <h2 className="font-bold text-sm text-white">
                 En que la Negra
-                <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 text-[9px] font-bold">
-                  POS
-                </span>
               </h2>
-              <p className="text-[11px] text-zinc-400">Espacio de trabajo gastronómico</p>
             </div>
           </div>
 
           <header className="space-y-1">
-            <span className="text-[10px] font-bold text-amber-500">
-              ACCESO AL SISTEMA
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-display text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-display text-white">
               Inicia sesión
             </h2>
             <p className="text-xs text-zinc-400">
               {import.meta.env.DEV
-                ? "Entra con tu usuario de turno o selecciona un perfil demo."
-                : "Entra con tu usuario de turno."}
+                ? "Entra con tu usuario o elige un perfil de prueba."
+                : "Entra con tu usuario."}
             </p>
           </header>
 
@@ -223,7 +123,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
           {import.meta.env.DEV && (
           <div className="space-y-1.5 bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/80">
             <p className="text-[10px] font-bold text-zinc-400 px-1">
-              Perfil rápido con 1 clic:
+              Perfiles de prueba (solo en desarrollo)
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -268,8 +168,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                 htmlFor="username"
                 className="text-xs font-bold text-zinc-300 flex items-center justify-between"
               >
-                <span>Usuario o Documento</span>
-                <span className="text-[10px] text-amber-500/80 font-medium">*Requerido</span>
+                <span>Usuario</span>
               </label>
               <div className="relative">
                 <User className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -292,7 +191,6 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                 className="text-xs font-bold text-zinc-300 flex items-center justify-between"
               >
                 <span>Contraseña</span>
-                <span className="text-[10px] text-amber-500/80 font-medium">*Requerido</span>
               </label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -349,12 +247,11 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin text-zinc-950" />
-                  <span>Entrando al sistema...</span>
+                  <span>Entrando…</span>
                 </>
               ) : (
                 <>
-                  <span>Entrar a En que la Negra</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Entrar</span>
                 </>
               )}
             </button>
@@ -362,11 +259,8 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
 
           {/* Soporte Footer */}
           <div className="text-center pt-1">
-            <p className="text-[11px] text-zinc-500">
-              ¿Problemas para acceder?{" "}
-              <span className="text-amber-400/90 font-semibold cursor-pointer hover:underline">
-                Contacta al administrador
-              </span>
+            <p className="text-xs text-zinc-500">
+              ¿Olvidaste tu contraseña? La jefa puede restablecerla desde «Mi cuenta».
             </p>
           </div>
         </div>

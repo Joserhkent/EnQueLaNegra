@@ -329,20 +329,23 @@ export default function DashboardPage() {
               <h3 className="text-xl font-display text-slate-900">Más vendidos</h3>
             </div>
 
-            <div className="space-y-4">
+            <div className="divide-y divide-slate-200">
+              {sortedTopProducts.length === 0 && (
+                <p className="py-8 text-center text-sm text-slate-500">Sin ventas en este periodo.</p>
+              )}
               {sortedTopProducts.slice(0, 4).map((p, idx) => (
-                <div key={p.name} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div key={p.name} className="flex items-center justify-between py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-md bg-slate-900 text-amber-400 font-bold text-xs flex items-center justify-center">
                       #{idx + 1}
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900 truncate max-w-[120px]">{p.name}</h4>
-                      <span className="text-[10px] text-slate-500">{p.count} pedidos realizados</span>
+                      <h4 className="text-sm font-semibold text-slate-900 truncate max-w-[180px]">{p.name}</h4>
+                      <span className="text-xs text-slate-500">{p.count} u.</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs font-extrabold text-slate-900">S/ {p.revenue.toFixed(2)}</span>
+                    <span className="text-sm font-bold text-slate-900">S/ {p.revenue.toFixed(2)}</span>
                   </div>
                 </div>
               ))}

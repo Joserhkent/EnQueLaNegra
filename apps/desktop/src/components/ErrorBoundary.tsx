@@ -37,18 +37,18 @@ export class ErrorBoundary extends Component<Props, State> {
             <AlertTriangle className="w-7 h-7" />
           </div>
           <h2 className="text-lg font-bold text-slate-900">
-            {this.props.fallbackTitle || "Ocurrió un problema al mostrar este módulo"}
+            {this.props.fallbackTitle || "Esta pantalla no se pudo cargar"}
           </h2>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
-            {this.state.error?.message || "Ha ocurrido un error inesperado al renderizar la pantalla."}
+            {this.state.error?.message || "Error desconocido."} Pulsa «Reintentar»; si se repite, recarga la app.
           </p>
           <div className="pt-2">
             <button
               onClick={this.handleReset}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition active:scale-95"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold rounded-md text-sm transition-colors active:scale-95"
             >
               <RefreshCw className="w-4 h-4" />
-              Reintentar / Recargar Módulo
+              Reintentar
             </button>
           </div>
         </div>

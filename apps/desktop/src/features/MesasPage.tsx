@@ -534,7 +534,7 @@ export default function MesasPage() {
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
             <span>
-              Caja cerrada. Ábrela en Pagos / Caja para abrir mesas, enviar comandas y cobrar.
+              Caja cerrada. Ábrela en Caja para abrir mesas, enviar comandas y cobrar.
             </span>
           </div>
         </div>
@@ -895,9 +895,9 @@ export default function MesasPage() {
                   )}
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                      <ShoppingBasket className="w-4 h-4 text-amber-500" /> Nueva Tanda
+                      <ShoppingBasket className="w-4 h-4 text-amber-500" /> Nueva tanda
                     </h4>
-                    <span className="text-xs text-slate-500 font-semibold">{Object.keys(cart).length} items</span>
+                    <span className="text-xs text-slate-500 font-semibold">{Object.keys(cart).length} productos</span>
                   </div>
 
                   <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
@@ -1038,7 +1038,7 @@ export default function MesasPage() {
                         disabled={!cajaEstado?.isOpen || !selectedMesa.currentOrder?.items.length}
                         className="col-span-2 py-3 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold rounded-lg text-xs transition active:scale-95 flex items-center justify-center gap-2"
                       >
-                        <Printer className="w-4 h-4" /> Imprimir Pre-Cuenta
+                        <Printer className="w-4 h-4" /> Imprimir precuenta
                       </button>
                       <button
                         type="button"

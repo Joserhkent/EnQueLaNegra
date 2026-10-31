@@ -40,7 +40,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
               <div className="text-sm font-bold text-slate-900">{order.customer}</div>
             </div>
             <div className="bg-slate-50 rounded-md p-3 border border-slate-200/80">
-              <div className="text-[10px] font-bold text-slate-500 mb-1">Tipo / Pago</div>
+              <div className="text-[10px] font-bold text-slate-500 mb-1">Tipo / pago</div>
               <div className="text-sm font-bold text-slate-900">
                 {order.type} • {order.paymentMethod}
               </div>
@@ -130,7 +130,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
           </div>
 
           <div className="flex items-center justify-between bg-amber-500/10 p-3 rounded-lg border border-amber-500/20">
-            <span className="text-xs font-bold text-amber-900">Total del Pedido</span>
+            <span className="text-xs font-bold text-amber-900">Total</span>
             <span className="text-xl font-extrabold text-amber-900">
               S/ {order.total.toFixed(2)}
             </span>
