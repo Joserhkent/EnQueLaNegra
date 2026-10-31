@@ -236,6 +236,13 @@ interface PosStore {
     motivo: string,
     usuario?: string
   ) => Promise<void>;
+  // Recibir mercadería ("entrada") o conteo de inventario ("ajuste") de varios insumos
+  // de una vez. Devuelve null si salió bien, o el mensaje de error.
+  registrarLoteStock: (
+    tipo: "entrada" | "ajuste",
+    items: { insumoId: string; cantidad: number; costoUnitario?: number }[],
+    motivo?: string
+  ) => Promise<string | null>;
   updateInsumoMinimo: (insumoId: string, stockMinimo: number) => Promise<void>;
 
   addProduct: (producto: ProductoPayload) => Promise<void>;
@@ -876,6 +883,22 @@ export const usePosStore = create<PosStore>((set, get) => ({
       }
     } catch (error) {
       console.error("Error al registrar movimiento:", error);
+    }
+  },
+
+  registrarLoteStock: async (tipo, items, motivo) => {
+    try {
+      const ruta = tipo === "entrada" ? "entrada" : "conteo";
+      const res = await authFetch(`${API_URL}/insumos/lote/${ruta}`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ items, motivo }),
+      });
+      if (!res.ok) return await mensajeError(res, "No se pudo guardar");
+      await Promise.all([get().fetchInsumos(), get().fetchMovimientos()]);
+      return null;
+    } catch {
+      return "No se pudo conectar con el servidor";
     }
   },
 

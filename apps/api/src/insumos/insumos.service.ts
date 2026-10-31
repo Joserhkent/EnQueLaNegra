@@ -7,6 +7,7 @@ import { MovimientoTipo } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { CreateInsumoDto } from './dto/create-insumo.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
+import { MovimientoLoteDto } from './dto/movimiento-lote.dto';
 
 @Injectable()
 export class InsumosService {
@@ -85,6 +86,72 @@ export class InsumosService {
     });
 
     return updated;
+  }
+
+  // Varios insumos en una sola transacción: o se guarda todo, o nada.
+  // "entrada" suma lo recibido (y actualiza el costo si viene); "ajuste" fija lo
+  // contado como stock y registra la diferencia. Los conteos sin cambio no se registran.
+  async movimientoLote(
+    tipo: 'entrada' | 'ajuste',
+    dto: MovimientoLoteDto,
+    userId?: string,
+  ) {
+    const ids = [...new Set(dto.items.map((i) => i.insumoId))];
+    if (ids.length !== dto.items.length) {
+      throw new BadRequestException('Hay un insumo repetido en la lista.');
+    }
+    const motivo =
+      dto.motivo?.trim() ||
+      (tipo === 'entrada' ? 'Recepción de mercadería' : 'Conteo de inventario');
+
+    return this.prisma.$transaction(async (tx) => {
+      const insumos = await tx.insumo.findMany({ where: { id: { in: ids } } });
+      const porId = new Map(insumos.map((i) => [i.id, i]));
+      const faltan = ids.filter((id) => !porId.has(id));
+      if (faltan.length) {
+        throw new NotFoundException(
+          `Insumos no encontrados: ${faltan.join(', ')}`,
+        );
+      }
+
+      let registrados = 0;
+      for (const item of dto.items) {
+        const insumo = porId.get(item.insumoId)!;
+        const delta =
+          tipo === 'ajuste'
+            ? item.cantidad - insumo.stockActual
+            : item.cantidad;
+        if (Math.abs(delta) < 1e-9 && item.costoUnitario === undefined)
+          continue;
+
+        await tx.insumo.update({
+          where: { id: insumo.id },
+          data: {
+            stockActual: insumo.stockActual + delta,
+            ...(tipo === 'entrada' && item.costoUnitario !== undefined
+              ? { costoUnitario: item.costoUnitario }
+              : {}),
+          },
+        });
+        if (Math.abs(delta) >= 1e-9) {
+          await tx.movimientoStock.create({
+            data: {
+              insumoId: insumo.id,
+              tipo: tipo === 'entrada' ? 'ENTRADA' : 'AJUSTE',
+              cantidad: Math.abs(delta),
+              motivo:
+                tipo === 'ajuste'
+                  ? `${motivo}: ${insumo.stockActual} → ${item.cantidad} ${insumo.unidadMedida}`
+                  : motivo,
+              usuarioId: userId,
+              usuario: 'Sistema POS',
+            },
+          });
+        }
+        registrados++;
+      }
+      return { registrados };
+    });
   }
 
   async updateMinimo(id: string, stockMinimo: number) {

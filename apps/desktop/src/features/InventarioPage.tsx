@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { usePosStore, type Insumo } from "../store/usePosStore";
 import { formatUnidad } from "../lib/utils";
+import RecibirMercaderiaModal from "../components/inventario/RecibirMercaderiaModal";
+import ConteoInventarioModal from "../components/inventario/ConteoInventarioModal";
 import {
   Boxes,
   PlusCircle,
@@ -11,7 +13,9 @@ import {
   X,
   ShieldAlert,
   Tags,
-  Trash2
+  Trash2,
+  PackagePlus,
+  ClipboardCheck,
 } from "lucide-react";
 
 // Helper de seguridad para extraer texto si viene como objeto o string
@@ -27,6 +31,15 @@ const getNombreTexto = (campo: unknown): string => {
 export default function InventarioPage() {
   const { insumos, movimientos, addStockMovement, fetchMovimientos, currentUser, categorias, fetchCategorias, addCategoria, deleteCategoria, addInsumo, deleteInsumo } = usePosStore();
   const isJefe = currentUser?.role === "jefe";
+  const [isRecibirOpen, setIsRecibirOpen] = useState(false);
+  const [isConteoOpen, setIsConteoOpen] = useState(false);
+  const [aviso, setAviso] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!aviso) return;
+    const t = setTimeout(() => setAviso(null), 6000);
+    return () => clearTimeout(t);
+  }, [aviso]);
 
   // El Kardex/Historial no viene precargado en el store: hay que pedirlo explícitamente.
   useEffect(() => {
@@ -207,8 +220,9 @@ export default function InventarioPage() {
           <h1 className="text-3xl text-slate-900">Inventario</h1>
         </div>
 
-        {isJefe && (
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {isJefe && (
+            <>
             <button
               onClick={() => setIsCategoriasModalOpen(true)}
               className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold px-4 py-2.5 rounded-md text-sm transition-colors active:scale-95"
@@ -224,15 +238,42 @@ export default function InventarioPage() {
               Nuevo insumo
             </button>
             <button
-              onClick={() => handleOpenMovementModal()}
-              className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-4 py-2.5 rounded-md text-sm transition-colors active:scale-95"
+              onClick={() => setIsConteoOpen(true)}
+              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold px-4 py-2.5 rounded-md text-sm transition-colors active:scale-95"
             >
-              <PlusCircle className="w-4 h-4" />
-              Entrada de stock
+              <ClipboardCheck className="w-4 h-4 text-slate-500" />
+              Contar inventario
             </button>
-          </div>
-        )}
+            </>
+          )}
+          <button
+            onClick={() => setIsRecibirOpen(true)}
+            className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-4 py-2.5 rounded-md text-sm transition-colors active:scale-95"
+          >
+            <PackagePlus className="w-4 h-4" />
+            Recibir mercadería
+          </button>
+        </div>
       </div>
+
+      {aviso && (
+        <div role="status" className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+          <CheckCircle2 className="w-4 h-4 shrink-0" /> {aviso}
+        </div>
+      )}
+
+      {isRecibirOpen && (
+        <RecibirMercaderiaModal
+          onClose={() => setIsRecibirOpen(false)}
+          onGuardado={(m) => { setIsRecibirOpen(false); setAviso(m); }}
+        />
+      )}
+      {isConteoOpen && (
+        <ConteoInventarioModal
+          onClose={() => setIsConteoOpen(false)}
+          onGuardado={(m) => { setIsConteoOpen(false); setAviso(m); }}
+        />
+      )}
 
       {/* Cifras del inventario */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 border border-slate-200 rounded-lg overflow-hidden">
