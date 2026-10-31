@@ -156,7 +156,7 @@ export default function CuentaModal({ onClose }: Props) {
                         )}
                         <div className="min-w-0">
                           <div className="text-xs font-bold text-slate-900 truncate">{u.name}</div>
-                          <div className="text-[10px] text-slate-500 font-mono">{u.username}</div>
+                          <div className="text-[10px] text-slate-500">{u.username}</div>
                         </div>
                       </div>
                       {restableciendo !== u.id && (

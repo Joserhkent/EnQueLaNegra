@@ -631,17 +631,17 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                   const itemsSummary = order.items.map((i) => `${i.cantidad}x ${i.nombre}`).join(", ");
                   return (
                     <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-4 px-4 font-extrabold text-slate-900 text-sm">
+                      <td className="py-3 px-4 font-extrabold text-slate-900 text-sm">
                         {order.code}
                       </td>
-                      <td className="py-4 px-4 font-bold text-slate-800">
+                      <td className="py-3 px-4 font-bold text-slate-800">
                         {order.customer}
                       </td>
-                      <td className="py-4 px-4 max-w-sm">
+                      <td className="py-3 px-4 max-w-sm">
                         <div className="font-semibold text-slate-800 truncate">{itemsSummary}</div>
                         <div className="text-[11px] text-slate-400">{order.items.length} items seleccionados</div>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-3 px-4">
                         <div className="flex items-center gap-1.5">
                           <span className="px-2 py-0.5 bg-slate-100 rounded-md font-semibold text-[11px] text-slate-700">
                             {order.paymentMethod}
@@ -649,19 +649,19 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                           <span className="text-slate-400">• {order.type}</span>
                         </div>
                       </td>
-                      <td className="py-4 px-4 font-extrabold text-slate-900 text-sm">
+                      <td className="py-3 px-4 font-extrabold text-slate-900 text-sm">
                         S/ {order.total.toFixed(2)}
                       </td>
-                      <td className="py-4 px-4 text-center">
+                      <td className="py-3 px-4 text-center">
                         {getStatusBadge(order)}
                       </td>
-                      <td className="py-4 px-4 text-center text-slate-400 font-mono text-[11px]">
+                      <td className="py-3 px-4 text-center text-slate-400 text-[11px]">
                         {order.fecha}
                       </td>
-                      <td className="py-4 px-4 text-center text-slate-400 font-mono text-[11px]">
+                      <td className="py-3 px-4 text-center text-slate-400 text-[11px]">
                         {order.hora}
                       </td>
-                      <td className="py-4 px-4 text-right">
+                      <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           {order.status !== "entregado" && order.status !== "cancelado" && (
                             <button
@@ -959,7 +959,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                       <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200 space-y-2">
                         <div className="text-[11px] font-extrabold text-amber-900 flex items-center justify-between">
                           <span>Pago mixto</span>
-                          <span className="text-amber-700 font-mono font-bold">Total: S/ {calculateCartTotal().toFixed(2)}</span>
+                          <span className="text-amber-700 font-bold">Total: S/ {calculateCartTotal().toFixed(2)}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div>

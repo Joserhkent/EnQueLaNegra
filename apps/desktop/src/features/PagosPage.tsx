@@ -278,7 +278,7 @@ export default function PagosPage() {
       </div>
 
       {/* Main Table: Payments Feed */}
-      <div className="bg-white p-6 rounded-lg border border-slate-200/80 space-y-6">
+      <div className="bg-white p-4 sm:p-5 rounded-lg border border-slate-200 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-display text-slate-900">Cobros</h2>
@@ -386,7 +386,7 @@ export default function PagosPage() {
 
                   return (
                     <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-slate-900 font-mono text-[11px]">
+                      <td className="py-3.5 px-4 font-bold text-slate-900 text-[11px]">
                         {order.code}
                       </td>
                       <td className="py-3.5 px-4 font-bold text-slate-800">{order.customer}</td>
@@ -433,7 +433,7 @@ export default function PagosPage() {
                           "—"
                         )}
                       </td>
-                      <td className="py-3.5 px-4 text-slate-400 font-mono text-[11px]">
+                      <td className="py-3.5 px-4 text-slate-400 text-[11px]">
                         {order.fecha} {order.hora}
                       </td>
                       <td className="py-3.5 px-4 text-right font-bold text-slate-900 text-sm">

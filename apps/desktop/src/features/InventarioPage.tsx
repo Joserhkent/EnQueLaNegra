@@ -10,7 +10,6 @@ import {
   History,
   X,
   ShieldAlert,
-  Coins,
   Tags,
   Trash2
 } from "lucide-react";
@@ -106,7 +105,7 @@ export default function InventarioPage() {
       case "optimo":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Óptimo
+            <CheckCircle2 className="w-3.5 h-3.5" /> Con stock
           </span>
         );
     }
@@ -201,98 +200,68 @@ export default function InventarioPage() {
   const totalInventoryValue = insumos.reduce((acc, curr) => acc + curr.stockActual * curr.costoUnitario, 0);
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
+    <div className="space-y-6 max-w-[1600px] mx-auto pb-12">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-lg border border-slate-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 pb-4 border-b border-slate-200">
         <div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gestión de Inventario & Insumos</h1>
-            <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded flex items-center gap-1.5">
-              <Boxes className="w-3.5 h-3.5 text-slate-500" />
-              {totalInsumos} Insumos Base
-            </span>
-          </div>
-          <p className="text-slate-500 text-sm mt-1">
-            Control de stock en tiempo real, umbrales de reabastecimiento y movimientos de recetas (BOM).
-          </p>
+          <h1 className="text-3xl text-slate-900">Inventario</h1>
         </div>
 
         {isJefe && (
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsCategoriasModalOpen(true)}
-              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold px-5 py-3 rounded-lg text-xs transition active:scale-95"
+              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold px-4 py-2.5 rounded-md text-sm transition-colors active:scale-95"
             >
               <Tags className="w-4 h-4 text-slate-500" />
               Categorías
             </button>
             <button
               onClick={handleOpenInsumoModal}
-              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-3 rounded-lg text-xs transition active:scale-95"
+              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2.5 rounded-md text-sm transition-colors active:scale-95"
             >
               <PlusCircle className="w-4 h-4" />
-              Nuevo Insumo
+              Nuevo insumo
             </button>
             <button
               onClick={() => handleOpenMovementModal()}
-              className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-3 rounded-lg text-xs transition active:scale-95"
+              className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-4 py-2.5 rounded-md text-sm transition-colors active:scale-95"
             >
               <PlusCircle className="w-4 h-4" />
-              Registrar Entrada / Reabastecimiento
+              Entrada de stock
             </button>
           </div>
         )}
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white p-6 rounded-lg border border-slate-200/80 flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-400">Total Insumos</span>
-            <div className="text-3xl font-extrabold text-slate-900 mt-1">{totalInsumos} items</div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Registrados en el sistema</span>
-          </div>
-          <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
-            <Boxes className="w-6 h-6" />
-          </div>
+      {/* Cifras del inventario */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 border border-slate-200 rounded-lg overflow-hidden">
+        <div className="bg-white p-4">
+          <span className="text-xs font-medium text-slate-500">Insumos</span>
+          <div className="text-3xl font-display text-slate-900">{totalInsumos}</div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-rose-200 flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-rose-600">Stock Crítico</span>
-            <div className="text-3xl font-extrabold text-rose-600 mt-1">{criticalCount} Insumos</div>
-            <span className="text-[11px] text-rose-500 mt-1 block font-medium">Urgente reordenar</span>
-          </div>
-          <div className="w-12 h-12 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
-            <ShieldAlert className="w-6 h-6" />
-          </div>
+        <div className="bg-white p-4">
+          <span className="text-xs font-medium text-rose-700">Sin stock / crítico</span>
+          <div className="text-3xl font-display text-rose-600">{criticalCount}</div>
+          <span className="text-xs text-slate-500">Reponer ya</span>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-amber-200 flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-amber-600">Bajo Mínimo</span>
-            <div className="text-3xl font-extrabold text-amber-600 mt-1">{lowCount} Insumos</div>
-            <span className="text-[11px] text-amber-600 mt-1 block font-medium">Cerca del umbral</span>
-          </div>
-          <div className="w-12 h-12 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
-            <AlertTriangle className="w-6 h-6" />
-          </div>
+        <div className="bg-white p-4">
+          <span className="text-xs font-medium text-amber-800">Bajo el mínimo</span>
+          <div className="text-3xl font-display text-amber-700">{lowCount}</div>
+          <span className="text-xs text-slate-500">Reponer pronto</span>
         </div>
 
-        <div className="bg-slate-900 text-white p-6 rounded-lg flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-400">Valorización Stock</span>
-            <div className="text-3xl font-extrabold text-amber-400 mt-1">S/ {totalInventoryValue.toFixed(2)}</div>
-            <span className="text-[11px] text-slate-400 mt-1 block">Costo total acumulado</span>
-          </div>
-          <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center text-amber-400">
-            <Coins className="w-6 h-6" />
-          </div>
+        <div className="bg-slate-900 p-4">
+          <span className="text-xs font-medium text-slate-400">Valor del stock</span>
+          <div className="text-3xl font-display text-amber-400">S/ {totalInventoryValue.toFixed(2)}</div>
+          <span className="text-xs text-slate-400">A costo de compra</span>
         </div>
       </div>
 
       {/* Main Container with Tabs */}
-      <div className="bg-white p-6 rounded-lg border border-slate-200/80 space-y-6">
+      <div className="bg-white p-4 sm:p-5 rounded-lg border border-slate-200 space-y-4">
         {/* Navigation Tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2">
@@ -305,7 +274,7 @@ export default function InventarioPage() {
               }`}
             >
               <Boxes className="w-4 h-4" />
-              Stock de Insumos ({totalInsumos})
+              Insumos ({totalInsumos})
             </button>
             <button
               onClick={() => setActiveTab("historial")}
@@ -316,7 +285,7 @@ export default function InventarioPage() {
               }`}
             >
               <History className="w-4 h-4" />
-              Kardex / Historial de Movimientos ({movimientos.length})
+              Movimientos ({movimientos.length})
             </button>
           </div>
 
@@ -374,7 +343,7 @@ export default function InventarioPage() {
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Buscar insumo (ej: Pan Brioche, Cheddar, Tocino)..."
+                  placeholder="Buscar insumo"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
@@ -387,21 +356,21 @@ export default function InventarioPage() {
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold text-[10px]">
-                    <th className="py-4 px-4">Insumo</th>
-                    <th className="py-4 px-4">Categoría</th>
-                    <th className="py-4 px-4">Stock Actual</th>
-                    <th className="py-4 px-4">Stock Mínimo</th>
-                    <th className="py-4 px-4">Costo Unit.</th>
-                    <th className="py-4 px-4">Valor Total</th>
-                    <th className="py-4 px-4 text-center">Estado</th>
-                    <th className="py-4 px-4 text-right">Acción</th>
+                    <th className="py-3 px-4">Insumo</th>
+                    <th className="py-3 px-4">Categoría</th>
+                    <th className="py-3 px-4">Stock</th>
+                    <th className="py-3 px-4">Mínimo</th>
+                    <th className="py-3 px-4">Costo unit.</th>
+                    <th className="py-3 px-4">Valor</th>
+                    <th className="py-3 px-4 text-center">Estado</th>
+                    <th className="py-3 px-4 text-right">Acción</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                   {filteredInsumos.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="py-8 text-center text-slate-400 font-medium">
-                        No se encontraron insumos que coincidan con la búsqueda.
+                        Ningún insumo coincide con la búsqueda.
                       </td>
                     </tr>
                   ) : (
@@ -412,39 +381,38 @@ export default function InventarioPage() {
 
                       return (
                         <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-4 px-4">
+                          <td className="py-3 px-4">
                             <div className="font-bold text-slate-900 text-sm">{item.nombre}</div>
-                            <div className="text-[10px] text-slate-400 font-mono">ID: {item.id}</div>
                           </td>
-                          <td className="py-4 px-4">
+                          <td className="py-3 px-4">
                             <span className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-[11px] font-semibold">
                               {/* 🛠️ FIX 1: Renderizado seguro de la categoría */}
-                              {categoriaNombre || "Sin Categoría"}
+                              {categoriaNombre || "Sin categoría"}
                             </span>
                             {categoriaNombre === "Salsas y Aderezos" && (
                               <span className="block mt-1 px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200/60 rounded text-[9px] font-bold w-max">
-                                🧪 Aderezo Libre (Consumo General)
+                                Aderezo libre
                               </span>
                             )}
                           </td>
-                          <td className="py-4 px-4">
+                          <td className="py-3 px-4">
                             <div className={`text-base font-extrabold ${isLow ? "text-rose-600" : "text-slate-900"}`}>
                               {item.stockActual} <span className="text-xs font-normal text-slate-500">{formatUnidad(item.unidadMedida, item.stockActual)}</span>
                             </div>
                           </td>
-                          <td className="py-4 px-4 font-semibold text-slate-600">
+                          <td className="py-3 px-4 font-semibold text-slate-600">
                             {item.stockMinimo} {formatUnidad(item.unidadMedida, item.stockMinimo)}
                           </td>
-                          <td className="py-4 px-4 font-semibold text-slate-700">
+                          <td className="py-3 px-4 font-semibold text-slate-700">
                             S/ {Number(item.costoUnitario || 0).toFixed(2)}
                           </td>
-                          <td className="py-4 px-4 font-bold text-slate-900">
+                          <td className="py-3 px-4 font-bold text-slate-900">
                             S/ {(item.stockActual * item.costoUnitario).toFixed(2)}
                           </td>
-                          <td className="py-4 px-4 text-center">
+                          <td className="py-3 px-4 text-center">
                             {getStatusBadge(status)}
                           </td>
-                          <td className="py-4 px-4 text-right">
+                          <td className="py-3 px-4 text-right">
                             {isJefe && (
                               <button
                                 onClick={() => handleDeleteInsumo(item)}
@@ -458,7 +426,7 @@ export default function InventarioPage() {
                               onClick={() => handleOpenMovementModal(item.id)}
                               className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-md text-[11px] transition active:scale-95"
                             >
-                              + Recargar
+                              Recargar
                             </button>
                           </td>
                         </tr>
@@ -473,20 +441,20 @@ export default function InventarioPage() {
           /* HISTORIAL KARDEX MOVIMIENTOS */
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 text-sm">Registro de Movimientos (Entradas / Salidas)</h3>
-              <span className="text-xs text-slate-400 font-medium">Descuentos automáticos por ventas & cargas manuales</span>
+              <h3 className="font-bold text-slate-900 text-sm">Movimientos de stock</h3>
+              <span className="text-xs text-slate-500">Ventas, cancelaciones y ajustes manuales</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 font-semibold text-[10px]">
-                    <th className="py-4 px-4">Fecha / Hora</th>
-                    <th className="py-4 px-4">Insumo</th>
-                    <th className="py-4 px-4">Tipo</th>
-                    <th className="py-4 px-4">Cantidad</th>
-                    <th className="py-4 px-4">Motivo / Origen</th>
-                    <th className="py-4 px-4 text-right">Usuario</th>
+                    <th className="py-3 px-4">Fecha y hora</th>
+                    <th className="py-3 px-4">Insumo</th>
+                    <th className="py-3 px-4">Tipo</th>
+                    <th className="py-3 px-4">Cantidad</th>
+                    <th className="py-3 px-4">Motivo</th>
+                    <th className="py-3 px-4 text-right">Usuario</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
@@ -504,7 +472,7 @@ export default function InventarioPage() {
 
                     return (
                       <tr key={mov.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-3 px-4 text-slate-500 font-mono text-[11px]">
+                        <td className="py-3 px-4 text-slate-500 text-[11px]">
                           {mov.fecha}
                         </td>
                         <td className="py-3 px-4 font-bold text-slate-900">
@@ -550,8 +518,7 @@ export default function InventarioPage() {
                   <Boxes className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base">Registrar Movimiento de Stock</h3>
-                  <p className="text-xs text-slate-400">Actualización manual del inventario de insumos</p>
+                  <h3 className="font-bold text-base">Movimiento de stock</h3>
                 </div>
               </div>
               <button
@@ -565,7 +532,7 @@ export default function InventarioPage() {
             <form onSubmit={handleSubmitMovement} className="p-6 space-y-5">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Seleccionar Insumo
+                  Insumo
                 </label>
                 <select
                   value={selectedInsumoId}
@@ -582,7 +549,7 @@ export default function InventarioPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Tipo de Operación
+                  Tipo
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {(
@@ -610,7 +577,7 @@ export default function InventarioPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Cantidad a ingresar / descontar
+                  Cantidad
                 </label>
                 <input
                   type="number"
@@ -625,7 +592,7 @@ export default function InventarioPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Motivo u Origen
+                  Motivo
                 </label>
                 <input
                   type="text"
@@ -649,7 +616,7 @@ export default function InventarioPage() {
                   type="submit"
                   className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs transition"
                 >
-                  Guardar Movimiento
+                  Guardar
                 </button>
               </div>
             </form>
@@ -667,8 +634,7 @@ export default function InventarioPage() {
                   <Boxes className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base">Nuevo Insumo</h3>
-                  <p className="text-xs text-slate-400">Agrega un insumo base al inventario</p>
+                  <h3 className="font-bold text-base">Nuevo insumo</h3>
                 </div>
               </div>
               <button
@@ -756,8 +722,7 @@ export default function InventarioPage() {
                   <Tags className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base">Categorías de Insumos</h3>
-                  <p className="text-xs text-slate-400">Crea o elimina categorías desde aquí</p>
+                  <h3 className="font-bold text-base">Categorías de insumos</h3>
                 </div>
               </div>
               <button
@@ -785,7 +750,7 @@ export default function InventarioPage() {
 
               <div className="space-y-1.5 max-h-64 overflow-y-auto">
                 {categorias.filter((c) => c.tipo === "INSUMO").length === 0 ? (
-                  <p className="text-center text-xs text-slate-400 py-4">No hay categorías registradas aún.</p>
+                  <p className="text-center text-xs text-slate-400 py-4">Aún no hay categorías.</p>
                 ) : (
                   categorias.filter((c) => c.tipo === "INSUMO").map((cat) => (
                     <div key={cat.id} className="flex items-center justify-between px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg">
