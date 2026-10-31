@@ -171,7 +171,7 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "g",
       "stockActual": 5250,
-      "stockMinimo": 0,
+      "stockMinimo": 650,
       "costoUnitario": 0.0467
     },
     {
@@ -1158,6 +1158,10 @@
           "cantidad": 150
         },
         {
+          "insumoId": "platano_maduro",
+          "cantidad": 1
+        },
+        {
           "insumoId": "queso_rallar",
           "cantidad": 30
         }
@@ -1716,6 +1720,10 @@
         {
           "insumoId": "ensalada_rusa",
           "cantidad": 60
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 0.6
         }
       ]
     },
@@ -1749,6 +1757,10 @@
         {
           "insumoId": "huevo",
           "cantidad": 1
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 0.6
         }
       ]
     },
@@ -1770,6 +1782,10 @@
         {
           "insumoId": "carta_tallarin",
           "cantidad": 250
+        },
+        {
+          "insumoId": "platano_maduro",
+          "cantidad": 0.6
         },
         {
           "insumoId": "queso_rallar",
