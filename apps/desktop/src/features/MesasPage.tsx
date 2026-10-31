@@ -7,6 +7,8 @@ import { esEstacionComandas } from "../lib/estacionComandas";
 import { agregadosDisponibles, extrasDeAgregados, precioAgregados } from "../lib/agregados";
 import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
+import { useMediaQuery, QUERY_TACTIL } from "../lib/useMediaQuery";
+import TomaPedido, { type CartLine } from "../components/pedido/TomaPedido";
 import {
   Users,
   Clock,
@@ -25,8 +27,6 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-
-type CartLine = { product: Producto; quantity: number; notes: string; agregados: string[] };
 
 function formatElapsed(startIso?: string | null): string {
   if (!startIso) return "--";
@@ -131,6 +131,16 @@ export default function MesasPage() {
 
   const selectedMesa = mesas.find((m) => m.id === selectedMesaId) || null;
 
+  // En celular y tablet la mesa abre la toma de pedido a pantalla completa; la
+  // cuenta (consumo enviado, precuenta, cobros) se abre aparte con «Cuenta».
+  const esTactil = useMediaQuery(QUERY_TACTIL);
+  // Se guarda la mesa cuya cuenta se abrió: al abrir otra mesa vuelve a la toma de pedido
+  const [cuentaMesaId, setCuentaMesaId] = useState<string | null>(null);
+  const vistaCuenta = cuentaMesaId !== null && cuentaMesaId === selectedMesaId;
+  const setVistaCuenta = (abrir: boolean) => setCuentaMesaId(abrir ? selectedMesaId : null);
+  const enTomaPedido = Boolean(selectedMesa) && esTactil && !vistaCuenta;
+  const enCuentaTactil = esTactil && vistaCuenta;
+
 
   const scrollCategories = (direction: "left" | "right") => {
     if (categoryScrollRef.current) {
@@ -158,6 +168,30 @@ export default function MesasPage() {
       },
     }));
     setCustomizingProduct(null);
+  };
+
+  // Toma de pedido táctil: «+» suma una unidad sin abrir ventana. Se agrupa en la
+  // línea sin nota ni agregados; la nota se pone después desde el pedido.
+  const nuevaLineaId = (prod: Producto) => `${prod.sku}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  const esLineaSimple = (line: CartLine, prod: Producto) => line.product.id === prod.id && !line.notes.trim() && line.agregados.length === 0;
+
+  const handleQuickAdd = (prod: Producto) => {
+    setCart((prev) => {
+      const existente = Object.entries(prev).find(([, line]) => esLineaSimple(line, prod));
+      if (existente) {
+        const [lineId, line] = existente;
+        return { ...prev, [lineId]: { ...line, quantity: line.quantity + 1 } };
+      }
+      return { ...prev, [nuevaLineaId(prod)]: { product: prod, quantity: 1, notes: "", agregados: [] } };
+    });
+  };
+
+  const handleQuickRemove = (prod: Producto) => {
+    const entradas = Object.entries(cart);
+    const objetivo =
+      entradas.find(([, line]) => esLineaSimple(line, prod)) ??
+      [...entradas].reverse().find(([, line]) => line.product.id === prod.id);
+    if (objetivo) handleUpdateCartQty(objetivo[0], -1);
   };
 
   const toggleCustomizationAgregado = (agregado: string) => setCustomizingAgregados((prev) => prev.includes(agregado) ? prev.filter((item) => item !== agregado) : [...prev, agregado]);
@@ -662,10 +696,47 @@ export default function MesasPage() {
         )}
       </div>
 
-      {/* Panel de mesa seleccionada */}
-      {selectedMesa && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-6xl rounded-lg shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
+      {/* Celular y tablet: toma de pedido a pantalla completa */}
+      {selectedMesa && enTomaPedido && (
+        <TomaPedido
+          numero={selectedMesa.number}
+          titulo={
+            selectedMesa.joinedTables?.length
+              ? `Mesas ${[selectedMesa.number, ...selectedMesa.joinedTables.map((table) => table.number)].sort((a, b) => a - b).join(" + ")}`
+              : `Mesa ${selectedMesa.number}`
+          }
+          subtitulo={(() => {
+            const enviados = (selectedMesa.currentOrder?.items || []).reduce((sum, item) => sum + item.cantidad, 0);
+            return enviados > 0
+              ? `Nueva tanda · ya pidieron ${enviados} producto${enviados === 1 ? "" : "s"} (S/ ${(selectedMesa.currentOrder?.total || 0).toFixed(2)})`
+              : "Libre · el primer envío abre la cuenta";
+          })()}
+          categorias={CATEGORIES}
+          productos={productos}
+          insumos={insumos}
+          agregados={agregadosVisibles}
+          cart={cart}
+          precioLinea={getCartItemTotal}
+          onAgregar={handleQuickAdd}
+          onQuitar={handleQuickRemove}
+          onCantidadLinea={handleUpdateCartQty}
+          onNotaLinea={handleUpdateCartNotes}
+          onAgregadoLinea={handleToggleAgregado}
+          onEnviar={() => void handleSendTanda()}
+          enviando={isSubmittingTanda}
+          cajaAbierta={Boolean(cajaEstado?.isOpen)}
+          onVerCuenta={() => setVistaCuenta(true)}
+          onCerrar={() => {
+            setSelectedMesaId(null);
+            setCart({});
+          }}
+        />
+      )}
+
+      {/* Panel de mesa seleccionada (en celular/tablet: solo la cuenta) */}
+      {selectedMesa && !enTomaPedido && (
+        <div className={`fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center ${enCuentaTactil ? "p-0 sm:p-4" : "p-4"}`}>
+          <div className={`bg-white w-full rounded-lg shadow-xl border border-slate-200 overflow-hidden flex flex-col ${enCuentaTactil ? "max-w-xl h-full sm:h-auto sm:max-h-[92vh] rounded-none sm:rounded-lg" : "max-w-6xl max-h-[92vh]"}`}>
             {/* Header */}
             <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
@@ -689,6 +760,18 @@ export default function MesasPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {enCuentaTactil && (
+                  <button
+                    type="button"
+                    onClick={() => setVistaCuenta(false)}
+                    className="px-3 py-2 rounded-md bg-amber-500 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 whitespace-nowrap"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {Object.keys(cart).length
+                      ? `Volver al pedido (${Object.values(cart).reduce((sum, line) => sum + line.quantity, 0)})`
+                      : "Pedir más"}
+                  </button>
+                )}
                 {Boolean(selectedMesa.joinedTables?.length) && (
                   <button
                     type="button"
@@ -701,6 +784,8 @@ export default function MesasPage() {
                 )}
                 <button
                   onClick={() => {
+                    const sinEnviar = Object.values(cart).reduce((sum, line) => sum + line.quantity, 0);
+                    if (sinEnviar > 0 && !window.confirm(`Hay ${sinEnviar} producto(s) sin enviar a cocina. ¿Salir y descartarlos?`)) return;
                     setSelectedMesaId(null);
                     setCart({});
                     setShowCheckout(false);
@@ -714,9 +799,9 @@ export default function MesasPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-5 flex-1 overflow-hidden">
-              {/* Catálogo */}
-              <div className="md:col-span-3 p-6 space-y-4 overflow-y-auto border-r border-slate-100">
+            <div className={`grid grid-cols-1 flex-1 overflow-hidden ${enCuentaTactil ? "" : "md:grid-cols-5"}`}>
+              {/* Catálogo (en celular/tablet se pide desde la toma de pedido) */}
+              <div className={`md:col-span-3 p-6 space-y-4 overflow-y-auto border-r border-slate-100 ${enCuentaTactil ? "hidden" : ""}`}>
                 <div className="relative flex items-center group py-1">
                   <button
                     type="button"
@@ -848,7 +933,7 @@ export default function MesasPage() {
               </div>
 
               {/* Carrito / Acciones */}
-              <div className="md:col-span-2 p-6 bg-slate-50/50 flex flex-col justify-between overflow-y-auto">
+              <div className={`p-6 bg-slate-50/50 flex flex-col overflow-y-auto ${enCuentaTactil ? "justify-start gap-4" : "justify-between md:col-span-2"}`}>
                 <div className="space-y-4">
                   {rondas.length > 0 && (
                     <div className="pb-4 border-b border-slate-200 space-y-3">
@@ -886,6 +971,7 @@ export default function MesasPage() {
                       </div>
                     </div>
                   )}
+                  {!enCuentaTactil && (<>
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                       <ShoppingBasket className="w-4 h-4 text-amber-500" /> Nueva tanda
@@ -984,6 +1070,7 @@ export default function MesasPage() {
                       )}
                     </button>
                   )}
+                  </>)}
                 </div>
 
                 <div className="pt-4 border-t border-slate-200 space-y-3">
