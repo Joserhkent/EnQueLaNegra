@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { ChevronLeft, Loader2, Minus, Plus, Receipt, Search, Send, X } from "lucide-react";
 import type { Agregado, Insumo, Producto } from "../../store/usePosStore";
 import { productoSinStock } from "../../lib/stock";
@@ -15,7 +15,8 @@ const sinTildes = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLo
 const soles = (n: number) => `S/ ${n.toFixed(2)}`;
 
 type Props = {
-  numero: number;
+  /** Lo que va en la insignia amarilla de la cabecera: «#4» en mesas, un ícono en para llevar */
+  insignia: ReactNode;
   titulo: string;
   subtitulo: string;
   categorias: string[];
@@ -32,14 +33,21 @@ type Props = {
   onEnviar: () => void;
   enviando: boolean;
   cajaAbierta: boolean;
-  onVerCuenta: () => void;
+  /** Texto del botón final; en para llevar se cobra al enviar */
+  textoEnviar?: string;
+  /** Datos extra del pedido (cliente, servicio, pago) bajo las líneas del pedido */
+  datosPedido?: ReactNode;
+  /** Título del resumen del pedido; por defecto «Pedido · {titulo}» */
+  tituloPedido?: string;
+  /** Abre la cuenta de la mesa; sin esto no se muestra el botón «Cuenta» */
+  onVerCuenta?: () => void;
   onCerrar: () => void;
 };
 
 // Toma de pedido para celular y tablet, a pantalla completa. Solo sirve para anotar
 // y mandar a cocina; los cobros y la precuenta están en «Cuenta».
 export default function TomaPedido(props: Props) {
-  const { numero, titulo, subtitulo, categorias, productos, insumos, cart, precioLinea, onAgregar, onQuitar, onEnviar, enviando, cajaAbierta, onVerCuenta, onCerrar } = props;
+  const { insignia, titulo, subtitulo, categorias, productos, insumos, cart, precioLinea, onAgregar, onQuitar, onEnviar, enviando, cajaAbierta, textoEnviar = "Enviar a cocina", datosPedido, tituloPedido = `Pedido · ${titulo}`, onVerCuenta, onCerrar } = props;
   const esTablet = useMediaQuery("(min-width: 768px)");
   const [categoria, setCategoria] = useState<string | null>(null);
   const [busqueda, setBusqueda] = useState("");
@@ -137,8 +145,8 @@ export default function TomaPedido(props: Props) {
       <div key={prod.id} className={`rounded-xl border p-3 grid gap-2 ${enPedido ? "border-slate-900 bg-amber-50" : "border-slate-200 bg-white"} ${agotado ? "opacity-60" : ""}`}>
         <span className="text-[28px]">{prod.iconoEmoji}</span>
         <div className="font-bold text-sm leading-tight text-slate-900 min-h-[34px]">{prod.nombre}</div>
-        <div className="flex items-center justify-between gap-1.5">
-          <span className="font-extrabold tabular-nums text-slate-900">
+        <div className="flex flex-wrap items-center justify-between gap-1.5">
+          <span className="font-extrabold tabular-nums text-slate-900 whitespace-nowrap">
             {soles(Number(prod.precio || 0))}
             {agotado && <span className="block text-[11px] text-rose-600">Sin stock</span>}
           </span>
@@ -174,7 +182,12 @@ export default function TomaPedido(props: Props) {
   // Líneas del pedido con cantidad, nota para cocina y agregados
   const detallePedido = lineas.length === 0
     ? <div className="py-8 text-center text-slate-400">Toca un producto para agregarlo.</div>
-    : lineas.map(([lineId, line]) => <LineaPedido key={lineId} lineId={lineId} line={line} {...props} />);
+    : (
+      <>
+        {lineas.map(([lineId, line]) => <LineaPedido key={lineId} lineId={lineId} line={line} {...props} />)}
+        {datosPedido && <div className="py-4">{datosPedido}</div>}
+      </>
+    );
 
   const pieEnvio = (
     <div className="px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))] border-t border-slate-200 grid gap-2.5 shrink-0 bg-white">
@@ -192,24 +205,26 @@ export default function TomaPedido(props: Props) {
         className="h-14 rounded-xl bg-slate-900 text-amber-400 font-extrabold text-[17px] flex items-center justify-center gap-2 active:scale-[.98] transition disabled:opacity-35"
       >
         {enviando ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-        {!cajaAbierta ? "Caja cerrada" : enviando ? "Enviando…" : "Enviar a cocina"}
+        {!cajaAbierta ? "Caja cerrada" : enviando ? "Enviando…" : textoEnviar}
       </button>
     </div>
   );
 
   const cabecera = (
     <div className="bg-slate-900 text-white flex items-center gap-2.5 px-3 pb-3 pt-[max(12px,env(safe-area-inset-top))] shrink-0">
-      <button type="button" onClick={cerrar} aria-label="Volver a las mesas" className="w-10 h-10 rounded-lg bg-white/10 grid place-items-center shrink-0">
+      <button type="button" onClick={cerrar} aria-label="Volver" className="w-10 h-10 rounded-lg bg-white/10 grid place-items-center shrink-0">
         <ChevronLeft className="w-5 h-5" />
       </button>
-      <span className="bg-amber-500 text-slate-950 font-black rounded-lg px-2.5 py-1.5 text-[15px] shrink-0">#{numero}</span>
+      <span className="bg-amber-500 text-slate-950 font-black rounded-lg px-2.5 py-1.5 text-[15px] shrink-0 flex items-center">{insignia}</span>
       <div className="flex-1 min-w-0">
         <div className="font-extrabold text-base leading-tight truncate">{titulo}</div>
         <div className="text-xs text-slate-400 truncate">{subtitulo}</div>
       </div>
-      <button type="button" onClick={onVerCuenta} className="h-10 px-3 rounded-lg bg-white/10 flex items-center gap-1.5 text-sm font-bold shrink-0">
-        <Receipt className="w-4 h-4" /> Cuenta
-      </button>
+      {onVerCuenta && (
+        <button type="button" onClick={onVerCuenta} className="h-10 px-3 rounded-lg bg-white/10 flex items-center gap-1.5 text-sm font-bold shrink-0">
+          <Receipt className="w-4 h-4" /> Cuenta
+        </button>
+      )}
     </div>
   );
 
@@ -246,7 +261,7 @@ export default function TomaPedido(props: Props) {
             </div>
           </div>
           <div className="border-l border-slate-200 flex flex-col min-h-0">
-            <div className="px-4 py-3.5 border-b border-slate-200 font-extrabold text-lg">Pedido · {titulo}</div>
+            <div className="px-4 py-3.5 border-b border-slate-200 font-extrabold text-lg">{tituloPedido}</div>
             <div className="flex-1 overflow-y-auto px-4">{detallePedido}</div>
             {pieEnvio}
           </div>
@@ -331,7 +346,7 @@ export default function TomaPedido(props: Props) {
           <div className="bg-white w-full max-h-[88%] rounded-t-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="w-11 h-[5px] rounded-full bg-slate-300 mx-auto mt-2.5 mb-1" />
             <div className="flex items-center justify-between px-4 pt-1.5 pb-2.5 border-b border-slate-200">
-              <span className="font-extrabold text-lg">Pedido · {titulo}</span>
+              <span className="font-extrabold text-lg">{tituloPedido}</span>
               <button type="button" onClick={() => setVerPedido(false)} aria-label="Cerrar pedido" className="w-10 h-10 rounded-lg bg-slate-100 grid place-items-center">
                 <X className="w-5 h-5" />
               </button>

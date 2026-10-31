@@ -8,6 +8,8 @@ import { esEstacionComandas } from "../lib/estacionComandas";
 import { agregadosDisponibles, extrasDeAgregados, precioAgregados } from "../lib/agregados";
 import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
+import { useMediaQuery, QUERY_TACTIL } from "../lib/useMediaQuery";
+import TomaPedido from "../components/pedido/TomaPedido";
 import {
   ShoppingBag,
   PlusCircle,
@@ -75,6 +77,8 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [selectedDetailOrder, setSelectedDetailOrder] = useState<Order | null>(null);
 
   const categoryScrollRef = useRef<HTMLDivElement>(null);
+  // En celular y tablet el pedido nuevo se toma a pantalla completa (igual que en Mesas)
+  const esTactil = useMediaQuery(QUERY_TACTIL);
 
   // Carga la lista de insumos (necesaria para mapear nombre de crema/agregado -> insumoId real)
   useEffect(() => {
@@ -140,6 +144,30 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
     });
   };
 
+  // «−» en la toma de pedido táctil: quita una unidad de la línea sin nota ni
+  // agregados de ese producto; si no hay, de la última línea que lo tenga.
+  const handleQuickRemove = (prod: Producto) => {
+    const entradas = Object.entries(cart);
+    const objetivo =
+      entradas.find(([, line]) => line.product.id === prod.id && line.agregados.length === 0 && !line.notes.trim()) ??
+      [...entradas].reverse().find(([, line]) => line.product.id === prod.id);
+    if (objetivo) handleUpdateCartQty(objetivo[0], -1);
+  };
+
+  // Pago mixto: al escribir una parte se completa la otra con lo que falta del total
+  const completarMixto = (lado: "digital" | "efectivo", val: string) => {
+    const num = parseFloat(val.replace(",", ".")) || 0;
+    const tot = calculateCartTotal();
+    const resto = num <= tot ? (tot - num).toFixed(2) : "0";
+    if (lado === "digital") {
+      setMontoDigital(val);
+      setMontoEfectivo(resto);
+    } else {
+      setMontoEfectivo(val);
+      setMontoDigital(resto);
+    }
+  };
+
   const handleUpdateCartQty = (lineId: string, delta: number) => {
     setCart((prev) => {
       const item = prev[lineId];
@@ -195,8 +223,8 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
     return Object.values(cart).reduce((acc, curr) => acc + getCartItemTotal(curr), 0);
   };
 
-  const handleCreateOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateOrder = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (isSubmittingOrder) return;
 
     const cartList = Object.values(cart);
@@ -218,8 +246,9 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       const horaStr = now.toTimeString().split(" ")[0].substring(0, 5);
 
       const totalAmount = calculateCartTotal();
-      const numEf = parseFloat(montoEfectivo) || 0;
-      const numDig = parseFloat(montoDigital) || 0;
+      // El teclado del celular en español escribe coma decimal («10,50»)
+      const numEf = parseFloat(montoEfectivo.replace(",", ".")) || 0;
+      const numDig = parseFloat(montoDigital.replace(",", ".")) || 0;
 
       const newOrder: Order = {
         id: String(Date.now()),
@@ -693,7 +722,117 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       </div>
 
       {/* NEW ORDER MODAL */}
-      {isModalOpen && (
+      {/* Celular y tablet: pedido para llevar a pantalla completa */}
+      {isModalOpen && esTactil && (
+        <TomaPedido
+          insignia={<ShoppingBag className="w-[18px] h-[18px]" />}
+          titulo="Nuevo pedido"
+          tituloPedido="Pedido"
+          subtitulo={`${orderType === "Llevar" ? "Para llevar" : "Delivery"} · ${customerName.trim() || "Cliente mostrador"}`}
+          categorias={menuTabs}
+          productos={productos}
+          insumos={insumos}
+          agregados={agregadosVisibles}
+          cart={cart}
+          precioLinea={getCartItemTotal}
+          onAgregar={handleAddToCart}
+          onQuitar={handleQuickRemove}
+          onCantidadLinea={handleUpdateCartQty}
+          onNotaLinea={handleUpdateCartNotes}
+          onAgregadoLinea={handleToggleAgregado}
+          onEnviar={() => void handleCreateOrder()}
+          enviando={isSubmittingOrder}
+          cajaAbierta={Boolean(cajaEstado?.isOpen)}
+          textoEnviar="Cobrar y enviar a cocina"
+          datosPedido={
+            <div className="grid gap-4">
+              <label className="grid gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Cliente</span>
+                <input
+                  id="pedido-cliente"
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Nombre (opcional)"
+                  autoComplete="off"
+                  className="h-12 px-3 rounded-xl border border-slate-200 bg-white text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900"
+                />
+              </label>
+              <div className="grid gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Servicio</span>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {(
+                    [
+                      { key: "Llevar", label: "Para llevar" },
+                      { key: "Delivery", label: "Delivery" },
+                    ] as const
+                  ).map((t) => (
+                    <button
+                      key={t.key}
+                      type="button"
+                      onClick={() => setOrderType(t.key)}
+                      className={`h-11 rounded-xl border text-sm font-bold ${orderType === t.key ? "bg-slate-900 text-amber-400 border-slate-900" : "bg-white text-slate-700 border-slate-200"}`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid gap-1.5">
+                <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Pago</span>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {(["Yape/Plin", "Efectivo", "Mixto"] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setPaymentMethod(m)}
+                      className={`h-11 rounded-xl border text-sm font-bold ${paymentMethod === m ? "bg-slate-900 text-amber-400 border-slate-900" : "bg-white text-slate-700 border-slate-200"}`}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+                {paymentMethod === "Mixto" && (
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    <label className="grid gap-1">
+                      <span className="text-xs font-bold text-slate-600">Yape / Plin (S/)</span>
+                      <input
+                        id="pedido-mixto-digital"
+                        type="text"
+                        inputMode="decimal"
+                        value={montoDigital}
+                        onChange={(e) => completarMixto("digital", e.target.value)}
+                        placeholder="0.00"
+                        className="h-12 px-3 rounded-xl border border-slate-200 bg-white text-base font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900"
+                      />
+                    </label>
+                    <label className="grid gap-1">
+                      <span className="text-xs font-bold text-slate-600">Efectivo (S/)</span>
+                      <input
+                        id="pedido-mixto-efectivo"
+                        type="text"
+                        inputMode="decimal"
+                        value={montoEfectivo}
+                        onChange={(e) => completarMixto("efectivo", e.target.value)}
+                        placeholder="0.00"
+                        className="h-12 px-3 rounded-xl border border-slate-200 bg-white text-base font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900"
+                      />
+                    </label>
+                  </div>
+                )}
+                {paymentMethod === "Efectivo" && <CambioEfectivo total={calculateCartTotal()} />}
+                {paymentMethod === "Mixto" && <CambioEfectivo total={parseFloat(montoEfectivo.replace(",", ".")) || 0} />}
+              </div>
+            </div>
+          }
+          onCerrar={() => {
+            setIsModalOpen(false);
+            setCart({});
+          }}
+        />
+      )}
+
+      {isModalOpen && !esTactil && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-4xl rounded-lg shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
             <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between shrink-0">

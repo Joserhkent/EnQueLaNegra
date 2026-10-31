@@ -714,7 +714,7 @@ export default function MesasPage() {
       {/* Celular y tablet: toma de pedido a pantalla completa */}
       {selectedMesa && enTomaPedido && (
         <TomaPedido
-          numero={selectedMesa.number}
+          insignia={`#${selectedMesa.number}`}
           titulo={
             selectedMesa.joinedTables?.length
               ? `Mesas ${[selectedMesa.number, ...selectedMesa.joinedTables.map((table) => table.number)].sort((a, b) => a - b).join(" + ")}`
