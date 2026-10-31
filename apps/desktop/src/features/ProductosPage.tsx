@@ -13,6 +13,8 @@ import {
 
 import { usePosStore, type ProductoPayload } from "../store/usePosStore";
 import ErrorBoundary from "../components/ErrorBoundary";
+import RecetaEditor from "../components/carta/RecetaEditor";
+import { cantidadBaseLinea, lineaDesdeCantidad, type LineaReceta } from "../lib/receta";
 
 // Tipos adaptados para tolerar objeto o string en categoría
 export interface CategoriaObj {
@@ -99,9 +101,9 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     iconoEmoji: "🌽",
     isAvailable: true,
     isPopular: false,
-    selectedReceta: [] as string[],
-    selectedRecetaCantidades: {} as Record<string, number>,
+    recetaLineas: [] as LineaReceta[],
   });
+  const [recetaError, setRecetaError] = useState<string | null>(null);
 
   // Categorías dinámicas desde el backend (+ fallback con las clásicas)
   useEffect(() => {
@@ -184,8 +186,13 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           iconoEmoji: prod.iconoEmoji || "🌽",
           isAvailable: prod.isAvailable !== false,
           isPopular: !!prod.isPopular,
-          selectedReceta: Array.isArray(prod.receta) ? [...prod.receta] : [],
-          selectedRecetaCantidades: { ...(prod.recetaCantidades || {}) },
+          recetaLineas: (Array.isArray(prod.receta) ? prod.receta : []).map((insumoId) =>
+            lineaDesdeCantidad(
+              store.insumos.find((i) => i.id === insumoId),
+              insumoId,
+              Number(prod.recetaCantidades?.[insumoId]) || 0
+            )
+          ),
         });
       } else {
         setEditingProduct(null);
@@ -199,10 +206,10 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           iconoEmoji: "🌽",
           isAvailable: true,
           isPopular: false,
-          selectedReceta: [],
-          selectedRecetaCantidades: {},
+          recetaLineas: [],
         });
       }
+      setRecetaError(null);
       setIsEmojiPickerOpen(false);
       setIsModalOpen(true);
     } catch (err) {
@@ -210,39 +217,18 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     }
   };
 
-  const handleToggleRecetaInsumo = (insumoId: string) => {
-    if (!insumoId) return;
-    setFormData((prev) => {
-      const curReceta = Array.isArray(prev?.selectedReceta) ? prev.selectedReceta : [];
-      const exists = curReceta.includes(insumoId);
-      const curCants = { ...(prev?.selectedRecetaCantidades || {}) };
-      if (exists) {
-        delete curCants[insumoId];
-      } else {
-        curCants[insumoId] = 1; // cantidad aproximada por defecto, el dueño la ajusta
-      }
-      return {
-        ...prev,
-        selectedReceta: exists
-          ? curReceta.filter((id) => id !== insumoId)
-          : [...curReceta, insumoId],
-        selectedRecetaCantidades: curCants,
-      };
-    });
-  };
-
-  const handleChangeCantidadInsumo = (insumoId: string, cantidad: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      selectedRecetaCantidades: {
-        ...(prev?.selectedRecetaCantidades || {}),
-        [insumoId]: cantidad > 0 ? cantidad : 1,
-      },
-    }));
-  };
-
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    const receta: { insumoId: string; cantidad: number }[] = [];
+    for (const l of formData.recetaLineas) {
+      const insumo = store.insumos.find((i) => i.id === l.insumoId);
+      const cantidad = cantidadBaseLinea(insumo, l);
+      if (cantidad === null) {
+        setRecetaError(`Falta la cantidad de ${insumo?.nombre ?? "un ingrediente"} en la receta.`);
+        return;
+      }
+      receta.push({ insumoId: l.insumoId, cantidad });
+    }
     try {
       const productPayload = {
         id: editingProduct?.id || formData.sku || `PROD-${Date.now()}`,
@@ -254,13 +240,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         iconoEmoji: formData.iconoEmoji || "🌽",
         isAvailable: formData.isAvailable !== false,
         isPopular: Boolean(formData.isPopular),
-        receta: (Array.isArray(formData.selectedReceta) ? formData.selectedReceta : []).map(
-          (insumoId) => ({
-            insumoId,
-            cantidad:
-              Number(formData.selectedRecetaCantidades?.[insumoId]) || 1,
-          }),
-        ),
+        receta,
       };
 
       if (typeof saveProduct === "function") {
@@ -593,7 +573,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
       {/* CREATE / EDIT PRODUCT MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-xl rounded-lg shadow-xl border border-slate-200 overflow-hidden my-8">
+          <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl border border-slate-200 overflow-hidden my-8">
             {/* Modal Header */}
             <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -782,95 +762,15 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                 </div>
               </div>
 
-              {/* Receta (BOM) Insumos Selection Organized by Category */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">
-                  Receta: insumos que se descuentan por cada unidad vendida
-                </label>
-                <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 max-h-48 overflow-y-auto space-y-3">
-                  {(() => {
-                    const safeInsumos = (Array.isArray(insumos) ? insumos : []).filter(
-                      (i): i is Insumo & { id: string } => Boolean(i && i.id)
-                    );
-
-                    const rawCategories = safeInsumos
-                      .map((i) => (typeof i.categoria === "string" && i.categoria.trim() ? i.categoria : "General"))
-                      .filter((c) => c !== "Salsas y Aderezos");
-
-                    const recipeCategories = Array.from(new Set(rawCategories));
-
-                    if (recipeCategories.length === 0) {
-                      return (
-                        <div className="text-center py-6 text-xs text-slate-400 font-medium">
-                          Aún no hay insumos. Créalos en Inventario.
-                        </div>
-                      );
-                    }
-
-                    return recipeCategories.map((catName) => {
-                      const catInsumos = safeInsumos.filter(
-                        (i) => (i.categoria || "General") === catName
-                      );
-
-                      if (catInsumos.length === 0) return null;
-
-                      return (
-                        <div key={catName} className="space-y-1">
-                          <div className="text-[10px] font-extrabold text-slate-400 px-1">
-                            {catName}
-                          </div>
-                          <div className="grid grid-cols-2 gap-1.5">
-                            {catInsumos.map((ins) => {
-                              const isChecked = Boolean(
-                                Array.isArray(formData.selectedReceta) &&
-                                formData.selectedReceta.includes(ins.id)
-                              );
-                              return (
-                                <div
-                                  key={ins.id}
-                                  className={`flex items-center gap-1.5 rounded-md border px-1.5 py-1 transition ${
-                                    isChecked
-                                      ? "bg-amber-500/10 border-amber-500"
-                                      : "bg-white border-slate-200"
-                                  }`}
-                                >
-                                  <button
-                                    type="button"
-                                    onClick={() => handleToggleRecetaInsumo(ins.id)}
-                                    className={`flex-1 min-w-0 px-1 py-0.5 rounded-lg text-[11px] font-semibold text-left truncate ${
-                                      isChecked
-                                        ? "text-amber-900 font-bold"
-                                        : "text-slate-600 hover:bg-slate-100"
-                                    }`}
-                                    title={ins.nombre || ins.id}
-                                  >
-                                    {ins.nombre || ins.id}
-                                  </button>
-                                  {isChecked && (
-                                    <input
-                                      type="number"
-                                      min={0.1}
-                                      step={0.1}
-                                      value={
-                                        Number(formData.selectedRecetaCantidades?.[ins.id]) || 1
-                                      }
-                                      onChange={(e) =>
-                                        handleChangeCantidadInsumo(ins.id, Number(e.target.value))
-                                      }
-                                      className="w-14 shrink-0 rounded-lg border border-amber-300 bg-white px-1 py-0.5 text-[11px] font-bold text-amber-900 text-center focus:outline-none focus:ring-1 focus:ring-amber-500"
-                                      title="Cantidad que se descuenta del inventario por unidad vendida"
-                                    />
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    });
-                  })()}
-                </div>
-              </div>
+              <RecetaEditor
+                lineas={formData.recetaLineas}
+                onChange={(recetaLineas) => {
+                  setRecetaError(null);
+                  setFormData((prev) => ({ ...prev, recetaLineas }));
+                }}
+                precio={Number(String(formData.precio).replace(",", ".")) || 0}
+                error={recetaError}
+              />
 
               {/* Buttons */}
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
