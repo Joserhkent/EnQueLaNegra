@@ -168,10 +168,21 @@ export class InsumosService {
         'La presentación necesita nombre y cuánto trae (ej. lata de 130 g).',
       );
     }
+    if (dto.categoriaId) {
+      const categoria = await this.prisma.categoria.findUnique({
+        where: { id: dto.categoriaId },
+      });
+      if (!categoria || categoria.tipo !== 'INSUMO') {
+        throw new BadRequestException(
+          'Elige una categoría de inventario que exista.',
+        );
+      }
+    }
     return this.prisma.insumo.update({
       where: { id },
       data: {
         nombre: dto.nombre?.trim(),
+        categoriaId: dto.categoriaId,
         stockMinimo: dto.stockMinimo,
         costoUnitario: dto.costoUnitario,
         ...(tocaPresentacion

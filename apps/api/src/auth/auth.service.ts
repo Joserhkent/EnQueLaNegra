@@ -9,6 +9,8 @@ import { compare, hash } from 'bcrypt';
 import { PrismaService } from '../prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { CambiarPasswordDto, RestablecerPasswordDto } from './dto/password.dto';
+import { ActualizarUsuarioDto, CrearUsuarioDto } from './dto/usuario.dto';
+import { ROLES_ADMIN } from './jefe.guard';
 
 const BCRYPT_ROUNDS = 10;
 
@@ -22,8 +24,9 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { username, password } = loginDto;
 
-    const user = await this.prisma.user.findUnique({
-      where: { username },
+    // Los usuarios se guardan en minúsculas: «Carlos» y «carlos» son el mismo
+    const user = await this.prisma.user.findFirst({
+      where: { username: { equals: username.trim(), mode: 'insensitive' } },
       include: {
         rol: true,
       },
@@ -109,8 +112,7 @@ export class AuthService {
     return { ok: true };
   }
 
-  // Solo para el Jefe (JefeGuard en el controlador): lista para restablecer
-  // contraseñas. Nunca devuelve el hash.
+  // Solo para el Jefe (JefeGuard en el controlador). Nunca devuelve el hash.
   async listarUsuarios() {
     const usuarios = await this.prisma.user.findMany({
       select: {
@@ -118,14 +120,118 @@ export class AuthService {
         name: true,
         username: true,
         active: true,
+        turn: true,
+        rolId: true,
         rol: { select: { nombre: true } },
       },
-      orderBy: { name: 'asc' },
+      orderBy: [{ active: 'desc' }, { name: 'asc' }],
     });
     return usuarios.map(({ rol, ...u }) => ({
       ...u,
       role: rol.nombre.toLowerCase(),
+      rolNombre: rol.nombre,
     }));
+  }
+
+  listarRoles() {
+    return this.prisma.rol.findMany({
+      select: { id: true, nombre: true, descripcion: true },
+      orderBy: { nombre: 'asc' },
+    });
+  }
+
+  private async assertUsuarioLibre(username: string, exceptoId?: string) {
+    const otro = await this.prisma.user.findFirst({
+      where: {
+        username: { equals: username, mode: 'insensitive' },
+        ...(exceptoId ? { id: { not: exceptoId } } : {}),
+      },
+    });
+    if (otro) {
+      throw new BadRequestException(
+        `El usuario «${username}» ya existe (${otro.name}${otro.active ? '' : ', desactivado'}). Elige otro.`,
+      );
+    }
+  }
+
+  private async rolOError(rolId: string) {
+    const rol = await this.prisma.rol.findUnique({ where: { id: rolId } });
+    if (!rol) throw new BadRequestException('Elige un rol que exista');
+    return rol;
+  }
+
+  private esAdmin = (nombreRol: string) =>
+    ROLES_ADMIN.includes(nombreRol.toLowerCase());
+
+  async crearUsuario(dto: CrearUsuarioDto) {
+    await this.rolOError(dto.rolId);
+    await this.assertUsuarioLibre(dto.username);
+    const user = await this.prisma.user.create({
+      data: {
+        name: dto.name,
+        username: dto.username,
+        password: await hash(dto.password, BCRYPT_ROUNDS),
+        rolId: dto.rolId,
+        turn: dto.turn || null,
+      },
+    });
+    return { id: user.id };
+  }
+
+  // Editar datos, rol o activar/desactivar. Nunca se borra un usuario: sus ventas,
+  // movimientos y cierres de caja siguen mostrando quién los hizo (como Toast).
+  async actualizarUsuario(
+    id: string,
+    dto: ActualizarUsuarioDto,
+    actorId: string,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { rol: true },
+    });
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    if (id === actorId && dto.active === false) {
+      throw new BadRequestException('No puedes desactivar tu propio usuario');
+    }
+    if (dto.username && dto.username !== user.username) {
+      await this.assertUsuarioLibre(dto.username, id);
+    }
+    const rolNuevo = dto.rolId ? await this.rolOError(dto.rolId) : user.rol;
+
+    // Siempre debe quedar al menos un administrador activo que pueda entrar
+    const dejaDeSerAdminActivo =
+      this.esAdmin(user.rol.nombre) &&
+      user.active &&
+      (dto.active === false || !this.esAdmin(rolNuevo.nombre));
+    if (dejaDeSerAdminActivo) {
+      const otrosAdmins = await this.prisma.user.count({
+        where: {
+          id: { not: id },
+          active: true,
+          rol: {
+            nombre: { in: ROLES_ADMIN, mode: 'insensitive' },
+          },
+        },
+      });
+      if (otrosAdmins === 0) {
+        throw new BadRequestException(
+          'Debe quedar al menos un Jefe activo. Nombra otro Jefe antes de cambiar este usuario.',
+        );
+      }
+    }
+
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        name: dto.name,
+        username: dto.username,
+        rolId: dto.rolId,
+        turn: dto.turn === undefined ? undefined : dto.turn || null,
+        active: dto.active,
+      },
+    });
+    return { ok: true };
   }
 
   // El Jefe pone una contraseña nueva a otro usuario (p. ej. el mesonero la olvidó)

@@ -124,6 +124,8 @@ model Categoria {
   nombre String
   tipo   CategoriaTipo
   orden  Int           @default(0)
+  // Solo carta: si sus platos admiten agregados y notas de comida (las bebidas no)
+  aceptaAgregados Boolean @default(true)
 
   productos Producto[]
   insumos   Insumo[]

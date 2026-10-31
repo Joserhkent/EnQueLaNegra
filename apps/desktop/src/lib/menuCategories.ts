@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePosStore, type Producto } from "../store/usePosStore";
 
-// Categoría que agrupa las porciones sueltas; siempre va al final de las pestañas.
+// Categoría que agrupa las porciones sueltas
 const CATEGORIA_EXTRAS = "Agregados";
 
-// Categorías de bebidas/porciones: no admiten agregados ni personalización por plato.
+// Respaldo si la categoría aún no cargó: bebidas/porciones sin agregados ni notas.
+// Lo que manda es la casilla "Lleva agregados" de cada categoría (aceptaAgregados).
 const CATEGORIAS_SIN_PERSONALIZACION = new Set([
   CATEGORIA_EXTRAS,
   "Batidos",
@@ -25,8 +26,13 @@ export const getCategoriaNombre = (prod: Producto): string => {
 export const labelCategoria = (nombre: string): string =>
   nombre === CATEGORIA_EXTRAS ? "Porciones Extras" : nombre;
 
-export const permitePersonalizacion = (nombre: string): boolean =>
-  !CATEGORIAS_SIN_PERSONALIZACION.has(nombre);
+export const permitePersonalizacion = (nombre: string): boolean => {
+  const categoria = usePosStore
+    .getState()
+    .categorias.find((c) => c.tipo === "PRODUCTO" && c.nombre === nombre);
+  if (categoria && typeof categoria.aceptaAgregados === "boolean") return categoria.aceptaAgregados;
+  return !CATEGORIAS_SIN_PERSONALIZACION.has(nombre);
+};
 
 // Pestañas del menú derivadas de la base de datos: solo categorías que tienen al
 // menos un producto disponible, en el orden definido en la tabla Categoria.
@@ -48,11 +54,10 @@ export function useMenuCategories(productos: Producto[]) {
     const orden = new Map(
       categorias.filter((c) => c.tipo === "PRODUCTO").map((c) => [c.nombre, c.orden ?? 0]),
     );
-    return [...conProductos].sort((a, b) => {
-      if (a === CATEGORIA_EXTRAS) return 1;
-      if (b === CATEGORIA_EXTRAS) return -1;
-      return (orden.get(a) ?? 999) - (orden.get(b) ?? 999) || a.localeCompare(b);
-    });
+    // El orden lo decide la jefa en "Categorías" (Agregados queda al final por defecto)
+    return [...conProductos].sort(
+      (a, b) => (orden.get(a) ?? 1e9) - (orden.get(b) ?? 1e9) || a.localeCompare(b),
+    );
   }, [productos, categorias]);
 
   const activeCategory = tabs.includes(selected) ? selected : (tabs[0] ?? "");

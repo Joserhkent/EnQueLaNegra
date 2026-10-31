@@ -6,7 +6,12 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 interface Carta {
-  categorias: { nombre: string; tipo: CategoriaTipo; orden: number }[];
+  categorias: {
+    nombre: string;
+    tipo: CategoriaTipo;
+    orden: number;
+    aceptaAgregados?: boolean;
+  }[];
   insumos: {
     id: string;
     nombre: string;
@@ -55,7 +60,9 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('🌱 Iniciando carga de datos semilla (Seed) para En que la Negra POS...');
+  console.log(
+    '🌱 Iniciando carga de datos semilla (Seed) para En que la Negra POS...',
+  );
 
   // 1. Limpiar base de datos (orden respeta dependencias FK)
   await prisma.pago.deleteMany();
@@ -110,20 +117,32 @@ async function main() {
     data: { nombre: 'Jefe', descripcion: 'Acceso total al sistema POS' },
   });
   const rolEmpleado = await prisma.rol.create({
-    data: { nombre: 'Empleado', descripcion: 'Mozo/mesonero: mesas, pedidos, pagos y consulta de inventario' },
+    data: {
+      nombre: 'Empleado',
+      descripcion:
+        'Mozo/mesonero: mesas, pedidos, pagos y consulta de inventario',
+    },
   });
 
   // Jefa: VER + CREAR + EDITAR + ELIMINAR en todos los módulos
   await prisma.rolPermiso.createMany({
-    data: [...permisos.values()].map((p) => ({ rolId: rolJefe.id, permisoId: p.id })),
+    data: [...permisos.values()].map((p) => ({
+      rolId: rolJefe.id,
+      permisoId: p.id,
+    })),
   });
 
   // Mesonero: acceso operativo (sin Dashboard ni Historial, inventario solo lectura)
   const permisosEmpleado = [
-    'mesas:VER', 'mesas:CREAR', 'mesas:EDITAR',
+    'mesas:VER',
+    'mesas:CREAR',
+    'mesas:EDITAR',
     'productos:VER',
-    'pedidos:VER', 'pedidos:CREAR', 'pedidos:EDITAR',
-    'pagos:VER', 'pagos:CREAR',
+    'pedidos:VER',
+    'pedidos:CREAR',
+    'pedidos:EDITAR',
+    'pagos:VER',
+    'pagos:CREAR',
     'inventario:VER',
   ];
   await prisma.rolPermiso.createMany({
@@ -159,7 +178,9 @@ async function main() {
     },
   });
 
-  console.log(`👤 Usuarios creados: ${jefeUser.name} (Jefa) y ${empleadoUser.name} (Mesonero)`);
+  console.log(
+    `👤 Usuarios creados: ${jefeUser.name} (Jefa) y ${empleadoUser.name} (Mesonero)`,
+  );
 
   // 6. Mesas del salón (Dine-in)
   const mesasData = [
@@ -212,7 +233,9 @@ async function main() {
       },
     });
   }
-  console.log(`🍽️  ${carta.productos.length} Productos y Recetas (BOM) creados.`);
+  console.log(
+    `🍽️  ${carta.productos.length} Productos y Recetas (BOM) creados.`,
+  );
 
   if (carta.agregados?.length) {
     await prisma.agregado.createMany({ data: carta.agregados });
@@ -223,7 +246,7 @@ async function main() {
   await prisma.cajaSesion.create({
     data: {
       estado: 'ABIERTA',
-      montoInicial: 150.00,
+      montoInicial: 150.0,
       usuarioAperturaId: jefeUser.id,
       usuarioApertura: 'La Negra (Jefa)',
       notasApertura: 'Fondo de sencillo inicial para apertura de turno',

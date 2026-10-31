@@ -12,6 +12,7 @@ import {
   PlusSquare
 } from "lucide-react";
 
+import CategoriasModal from "../components/CategoriasModal";
 import { usePosStore, type ProductoPayload } from "../store/usePosStore";
 import ErrorBoundary from "../components/ErrorBoundary";
 import RecetaEditor from "../components/carta/RecetaEditor";
@@ -146,6 +147,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
   // Modal nueva categoría
   const [isCategoriaModalOpen, setIsCategoriaModalOpen] = useState(false);
   const [nuevaCategoria, setNuevaCategoria] = useState("");
+  const [isGestionCategoriasOpen, setIsGestionCategoriasOpen] = useState(false);
 
   const handleCreateCategoria = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -356,12 +358,12 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           </div>
           {isJefe && (
             <button
-              onClick={() => setIsCategoriaModalOpen(true)}
+              onClick={() => setIsGestionCategoriasOpen(true)}
               className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20 hover:bg-amber-500/20 transition shrink-0"
-              title="Crear nueva categoría"
+              title="Crear, renombrar, ordenar o borrar categorías"
             >
               <Tags className="w-3.5 h-3.5" />
-              Nueva categoría
+              Categorías
             </button>
           )}
         </div>
@@ -805,6 +807,14 @@ export function ProductosPageContent(props?: ProductosPageProps) {
             </form>
           </div>
         </div>
+      )}
+
+      {isGestionCategoriasOpen && (
+        <CategoriasModal
+          tipo="PRODUCTO"
+          onClose={() => setIsGestionCategoriasOpen(false)}
+          onCreada={setSelectedCategory}
+        />
       )}
 
       {/* NUEVA CATEGORIA MODAL */}

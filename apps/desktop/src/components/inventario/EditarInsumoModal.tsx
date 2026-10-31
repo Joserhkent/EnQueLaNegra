@@ -21,12 +21,16 @@ type Props = {
 const aTexto = (n: number, decimales = 4) => (n ? String(Number(n.toFixed(decimales))) : "");
 
 /**
- * Ajustes del insumo (solo jefa): cómo se compra (presentación), el mínimo y el
+ * Ajustes del insumo (solo jefa): nombre, categoría, cómo se compra (presentación), el mínimo y el
  * costo. Todo se escribe en la unidad cómoda y se guarda en la del sistema, que
  * es la que usan las recetas.
  */
 export default function EditarInsumoModal({ insumo, onClose, onGuardado }: Props) {
-  const { updateInsumo } = usePosStore();
+  const { updateInsumo, categorias } = usePosStore();
+  const categoriasInsumo = categorias.filter((c) => c.tipo === "INSUMO");
+  const categoriaInicial = categoriasInsumo.find((c) => c.nombre === insumo.categoria)?.id ?? "";
+  const [nombre, setNombre] = useState(insumo.nombre);
+  const [categoriaId, setCategoriaId] = useState(categoriaInicial);
   const claveInicial = opcionPreferida(insumo);
   const factorInicial = factorDe(insumo, claveInicial);
 
@@ -65,6 +69,10 @@ export default function EditarInsumoModal({ insumo, onClose, onGuardado }: Props
   const siguienteCosto = opciones[(opciones.indexOf(costoOpcion) + 1) % opciones.length];
 
   const guardar = async () => {
+    if (!nombre.trim()) {
+      setError("El insumo necesita un nombre.");
+      return;
+    }
     if (presNombre.trim() && !traeBase) {
       setError(`Escribe cuánto trae 1 ${presNombre.trim()}.`);
       return;
@@ -80,6 +88,8 @@ export default function EditarInsumoModal({ insumo, onClose, onGuardado }: Props
     setGuardando(true);
     setError(null);
     const fallo = await updateInsumo(insumo.id, {
+      ...(nombre.trim() !== insumo.nombre ? { nombre: nombre.trim() } : {}),
+      ...(categoriaId && categoriaId !== categoriaInicial ? { categoriaId } : {}),
       presentacionNombre: borrador.presentacionNombre,
       presentacionCantidad: borrador.presentacionCantidad,
       ...(minTocado ? { stockMinimo: minimo * factorDe(borrador, minClave) } : {}),
@@ -90,7 +100,7 @@ export default function EditarInsumoModal({ insumo, onClose, onGuardado }: Props
       setError(fallo);
       return;
     }
-    onGuardado(`${insumo.nombre} actualizado.`);
+    onGuardado(`${nombre.trim()} actualizado.`);
   };
 
   return (
@@ -100,7 +110,7 @@ export default function EditarInsumoModal({ insumo, onClose, onGuardado }: Props
           <div className="min-w-0">
             <h3 className="font-bold text-base text-slate-900 truncate">{insumo.nombre}</h3>
             <p className="text-xs text-slate-500">
-              Las recetas siguen en {insumo.unidadMedida}. Esto solo cambia cómo se compra y se cuenta.
+              Las recetas siguen en {insumo.unidadMedida}. La presentación solo cambia cómo se compra y se cuenta.
             </p>
           </div>
           <button type="button" onClick={onClose} className="p-2 rounded-md hover:bg-slate-100 text-slate-500" aria-label="Cerrar">
@@ -109,6 +119,34 @@ export default function EditarInsumoModal({ insumo, onClose, onGuardado }: Props
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <label className="space-y-1">
+              <span className="block text-[11px] font-bold text-slate-600">Nombre</span>
+              <input
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                maxLength={80}
+                className="w-full px-2.5 py-2 border border-slate-300 rounded-md text-sm font-semibold text-slate-900 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="block text-[11px] font-bold text-slate-600">Categoría</span>
+              <select
+                value={categoriaId}
+                onChange={(e) => setCategoriaId(e.target.value)}
+                className="w-full px-2.5 py-2 border border-slate-300 rounded-md text-sm font-semibold text-slate-900 bg-white outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+              >
+                {!categoriaInicial && <option value="">{insumo.categoria || "Sin categoría"}</option>}
+                {categoriasInsumo.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
           <fieldset className="space-y-2">
             <legend className="text-xs font-bold text-slate-700">Cómo se compra (opcional)</legend>
             <p className="text-[11px] text-slate-500">

@@ -1,139 +1,166 @@
 {
   "categorias": [
     {
-      "nombre": "Hamburguesas",
-      "tipo": "PRODUCTO",
-      "orden": 0
-    },
-    {
-      "nombre": "Arepas",
-      "tipo": "PRODUCTO",
-      "orden": 1
-    },
-    {
-      "nombre": "Empanadas",
-      "tipo": "PRODUCTO",
-      "orden": 1
-    },
-    {
-      "nombre": "Cachapas",
-      "tipo": "PRODUCTO",
-      "orden": 2
-    },
-    {
-      "nombre": "Patacones",
-      "tipo": "PRODUCTO",
-      "orden": 3
-    },
-    {
-      "nombre": "Pepitos",
-      "tipo": "PRODUCTO",
-      "orden": 4
-    },
-    {
-      "nombre": "Shawarmas",
-      "tipo": "PRODUCTO",
-      "orden": 5
-    },
-    {
-      "nombre": "Perros calientes",
-      "tipo": "PRODUCTO",
-      "orden": 6
-    },
-    {
-      "nombre": "Acompañamientos",
-      "tipo": "PRODUCTO",
-      "orden": 7
-    },
-    {
-      "nombre": "Agregados",
-      "tipo": "PRODUCTO",
-      "orden": 7
-    },
-    {
-      "nombre": "Pasteles",
-      "tipo": "PRODUCTO",
-      "orden": 9
-    },
-    {
-      "nombre": "Sábados de comida criolla",
-      "tipo": "PRODUCTO",
-      "orden": 10
-    },
-    {
-      "nombre": "Domingos de sopas",
-      "tipo": "PRODUCTO",
-      "orden": 11
-    },
-    {
-      "nombre": "Refrescos",
-      "tipo": "PRODUCTO",
-      "orden": 12
-    },
-    {
-      "nombre": "Jugos",
-      "tipo": "PRODUCTO",
-      "orden": 13
-    },
-    {
-      "nombre": "Batidos",
-      "tipo": "PRODUCTO",
-      "orden": 14
-    },
-    {
-      "nombre": "Bebidas en lata",
-      "tipo": "PRODUCTO",
-      "orden": 15
-    },
-    {
-      "nombre": "Gaseosas y otras bebidas",
-      "tipo": "PRODUCTO",
-      "orden": 16
-    },
-    {
       "nombre": "Panes y Masas",
       "tipo": "INSUMO",
-      "orden": 0
+      "orden": 0,
+      "aceptaAgregados": true
     },
     {
       "nombre": "Carnes y Proteínas",
       "tipo": "INSUMO",
-      "orden": 1
+      "orden": 1,
+      "aceptaAgregados": true
     },
     {
       "nombre": "Abarrotes para bebidas",
       "tipo": "INSUMO",
-      "orden": 2
+      "orden": 2,
+      "aceptaAgregados": true
     },
     {
       "nombre": "Quesos y Lácteos",
       "tipo": "INSUMO",
-      "orden": 2
+      "orden": 3,
+      "aceptaAgregados": true
     },
     {
       "nombre": "Verduras y Legumbres",
       "tipo": "INSUMO",
-      "orden": 3
+      "orden": 4,
+      "aceptaAgregados": true
     },
     {
       "nombre": "Frutas",
       "tipo": "INSUMO",
-      "orden": 4
+      "orden": 5,
+      "aceptaAgregados": true
     },
     {
       "nombre": "Papas",
       "tipo": "INSUMO",
-      "orden": 4
+      "orden": 6,
+      "aceptaAgregados": true
     },
     {
       "nombre": "Bebidas envasadas",
       "tipo": "INSUMO",
-      "orden": 5
+      "orden": 7,
+      "aceptaAgregados": true
     },
     {
       "nombre": "Cremas",
       "tipo": "INSUMO",
-      "orden": 6
+      "orden": 8,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Hamburguesas",
+      "tipo": "PRODUCTO",
+      "orden": 0,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Arepas",
+      "tipo": "PRODUCTO",
+      "orden": 1,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Empanadas",
+      "tipo": "PRODUCTO",
+      "orden": 2,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Cachapas",
+      "tipo": "PRODUCTO",
+      "orden": 3,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Patacones",
+      "tipo": "PRODUCTO",
+      "orden": 4,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Pepitos",
+      "tipo": "PRODUCTO",
+      "orden": 5,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Shawarmas",
+      "tipo": "PRODUCTO",
+      "orden": 6,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Perros calientes",
+      "tipo": "PRODUCTO",
+      "orden": 7,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Acompañamientos",
+      "tipo": "PRODUCTO",
+      "orden": 8,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Pasteles",
+      "tipo": "PRODUCTO",
+      "orden": 9,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Sábados de comida criolla",
+      "tipo": "PRODUCTO",
+      "orden": 10,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Domingos de sopas",
+      "tipo": "PRODUCTO",
+      "orden": 11,
+      "aceptaAgregados": true
+    },
+    {
+      "nombre": "Refrescos",
+      "tipo": "PRODUCTO",
+      "orden": 12,
+      "aceptaAgregados": false
+    },
+    {
+      "nombre": "Jugos",
+      "tipo": "PRODUCTO",
+      "orden": 13,
+      "aceptaAgregados": false
+    },
+    {
+      "nombre": "Batidos",
+      "tipo": "PRODUCTO",
+      "orden": 14,
+      "aceptaAgregados": false
+    },
+    {
+      "nombre": "Bebidas en lata",
+      "tipo": "PRODUCTO",
+      "orden": 15,
+      "aceptaAgregados": false
+    },
+    {
+      "nombre": "Gaseosas y otras bebidas",
+      "tipo": "PRODUCTO",
+      "orden": 16,
+      "aceptaAgregados": false
+    },
+    {
+      "nombre": "Agregados",
+      "tipo": "PRODUCTO",
+      "orden": 17,
+      "aceptaAgregados": false
     }
   ],
   "insumos": [

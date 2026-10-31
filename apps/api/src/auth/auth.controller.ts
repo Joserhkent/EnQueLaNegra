@@ -10,6 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CambiarPasswordDto, RestablecerPasswordDto } from './dto/password.dto';
+import { ActualizarUsuarioDto, CrearUsuarioDto } from './dto/usuario.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { JefeGuard } from './jefe.guard';
 import { GetUser } from './get-user.decorator';
@@ -42,6 +43,28 @@ export class AuthController {
   @Get('usuarios')
   listarUsuarios() {
     return this.authService.listarUsuarios();
+  }
+
+  @UseGuards(JwtAuthGuard, JefeGuard)
+  @Get('roles')
+  listarRoles() {
+    return this.authService.listarRoles();
+  }
+
+  @UseGuards(JwtAuthGuard, JefeGuard)
+  @Post('usuarios')
+  crearUsuario(@Body() dto: CrearUsuarioDto) {
+    return this.authService.crearUsuario(dto);
+  }
+
+  @UseGuards(JwtAuthGuard, JefeGuard)
+  @Patch('usuarios/:id')
+  actualizarUsuario(
+    @Param('id') id: string,
+    @Body() dto: ActualizarUsuarioDto,
+    @GetUser('id') actorId: string,
+  ) {
+    return this.authService.actualizarUsuario(id, dto, actorId);
   }
 
   @UseGuards(JwtAuthGuard, JefeGuard)

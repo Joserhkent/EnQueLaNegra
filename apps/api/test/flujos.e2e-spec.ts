@@ -528,4 +528,191 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     await login('mesonero2026').expect(401);
     await login('restablecida2026').expect(201);
   });
+
+  it('equipo: el Jefe crea, edita y desactiva usuarios con protecciones', async () => {
+    await api('get', '/auth/roles', empleado).expect(403);
+    const { body: roles } = await api('get', '/auth/roles', jefe).expect(200);
+    const rolJefe = roles.find((r: { nombre: string }) => r.nombre === 'Jefe');
+    const rolEmp = roles.find(
+      (r: { nombre: string }) => r.nombre === 'Empleado',
+    );
+    const nuevo = {
+      name: 'María Pérez',
+      username: ' Maria.P ',
+      password: 'maria2026',
+      rolId: rolEmp.id,
+      turn: 'Noche',
+    };
+    await api('post', '/auth/usuarios', empleado, nuevo).expect(403);
+    await api('post', '/auth/usuarios', jefe, {
+      ...nuevo,
+      password: 'corta',
+    }).expect(400);
+    await api('post', '/auth/usuarios', jefe, {
+      ...nuevo,
+      username: 'con espacio',
+    }).expect(400);
+    await api('post', '/auth/usuarios', jefe, {
+      ...nuevo,
+      rolId: 'no-existe',
+    }).expect(400);
+    const { body: creado } = await api(
+      'post',
+      '/auth/usuarios',
+      jefe,
+      nuevo,
+    ).expect(201);
+    // Se guarda en minúsculas y no se repite (ni cambiando mayúsculas)
+    await api('post', '/auth/usuarios', jefe, {
+      ...nuevo,
+      username: 'MARIA.P',
+    }).expect(400);
+    const entra = await api('post', '/auth/login', undefined, {
+      username: 'MARIA.P',
+      password: 'maria2026',
+    }).expect(201);
+    expect(entra.body.user.role).toBe('empleado');
+    const tokenMaria = entra.body.accessToken;
+
+    // Editar datos y rol; el usuario no puede chocar con otro
+    await api('patch', `/auth/usuarios/${creado.id}`, jefe, {
+      username: 'empleado',
+    }).expect(400);
+    await api('patch', `/auth/usuarios/${creado.id}`, jefe, {
+      name: 'María P.',
+      rolId: rolJefe.id,
+    }).expect(200);
+    const { body: lista } = await api('get', '/auth/usuarios', jefe).expect(
+      200,
+    );
+    const maria = lista.find((u: { id: string }) => u.id === creado.id);
+    expect(maria).toMatchObject({
+      name: 'María P.',
+      username: 'maria.p',
+      role: 'jefe',
+      turn: 'Noche',
+      active: true,
+    });
+
+    // Desactivar corta la sesión al instante y no deja volver a entrar
+    await api('patch', `/auth/usuarios/${creado.id}`, jefe, {
+      active: false,
+    }).expect(200);
+    await api('get', '/auth/me', tokenMaria).expect(401);
+    await api('post', '/auth/login', undefined, {
+      username: 'maria.p',
+      password: 'maria2026',
+    }).expect(401);
+
+    // Nadie se desactiva a sí mismo ni deja el sistema sin Jefe activo
+    const admin = lista.find(
+      (u: { username: string }) => u.username === 'admin',
+    );
+    await api('patch', `/auth/usuarios/${admin.id}`, jefe, {
+      active: false,
+    }).expect(400);
+    await api('patch', `/auth/usuarios/${admin.id}`, jefe, {
+      rolId: rolEmp.id,
+    }).expect(400);
+    // Con otro Jefe activo sí se puede cambiar el rol del primero (y se revierte)
+    await api('patch', `/auth/usuarios/${creado.id}`, jefe, {
+      active: true,
+    }).expect(200);
+    await api('patch', `/auth/usuarios/${admin.id}`, jefe, {
+      rolId: rolEmp.id,
+    }).expect(200);
+    await q(`update "User" set "rolId"=$1 where id=$2`, [rolJefe.id, admin.id]);
+    await q(`update "User" set active=false where id=$1`, [creado.id]);
+  });
+
+  it('categorías: renombrar, ordenar y marcar si llevan agregados', async () => {
+    const { body: todas } = await api('get', '/categorias', jefe).expect(200);
+    const carta = todas.filter((c: { tipo: string }) => c.tipo === 'PRODUCTO');
+    // Agregados va al final y las bebidas no llevan agregados
+    expect(carta[carta.length - 1].nombre).toBe('Agregados');
+    expect(
+      carta.find((c: { nombre: string }) => c.nombre === 'Jugos')
+        ?.aceptaAgregados,
+    ).toBe(false);
+
+    const [a, b] = carta;
+    await api('patch', `/categorias/${a.id}`, empleado, {
+      nombre: 'X',
+    }).expect(403);
+    await api('patch', `/categorias/${a.id}`, jefe, {
+      nombre: b.nombre,
+    }).expect(400);
+    await api('patch', `/categorias/${a.id}`, jefe, {
+      nombre: `${a.nombre} renombrada`,
+      aceptaAgregados: false,
+    }).expect(200);
+    const [{ n }] = await q<{ n: string }>(
+      `select c.nombre n from "Producto" p join "Categoria" c on c.id=p."categoriaId" where c.id=$1 limit 1`,
+      [a.id],
+    );
+    expect(n).toBe(`${a.nombre} renombrada`);
+
+    // El orden debe traer todas las categorías del tipo, sin repetir
+    const ids = carta.map((c: { id: string }) => c.id);
+    await api('patch', '/categorias/orden', jefe, {
+      tipo: 'PRODUCTO',
+      ids: ids.slice(1),
+    }).expect(400);
+    const invertido = [ids[1], ids[0], ...ids.slice(2)];
+    const { body: ordenadas } = await api('patch', '/categorias/orden', jefe, {
+      tipo: 'PRODUCTO',
+      ids: invertido,
+    }).expect(200);
+    expect(ordenadas.map((c: { id: string }) => c.id)).toEqual(invertido);
+
+    // Una nueva queda al final; se revierte lo de esta prueba
+    const { body: nueva } = await api('post', '/categorias', jefe, {
+      nombre: 'Postres prueba',
+      tipo: 'PRODUCTO',
+    }).expect(201);
+    const { body: luego } = await api('get', '/categorias?tipo=PRODUCTO', jefe);
+    expect(luego[luego.length - 1].id).toBe(nueva.id);
+    await api('delete', `/categorias/${nueva.id}`, jefe).expect(200);
+    await api('patch', `/categorias/${a.id}`, jefe, {
+      nombre: a.nombre,
+      aceptaAgregados: a.aceptaAgregados,
+    }).expect(200);
+    await api('patch', '/categorias/orden', jefe, {
+      tipo: 'PRODUCTO',
+      ids,
+    }).expect(200);
+  });
+
+  it('insumos: se cambia nombre y categoría solo a una de inventario', async () => {
+    const { body: todas } = await api('get', '/categorias', jefe).expect(200);
+    const deInsumo = todas.filter((c: { tipo: string }) => c.tipo === 'INSUMO');
+    const deCarta = todas.find((c: { tipo: string }) => c.tipo === 'PRODUCTO');
+    const [ins] = await q<{ id: string; nombre: string; categoriaId: string }>(
+      'select id,nombre,"categoriaId" from "Insumo" order by id limit 1',
+    );
+    const otra = deInsumo.find((c: { id: string }) => c.id !== ins.categoriaId);
+    await api('patch', `/insumos/${ins.id}`, empleado, {
+      categoriaId: otra.id,
+    }).expect(403);
+    await api('patch', `/insumos/${ins.id}`, jefe, {
+      categoriaId: deCarta.id,
+    }).expect(400);
+    await api('patch', `/insumos/${ins.id}`, jefe, {
+      categoriaId: otra.id,
+      nombre: `${ins.nombre} (prueba)`,
+    }).expect(200);
+    const [luego] = await q<{ nombre: string; categoriaId: string }>(
+      'select nombre,"categoriaId" from "Insumo" where id=$1',
+      [ins.id],
+    );
+    expect(luego).toEqual({
+      nombre: `${ins.nombre} (prueba)`,
+      categoriaId: otra.id,
+    });
+    await q('update "Insumo" set nombre=$1,"categoriaId"=$2 where id=$3', [
+      ins.nombre,
+      ins.categoriaId,
+      ins.id,
+    ]);
+  });
 });

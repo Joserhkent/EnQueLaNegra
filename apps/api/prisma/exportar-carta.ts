@@ -12,17 +12,32 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const [categorias, insumos, productos, agregados] = await Promise.all([
-    prisma.categoria.findMany({ orderBy: [{ tipo: 'asc' }, { orden: 'asc' }, { nombre: 'asc' }] }),
-    prisma.insumo.findMany({ include: { categoria: true }, orderBy: { id: 'asc' } }),
+    prisma.categoria.findMany({
+      orderBy: [{ tipo: 'asc' }, { orden: 'asc' }, { nombre: 'asc' }],
+    }),
+    prisma.insumo.findMany({
+      include: { categoria: true },
+      orderBy: { id: 'asc' },
+    }),
     prisma.producto.findMany({
-      include: { categoria: true, recetaItems: { orderBy: { insumoId: 'asc' } } },
+      include: {
+        categoria: true,
+        recetaItems: { orderBy: { insumoId: 'asc' } },
+      },
       orderBy: { sku: 'asc' },
     }),
-    prisma.agregado.findMany({ orderBy: [{ orden: 'asc' }, { nombre: 'asc' }] }),
+    prisma.agregado.findMany({
+      orderBy: [{ orden: 'asc' }, { nombre: 'asc' }],
+    }),
   ]);
 
   const carta = {
-    categorias: categorias.map((c) => ({ nombre: c.nombre, tipo: c.tipo, orden: c.orden })),
+    categorias: categorias.map((c) => ({
+      nombre: c.nombre,
+      tipo: c.tipo,
+      orden: c.orden,
+      aceptaAgregados: c.aceptaAgregados,
+    })),
     insumos: insumos.map((i) => ({
       id: i.id,
       nombre: i.nombre,
@@ -44,7 +59,10 @@ async function main() {
       isPopular: p.isPopular,
       descripcion: p.descripcion,
       iconoEmoji: p.iconoEmoji,
-      receta: p.recetaItems.map((r) => ({ insumoId: r.insumoId, cantidad: r.cantidadRequerida })),
+      receta: p.recetaItems.map((r) => ({
+        insumoId: r.insumoId,
+        cantidad: r.cantidadRequerida,
+      })),
     })),
     agregados: agregados.map((a) => ({
       nombre: a.nombre,

@@ -46,6 +46,9 @@ export interface Categoria {
   nombre: string;
   tipo: "PRODUCTO" | "INSUMO";
   orden?: number;
+  // false en bebidas y porciones: sus productos no llevan agregados ni notas por plato
+  aceptaAgregados?: boolean;
+  _count?: { productos?: number; insumos?: number };
 }
 
 // Lo que se envía al crear/editar un producto: la receta va con su cantidad por insumo.
@@ -246,6 +249,9 @@ interface PosStore {
   cambiarPassword: (actual: string, nueva: string) => Promise<string | null>;
   listarUsuarios: () => Promise<UsuarioSistema[]>;
   restablecerPassword: (userId: string, nueva: string) => Promise<string | null>;
+  listarRoles: () => Promise<RolSistema[]>;
+  // Crea (id null) o edita un usuario. Devuelve null o el error.
+  guardarUsuario: (id: string | null, datos: UsuarioDatos) => Promise<string | null>;
 
   addStockMovement: (
     insumoId: string,
@@ -270,6 +276,8 @@ interface PosStore {
       costoUnitario?: number;
       presentacionNombre?: string | null;
       presentacionCantidad?: number | null;
+      nombre?: string;
+      categoriaId?: string;
     }
   ) => Promise<string | null>;
 
@@ -287,6 +295,9 @@ interface PosStore {
   borrarAgregado: (id: string) => Promise<string | null>;
   addCategoria: (nombre: string, tipo: "PRODUCTO" | "INSUMO") => Promise<boolean>;
   deleteCategoria: (id: string) => Promise<boolean>;
+  // Devuelven null o el mensaje de error
+  updateCategoria: (id: string, cambios: { nombre?: string; aceptaAgregados?: boolean }) => Promise<string | null>;
+  ordenarCategorias: (tipo: "PRODUCTO" | "INSUMO", ids: string[]) => Promise<string | null>;
 
   addInsumo: (data: {
     nombre: string;
@@ -353,7 +364,25 @@ export interface UsuarioSistema {
   username: string;
   active: boolean;
   role: string;
+  rolNombre?: string;
+  rolId?: string;
+  turn?: string | null;
 }
+
+export interface RolSistema {
+  id: string;
+  nombre: string;
+  descripcion?: string | null;
+}
+
+export type UsuarioDatos = {
+  name?: string;
+  username?: string;
+  password?: string;
+  rolId?: string;
+  turn?: string;
+  active?: boolean;
+};
 
 // 🔧 El backend (Prisma) guarda el status en MAYÚSCULAS (PREPARACION, LISTO, ENTREGADO, CANCELADO).
 // El frontend trabaja en minúsculas. Estas dos funciones traducen en cada dirección.
@@ -903,6 +932,28 @@ export const usePosStore = create<PosStore>((set, get) => ({
     }
   },
 
+  listarRoles: async () => {
+    try {
+      const res = await authFetch(`${API_URL}/auth/roles`, { headers: getAuthHeaders() });
+      return res.ok ? await res.json() : [];
+    } catch {
+      return [];
+    }
+  },
+
+  guardarUsuario: async (id, datos) => {
+    try {
+      const res = await authFetch(id ? `${API_URL}/auth/usuarios/${id}` : `${API_URL}/auth/usuarios`, {
+        method: id ? "PATCH" : "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(datos),
+      });
+      return res.ok ? null : await mensajeError(res, "No se pudo guardar el usuario");
+    } catch {
+      return "No se pudo conectar con el servidor";
+    }
+  },
+
   addStockMovement: async (insumoId, cantidad, tipo, motivo, _usuario = "Administrador") => {
     try {
       const res = await authFetch(`${API_URL}/insumos/${insumoId}/movimiento`, {
@@ -1091,6 +1142,47 @@ export const usePosStore = create<PosStore>((set, get) => ({
       console.error("Error al crear categoría:", error);
       alert("No se pudo crear la categoría");
       return false;
+    }
+  },
+
+  updateCategoria: async (id, cambios) => {
+    try {
+      const res = await authFetch(`${API_URL}/categorias/${id}`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(cambios),
+      });
+      if (!res.ok) return await mensajeError(res, "No se pudo guardar la categoría");
+      // Un nombre nuevo cambia lo que muestran productos e insumos
+      await Promise.all([get().fetchCategorias(), get().fetchProductos(), get().fetchInsumos()]);
+      return null;
+    } catch {
+      return "No se pudo conectar con el servidor";
+    }
+  },
+
+  ordenarCategorias: async (tipo, ids) => {
+    // Se ve al instante; si el servidor falla se recarga el orden real
+    const porId = new Map(ids.map((id, i) => [id, i]));
+    set((s) => ({
+      categorias: s.categorias
+        .map((c) => (porId.has(c.id) ? { ...c, orden: porId.get(c.id) } : c))
+        .sort((a, b) => a.tipo.localeCompare(b.tipo) || (a.orden ?? 0) - (b.orden ?? 0)),
+    }));
+    try {
+      const res = await authFetch(`${API_URL}/categorias/orden`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ tipo, ids }),
+      });
+      if (!res.ok) {
+        await get().fetchCategorias();
+        return await mensajeError(res, "No se pudo cambiar el orden");
+      }
+      return null;
+    } catch {
+      await get().fetchCategorias();
+      return "No se pudo conectar con el servidor";
     }
   },
 

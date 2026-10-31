@@ -44,6 +44,7 @@ describe('AuthService (White-box & Integration Tests)', () => {
           useValue: {
             user: {
               findUnique: jest.fn(),
+              findFirst: jest.fn(),
               update: jest.fn(),
             },
           },
@@ -64,7 +65,7 @@ describe('AuthService (White-box & Integration Tests)', () => {
   describe('Black-box & White-box Auth Validation', () => {
     it('1. Should authenticate Jefe successfully with correct password "123456"', async () => {
       jest
-        .spyOn(prismaService.user, 'findUnique')
+        .spyOn(prismaService.user, 'findFirst')
         .mockResolvedValue(mockUserAdmin as any);
 
       const result = await authService.login({
@@ -84,7 +85,7 @@ describe('AuthService (White-box & Integration Tests)', () => {
 
     it('2. Should authenticate Empleado successfully with correct password "123456"', async () => {
       jest
-        .spyOn(prismaService.user, 'findUnique')
+        .spyOn(prismaService.user, 'findFirst')
         .mockResolvedValue(mockUserEmpleado as any);
 
       const result = await authService.login({
@@ -104,7 +105,7 @@ describe('AuthService (White-box & Integration Tests)', () => {
 
     it('3. Should REJECT login with incorrect password for Empleado', async () => {
       jest
-        .spyOn(prismaService.user, 'findUnique')
+        .spyOn(prismaService.user, 'findFirst')
         .mockResolvedValue(mockUserEmpleado as any);
 
       await expect(
@@ -114,7 +115,7 @@ describe('AuthService (White-box & Integration Tests)', () => {
 
     it('4. Should REJECT login with incorrect password for Jefe', async () => {
       jest
-        .spyOn(prismaService.user, 'findUnique')
+        .spyOn(prismaService.user, 'findFirst')
         .mockResolvedValue(mockUserAdmin as any);
 
       await expect(
@@ -123,7 +124,7 @@ describe('AuthService (White-box & Integration Tests)', () => {
     });
 
     it('5. Should REJECT non-existent username', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue(null);
 
       await expect(
         authService.login({ username: 'unknownuser', password: '123456' }),
@@ -131,7 +132,7 @@ describe('AuthService (White-box & Integration Tests)', () => {
     });
 
     it('6. Should REJECT inactive user accounts', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue({
+      jest.spyOn(prismaService.user, 'findFirst').mockResolvedValue({
         ...mockUserEmpleado,
         active: false,
       } as any);

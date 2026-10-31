@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import type { AuthenticatedRequest } from './jwt-payload.interface';
 
-const ROLES_ADMIN = ['jefe', 'admin', 'administrador'];
+export const ROLES_ADMIN = ['jefe', 'admin', 'administrador'];
 
 // Debe usarse después de JwtAuthGuard (necesita request.user).
 @Injectable()

@@ -183,7 +183,7 @@ export default function Sidebar({
             setIsMobileOpen(false);
             setIsCuentaOpen(true);
           }}
-          title="Mi cuenta: cambiar contraseña"
+          title={isJefe ? "Mi cuenta y equipo: contraseñas y usuarios" : "Mi cuenta: cambiar contraseña"}
           className="w-full text-left bg-slate-800/60 border border-slate-700/50 hover:border-amber-500/60 hover:bg-slate-800 p-3.5 rounded-lg flex items-center gap-3 transition"
         >
           <div
@@ -215,7 +215,7 @@ export default function Sidebar({
               </span>
             </div>
             <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-              {currentUser?.turn || "Lun - Dom"}
+              {isJefe ? "Mi cuenta y equipo" : currentUser?.turn || "Mi cuenta"}
             </p>
           </div>
           <KeyRound className="w-4 h-4 text-slate-500 shrink-0" />

@@ -17,6 +17,12 @@ export class UpdateInsumoDto {
   @IsOptional()
   nombre?: string;
 
+  // Mover a otra categoría de inventario
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  categoriaId?: string;
+
   @IsNumber()
   @Min(0)
   @IsOptional()
