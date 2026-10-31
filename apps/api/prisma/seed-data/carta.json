@@ -153,35 +153,35 @@
       "categoria": "Verduras y Legumbres",
       "unidadMedida": "unidad",
       "stockActual": 108,
-      "stockMinimo": 15,
-      "costoUnitario": 0.8
+      "stockMinimo": 6,
+      "costoUnitario": 4
     },
     {
       "id": "arroz",
       "nombre": "Arroz Blanco",
       "categoria": "Panes y Masas",
-      "unidadMedida": "porción",
-      "stockActual": 40,
-      "stockMinimo": 20,
-      "costoUnitario": 0.4
+      "unidadMedida": "g",
+      "stockActual": 8000,
+      "stockMinimo": 2000,
+      "costoUnitario": 0.04
     },
     {
       "id": "atun",
       "nombre": "Atún en Lata",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 35,
-      "stockMinimo": 15,
-      "costoUnitario": 1
+      "unidadMedida": "g",
+      "stockActual": 5250,
+      "stockMinimo": 0,
+      "costoUnitario": 0.0467
     },
     {
       "id": "caraotas_negras",
       "nombre": "Caraotas Negras Refritas",
       "categoria": "Verduras y Legumbres",
-      "unidadMedida": "porción",
-      "stockActual": 40,
-      "stockMinimo": 20,
-      "costoUnitario": 0.6
+      "unidadMedida": "g",
+      "stockActual": 8000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.04
     },
     {
       "id": "carne_bolonesa",
@@ -189,44 +189,44 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "porción",
       "stockActual": 20,
-      "stockMinimo": 10,
-      "costoUnitario": 1.5
+      "stockMinimo": 0,
+      "costoUnitario": 0
     },
     {
       "id": "carne_hamburguesa",
       "nombre": "Carne de Hamburguesa (patty)",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "unidad",
-      "stockActual": 40,
-      "stockMinimo": 25,
-      "costoUnitario": 2
+      "stockActual": 39,
+      "stockMinimo": 20,
+      "costoUnitario": 8
     },
     {
       "id": "carne_mechada",
       "nombre": "Carne Mechada",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 35,
-      "stockMinimo": 20,
-      "costoUnitario": 2.2
+      "unidadMedida": "g",
+      "stockActual": 5250,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.0533
     },
     {
       "id": "carne_molida",
       "nombre": "Carne Molida",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 30,
-      "stockMinimo": 15,
-      "costoUnitario": 2
+      "unidadMedida": "g",
+      "stockActual": 4500,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.0533
     },
     {
       "id": "carne_shawarma",
       "nombre": "Carne de Shawarma",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 25,
-      "stockMinimo": 15,
-      "costoUnitario": 2.5
+      "unidadMedida": "g",
+      "stockActual": 3750,
+      "stockMinimo": 0,
+      "costoUnitario": 0.08
     },
     {
       "id": "carta_beb_agua",
@@ -234,8 +234,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 24,
-      "stockMinimo": 12,
-      "costoUnitario": 1
+      "stockMinimo": 10,
+      "costoUnitario": 5
     },
     {
       "id": "carta_beb_coca_1500",
@@ -243,8 +243,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 12,
-      "stockMinimo": 4,
-      "costoUnitario": 5.5
+      "stockMinimo": 10,
+      "costoUnitario": 12
     },
     {
       "id": "carta_beb_coca_500",
@@ -252,8 +252,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 18,
-      "stockMinimo": 6,
-      "costoUnitario": 2.2
+      "stockMinimo": 10,
+      "costoUnitario": 5
     },
     {
       "id": "carta_beb_coca_personal",
@@ -261,8 +261,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 36,
-      "stockMinimo": 12,
-      "costoUnitario": 1.5
+      "stockMinimo": 5,
+      "costoUnitario": 0
     },
     {
       "id": "carta_beb_fanta",
@@ -270,8 +270,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 24,
-      "stockMinimo": 12,
-      "costoUnitario": 1.5
+      "stockMinimo": 10,
+      "costoUnitario": 5
     },
     {
       "id": "carta_beb_frescolita",
@@ -279,8 +279,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 24,
-      "stockMinimo": 12,
-      "costoUnitario": 2.5
+      "stockMinimo": 10,
+      "costoUnitario": 10
     },
     {
       "id": "carta_beb_inca_1500",
@@ -288,8 +288,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 12,
-      "stockMinimo": 4,
-      "costoUnitario": 5.5
+      "stockMinimo": 10,
+      "costoUnitario": 12
     },
     {
       "id": "carta_beb_inca_500",
@@ -297,8 +297,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 18,
-      "stockMinimo": 6,
-      "costoUnitario": 2.2
+      "stockMinimo": 10,
+      "costoUnitario": 5
     },
     {
       "id": "carta_beb_inca_personal",
@@ -306,8 +306,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 36,
-      "stockMinimo": 12,
-      "costoUnitario": 1.5
+      "stockMinimo": 5,
+      "costoUnitario": 0
     },
     {
       "id": "carta_beb_malta",
@@ -315,8 +315,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 24,
-      "stockMinimo": 12,
-      "costoUnitario": 2.5
+      "stockMinimo": 10,
+      "costoUnitario": 10
     },
     {
       "id": "carta_beb_sporade",
@@ -324,8 +324,8 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 18,
-      "stockMinimo": 6,
-      "costoUnitario": 2
+      "stockMinimo": 10,
+      "costoUnitario": 4
     },
     {
       "id": "carta_beb_sprite",
@@ -333,26 +333,26 @@
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
       "stockActual": 24,
-      "stockMinimo": 12,
-      "costoUnitario": 1.5
+      "stockMinimo": 10,
+      "costoUnitario": 5
     },
     {
       "id": "carta_chorizo",
       "nombre": "Chorizo",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 20,
-      "stockMinimo": 10,
-      "costoUnitario": 1.5
+      "unidadMedida": "tajada",
+      "stockActual": 72,
+      "stockMinimo": 30,
+      "costoUnitario": 0.75
     },
     {
       "id": "carta_diablito",
       "nombre": "Diablito",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 15,
-      "stockMinimo": 6,
-      "costoUnitario": 1.2
+      "unidadMedida": "g",
+      "stockActual": 1800,
+      "stockMinimo": 0,
+      "costoUnitario": 0.1
     },
     {
       "id": "carta_fresa",
@@ -360,8 +360,8 @@
       "categoria": "Frutas",
       "unidadMedida": "g",
       "stockActual": 4000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.012
+      "stockMinimo": 450,
+      "costoUnitario": 8
     },
     {
       "id": "carta_guayaba",
@@ -369,8 +369,8 @@
       "categoria": "Frutas",
       "unidadMedida": "g",
       "stockActual": 3000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.006
+      "stockMinimo": 450,
+      "costoUnitario": 8
     },
     {
       "id": "carta_leche",
@@ -378,17 +378,17 @@
       "categoria": "Quesos y Lácteos",
       "unidadMedida": "ml",
       "stockActual": 6000,
-      "stockMinimo": 2000,
-      "costoUnitario": 0.0045
+      "stockMinimo": 0,
+      "costoUnitario": 5
     },
     {
       "id": "carta_limon",
       "nombre": "Limón",
       "categoria": "Frutas",
-      "unidadMedida": "g",
-      "stockActual": 2000,
-      "stockMinimo": 500,
-      "costoUnitario": 0.005
+      "unidadMedida": "unidad",
+      "stockActual": 90,
+      "stockMinimo": 30,
+      "costoUnitario": 0
     },
     {
       "id": "carta_mango",
@@ -396,17 +396,17 @@
       "categoria": "Frutas",
       "unidadMedida": "g",
       "stockActual": 4000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.006
+      "stockMinimo": 450,
+      "costoUnitario": 8
     },
     {
       "id": "carta_maracuya",
       "nombre": "Maracuyá",
       "categoria": "Frutas",
-      "unidadMedida": "g",
-      "stockActual": 5000,
-      "stockMinimo": 1500,
-      "costoUnitario": 0.008
+      "unidadMedida": "unidad",
+      "stockActual": 30,
+      "stockMinimo": 10,
+      "costoUnitario": 0
     },
     {
       "id": "carta_melon",
@@ -414,8 +414,8 @@
       "categoria": "Frutas",
       "unidadMedida": "g",
       "stockActual": 4000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.003
+      "stockMinimo": 450,
+      "costoUnitario": 8
     },
     {
       "id": "carta_papaya",
@@ -423,17 +423,17 @@
       "categoria": "Frutas",
       "unidadMedida": "g",
       "stockActual": 4000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.003
+      "stockMinimo": 450,
+      "costoUnitario": 8
     },
     {
       "id": "carta_papelon",
       "nombre": "Papelón",
       "categoria": "Abarrotes para bebidas",
-      "unidadMedida": "g",
-      "stockActual": 3000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.008
+      "unidadMedida": "bola",
+      "stockActual": 10,
+      "stockMinimo": 0,
+      "costoUnitario": 0
     },
     {
       "id": "carta_pina",
@@ -441,8 +441,8 @@
       "categoria": "Frutas",
       "unidadMedida": "g",
       "stockActual": 4000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.004
+      "stockMinimo": 450,
+      "costoUnitario": 8
     },
     {
       "id": "carta_salchicha_ahumada",
@@ -450,26 +450,26 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "unidad",
       "stockActual": 30,
-      "stockMinimo": 15,
-      "costoUnitario": 1.2
+      "stockMinimo": 30,
+      "costoUnitario": 4
     },
     {
       "id": "carta_tallarin",
       "nombre": "Tallarín",
       "categoria": "Panes y Masas",
-      "unidadMedida": "porción",
-      "stockActual": 15,
-      "stockMinimo": 8,
-      "costoUnitario": 0.8
+      "unidadMedida": "g",
+      "stockActual": 3750,
+      "stockMinimo": 2000,
+      "costoUnitario": 0.032
     },
     {
       "id": "chicharron",
       "nombre": "Chicharrón",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 20,
-      "stockMinimo": 12,
-      "costoUnitario": 1.3
+      "unidadMedida": "g",
+      "stockActual": 3000,
+      "stockMinimo": 0,
+      "costoUnitario": 0.0667
     },
     {
       "id": "chuleta_cerdo",
@@ -478,25 +478,25 @@
       "unidadMedida": "unidad",
       "stockActual": 15,
       "stockMinimo": 10,
-      "costoUnitario": 3
+      "costoUnitario": 12
     },
     {
       "id": "costillas",
       "nombre": "Costillas de Res",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
+      "unidadMedida": "presa",
       "stockActual": 15,
       "stockMinimo": 10,
-      "costoUnitario": 2.8
+      "costoUnitario": 12
     },
     {
       "id": "crema_aceituna",
       "nombre": "Aceituna",
       "categoria": "Cremas",
-      "unidadMedida": "porción",
-      "stockActual": 40,
-      "stockMinimo": 15,
-      "costoUnitario": 0.4
+      "unidadMedida": "ml",
+      "stockActual": 2000,
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_aji_esp",
@@ -504,8 +504,8 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 2000,
-      "stockMinimo": 500,
-      "costoUnitario": 0.01
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_bbq",
@@ -513,8 +513,8 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 2000,
-      "stockMinimo": 500,
-      "costoUnitario": 0.01
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_golf",
@@ -522,8 +522,8 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 3000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.01
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_huancaina",
@@ -531,26 +531,26 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 2000,
-      "stockMinimo": 500,
-      "costoUnitario": 0.012
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_maiz",
       "nombre": "Maíz",
       "categoria": "Cremas",
-      "unidadMedida": "porción",
-      "stockActual": 60,
-      "stockMinimo": 20,
-      "costoUnitario": 0.3
+      "unidadMedida": "g",
+      "stockActual": 1000,
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_queso",
       "nombre": "Queso",
       "categoria": "Cremas",
-      "unidadMedida": "porción",
-      "stockActual": 40,
-      "stockMinimo": 15,
-      "costoUnitario": 0.5
+      "unidadMedida": "ml",
+      "stockActual": 2000,
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_rocoto",
@@ -558,8 +558,8 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 2000,
-      "stockMinimo": 500,
-      "costoUnitario": 0.01
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_tartara",
@@ -567,17 +567,17 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 2000,
-      "stockMinimo": 500,
-      "costoUnitario": 0.012
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_tocino",
       "nombre": "Tocino",
       "categoria": "Cremas",
-      "unidadMedida": "porción",
-      "stockActual": 40,
-      "stockMinimo": 15,
-      "costoUnitario": 0.5
+      "unidadMedida": "ml",
+      "stockActual": 2000,
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "crema_vinagreta",
@@ -585,35 +585,44 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 2000,
-      "stockMinimo": 500,
-      "costoUnitario": 0.008
+      "stockMinimo": 300,
+      "costoUnitario": 0
+    },
+    {
+      "id": "ensalada_lechuga_tomate_cebolla",
+      "nombre": "Lechuga, tomate y cebolla",
+      "categoria": "Verduras y Legumbres",
+      "unidadMedida": "g",
+      "stockActual": 3000,
+      "stockMinimo": 0,
+      "costoUnitario": 0
     },
     {
       "id": "ensalada_rusa",
       "nombre": "Ensalada Rusa",
       "categoria": "Verduras y Legumbres",
-      "unidadMedida": "porción",
-      "stockActual": 25,
-      "stockMinimo": 15,
-      "costoUnitario": 0.6
+      "unidadMedida": "g",
+      "stockActual": 2500,
+      "stockMinimo": 250,
+      "costoUnitario": 0.05
     },
     {
       "id": "huevo",
       "nombre": "Huevo",
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "unidad",
-      "stockActual": 60,
+      "stockActual": 57,
       "stockMinimo": 30,
-      "costoUnitario": 0.3
+      "costoUnitario": 2
     },
     {
       "id": "jamon",
       "nombre": "Jamón Cocido",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 30,
-      "stockMinimo": 15,
-      "costoUnitario": 1.2
+      "unidadMedida": "tajada",
+      "stockActual": 112,
+      "stockMinimo": 30,
+      "costoUnitario": 1.25
     },
     {
       "id": "ketchup",
@@ -621,35 +630,35 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 3000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.01
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "masa_arepa",
       "nombre": "Harina de Maíz Precocida",
       "categoria": "Panes y Masas",
-      "unidadMedida": "porción",
-      "stockActual": 94,
-      "stockMinimo": 40,
-      "costoUnitario": 0.3
+      "unidadMedida": "g",
+      "stockActual": 14100,
+      "stockMinimo": 0,
+      "costoUnitario": 0.04
     },
     {
       "id": "masa_cachapa",
       "nombre": "Maíz Tierno (Cachapa)",
       "categoria": "Panes y Masas",
-      "unidadMedida": "porción",
-      "stockActual": 40,
-      "stockMinimo": 25,
-      "costoUnitario": 0.6
+      "unidadMedida": "g",
+      "stockActual": 12000,
+      "stockMinimo": 0,
+      "costoUnitario": 0.05
     },
     {
       "id": "masa_empanada",
       "nombre": "Masa para Empanada",
       "categoria": "Panes y Masas",
-      "unidadMedida": "unidad",
-      "stockActual": 50,
-      "stockMinimo": 30,
-      "costoUnitario": 0.25
+      "unidadMedida": "g",
+      "stockActual": 6000,
+      "stockMinimo": 2000,
+      "costoUnitario": 0
     },
     {
       "id": "masa_pastelito",
@@ -657,8 +666,8 @@
       "categoria": "Panes y Masas",
       "unidadMedida": "unidad",
       "stockActual": 50,
-      "stockMinimo": 25,
-      "costoUnitario": 0.3
+      "stockMinimo": 30,
+      "costoUnitario": 4
     },
     {
       "id": "mayonesa",
@@ -666,17 +675,17 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 4000,
-      "stockMinimo": 1000,
-      "costoUnitario": 0.01
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "mondongo",
       "nombre": "Mondongo",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 15,
-      "stockMinimo": 10,
-      "costoUnitario": 2.5
+      "unidadMedida": "g",
+      "stockActual": 3000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.05
     },
     {
       "id": "mostaza",
@@ -684,8 +693,8 @@
       "categoria": "Cremas",
       "unidadMedida": "ml",
       "stockActual": 2000,
-      "stockMinimo": 500,
-      "costoUnitario": 0.01
+      "stockMinimo": 300,
+      "costoUnitario": 0
     },
     {
       "id": "pan_arabe",
@@ -694,16 +703,16 @@
       "unidadMedida": "unidad",
       "stockActual": 35,
       "stockMinimo": 20,
-      "costoUnitario": 0.5
+      "costoUnitario": 8
     },
     {
       "id": "pan_hamburguesa",
       "nombre": "Pan de Hamburguesa",
       "categoria": "Panes y Masas",
       "unidadMedida": "unidad",
-      "stockActual": 45,
-      "stockMinimo": 25,
-      "costoUnitario": 0.5
+      "stockActual": 43,
+      "stockMinimo": 20,
+      "costoUnitario": 5
     },
     {
       "id": "pan_pepito",
@@ -711,8 +720,8 @@
       "categoria": "Panes y Masas",
       "unidadMedida": "unidad",
       "stockActual": 40,
-      "stockMinimo": 20,
-      "costoUnitario": 0.6
+      "stockMinimo": 10,
+      "costoUnitario": 8
     },
     {
       "id": "pan_perro",
@@ -721,34 +730,34 @@
       "unidadMedida": "unidad",
       "stockActual": 40,
       "stockMinimo": 20,
-      "costoUnitario": 0.4
+      "costoUnitario": 5
     },
     {
       "id": "papas_fritas",
       "nombre": "Papas Fritas",
       "categoria": "Papas",
-      "unidadMedida": "porción",
-      "stockActual": 80,
-      "stockMinimo": 40,
-      "costoUnitario": 1
+      "unidadMedida": "g",
+      "stockActual": 15800,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.075
     },
     {
       "id": "papas_ralladas",
       "nombre": "Papitas Ralladas",
       "categoria": "Papas",
-      "unidadMedida": "porción",
-      "stockActual": 40,
-      "stockMinimo": 20,
-      "costoUnitario": 0.4
+      "unidadMedida": "g",
+      "stockActual": 4000,
+      "stockMinimo": 0,
+      "costoUnitario": 0.03
     },
     {
       "id": "pasta_lasagna",
       "nombre": "Pasta para Lasagna",
       "categoria": "Panes y Masas",
-      "unidadMedida": "porción",
+      "unidadMedida": "unidad",
       "stockActual": 20,
       "stockMinimo": 10,
-      "costoUnitario": 1.2
+      "costoUnitario": 5
     },
     {
       "id": "platano_maduro",
@@ -756,8 +765,8 @@
       "categoria": "Verduras y Legumbres",
       "unidadMedida": "unidad",
       "stockActual": 30,
-      "stockMinimo": 15,
-      "costoUnitario": 0.4
+      "stockMinimo": 10,
+      "costoUnitario": 5
     },
     {
       "id": "platano_verde",
@@ -765,80 +774,89 @@
       "categoria": "Panes y Masas",
       "unidadMedida": "unidad",
       "stockActual": 35,
-      "stockMinimo": 20,
-      "costoUnitario": 0.4
+      "stockMinimo": 10,
+      "costoUnitario": 6
     },
     {
       "id": "pollo_desmechado",
       "nombre": "Pollo Desmechado",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 50,
-      "stockMinimo": 20,
-      "costoUnitario": 1.8
+      "unidadMedida": "g",
+      "stockActual": 7200,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.04
+    },
+    {
+      "id": "pollo_picado",
+      "nombre": "Pollo Picado",
+      "categoria": "Carnes y Proteínas",
+      "unidadMedida": "g",
+      "stockActual": 5000,
+      "stockMinimo": 0,
+      "costoUnitario": 0
     },
     {
       "id": "pollo_shawarma",
       "nombre": "Pollo para Shawarma",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 25,
-      "stockMinimo": 15,
-      "costoUnitario": 2
+      "unidadMedida": "g",
+      "stockActual": 3750,
+      "stockMinimo": 0,
+      "costoUnitario": 0.0667
     },
     {
       "id": "queso_chedar",
       "nombre": "Queso Cheddar",
       "categoria": "Quesos y Lácteos",
-      "unidadMedida": "porción",
-      "stockActual": 60,
-      "stockMinimo": 20,
-      "costoUnitario": 0.8
+      "unidadMedida": "lámina",
+      "stockActual": 58,
+      "stockMinimo": 15,
+      "costoUnitario": 5
     },
     {
       "id": "queso_de_mano",
       "nombre": "Queso de Mano",
       "categoria": "Quesos y Lácteos",
-      "unidadMedida": "porción",
+      "unidadMedida": "unidad",
       "stockActual": 40,
       "stockMinimo": 15,
-      "costoUnitario": 1.5
+      "costoUnitario": 7
     },
     {
       "id": "queso_edam",
       "nombre": "Queso Edam",
       "categoria": "Quesos y Lácteos",
-      "unidadMedida": "porción",
-      "stockActual": 30,
-      "stockMinimo": 10,
-      "costoUnitario": 1.2
+      "unidadMedida": "g",
+      "stockActual": 4500,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.0467
     },
     {
       "id": "queso_fresquito",
       "nombre": "Queso Fresco",
       "categoria": "Quesos y Lácteos",
-      "unidadMedida": "porción",
-      "stockActual": 50,
-      "stockMinimo": 20,
-      "costoUnitario": 1
+      "unidadMedida": "g",
+      "stockActual": 3000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0
     },
     {
       "id": "queso_rallar",
       "nombre": "Queso para Rallar",
       "categoria": "Quesos y Lácteos",
-      "unidadMedida": "porción",
-      "stockActual": 80,
-      "stockMinimo": 30,
-      "costoUnitario": 0.8
+      "unidadMedida": "g",
+      "stockActual": 8000,
+      "stockMinimo": 1000,
+      "costoUnitario": 0.05
     },
     {
       "id": "repollo",
       "nombre": "Repollo Rallado",
       "categoria": "Verduras y Legumbres",
-      "unidadMedida": "porción",
-      "stockActual": 30,
-      "stockMinimo": 15,
-      "costoUnitario": 0.3
+      "unidadMedida": "g",
+      "stockActual": 2800,
+      "stockMinimo": 250,
+      "costoUnitario": 0.04
     },
     {
       "id": "salchicha",
@@ -846,8 +864,8 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "unidad",
       "stockActual": 30,
-      "stockMinimo": 15,
-      "costoUnitario": 1
+      "stockMinimo": 30,
+      "costoUnitario": 3
     },
     {
       "id": "salchicha_perro",
@@ -855,17 +873,17 @@
       "categoria": "Carnes y Proteínas",
       "unidadMedida": "unidad",
       "stockActual": 35,
-      "stockMinimo": 20,
-      "costoUnitario": 0.9
+      "stockMinimo": 30,
+      "costoUnitario": 3
     },
     {
       "id": "tocino",
       "nombre": "Tocineta",
       "categoria": "Carnes y Proteínas",
-      "unidadMedida": "porción",
-      "stockActual": 20,
-      "stockMinimo": 15,
-      "costoUnitario": 1.1
+      "unidadMedida": "tajada",
+      "stockActual": 72,
+      "stockMinimo": 30,
+      "costoUnitario": 1.75
     }
   ],
   "productos": [
@@ -882,11 +900,11 @@
       "receta": [
         {
           "insumoId": "carta_salchicha_ahumada",
-          "cantidad": 1
+          "cantidad": 2
         },
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         }
       ]
     },
@@ -903,15 +921,15 @@
       "receta": [
         {
           "insumoId": "caraotas_negras",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         }
       ]
     },
@@ -928,15 +946,15 @@
       "receta": [
         {
           "insumoId": "carta_diablito",
-          "cantidad": 1
+          "cantidad": 120
         },
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         }
       ]
     },
@@ -953,15 +971,15 @@
       "receta": [
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         }
       ]
     },
@@ -978,11 +996,11 @@
       "receta": [
         {
           "insumoId": "carne_mechada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         }
       ]
     },
@@ -999,15 +1017,15 @@
       "receta": [
         {
           "insumoId": "carne_mechada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         }
       ]
     },
@@ -1024,11 +1042,11 @@
       "receta": [
         {
           "insumoId": "carne_molida",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         }
       ]
     },
@@ -1045,15 +1063,15 @@
       "receta": [
         {
           "insumoId": "carne_molida",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         }
       ]
     },
@@ -1070,11 +1088,11 @@
       "receta": [
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "cantidad": 150
         }
       ]
     },
@@ -1091,15 +1109,15 @@
       "receta": [
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         }
       ]
     },
@@ -1116,11 +1134,11 @@
       "receta": [
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         }
       ]
     },
@@ -1137,15 +1155,11 @@
       "receta": [
         {
           "insumoId": "masa_arepa",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "platano_maduro",
-          "cantidad": 0.5
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         }
       ]
     },
@@ -1162,11 +1176,11 @@
       "receta": [
         {
           "insumoId": "carta_fresa",
-          "cantidad": 200
+          "cantidad": 150
         },
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         }
       ]
     },
@@ -1183,11 +1197,11 @@
       "receta": [
         {
           "insumoId": "carta_fresa",
-          "cantidad": 200
+          "cantidad": 150
         },
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         }
       ]
     },
@@ -1204,11 +1218,11 @@
       "receta": [
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         },
         {
           "insumoId": "carta_mango",
-          "cantidad": 200
+          "cantidad": 150
         }
       ]
     },
@@ -1225,11 +1239,11 @@
       "receta": [
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         },
         {
           "insumoId": "carta_mango",
-          "cantidad": 200
+          "cantidad": 150
         }
       ]
     },
@@ -1246,11 +1260,11 @@
       "receta": [
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         },
         {
           "insumoId": "carta_papaya",
-          "cantidad": 200
+          "cantidad": 150
         }
       ]
     },
@@ -1267,11 +1281,11 @@
       "receta": [
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         },
         {
           "insumoId": "carta_papaya",
-          "cantidad": 200
+          "cantidad": 150
         }
       ]
     },
@@ -1288,11 +1302,11 @@
       "receta": [
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         },
         {
           "insumoId": "carta_pina",
-          "cantidad": 200
+          "cantidad": 150
         }
       ]
     },
@@ -1309,11 +1323,11 @@
       "receta": [
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         },
         {
           "insumoId": "carta_pina",
-          "cantidad": 200
+          "cantidad": 150
         }
       ]
     },
@@ -1330,11 +1344,11 @@
       "receta": [
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         },
         {
           "insumoId": "platano_maduro",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -1351,11 +1365,11 @@
       "receta": [
         {
           "insumoId": "carta_leche",
-          "cantidad": 250
+          "cantidad": 150
         },
         {
           "insumoId": "platano_maduro",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -1576,11 +1590,11 @@
       "receta": [
         {
           "insumoId": "chicharron",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_cachapa",
-          "cantidad": 1
+          "cantidad": 300
         },
         {
           "insumoId": "queso_de_mano",
@@ -1601,11 +1615,11 @@
       "receta": [
         {
           "insumoId": "masa_cachapa",
-          "cantidad": 1
+          "cantidad": 300
         },
         {
           "insumoId": "queso_de_mano",
-          "cantidad": 2
+          "cantidad": 1
         }
       ]
     },
@@ -1622,11 +1636,11 @@
       "receta": [
         {
           "insumoId": "carne_mechada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_cachapa",
-          "cantidad": 1
+          "cantidad": 300
         },
         {
           "insumoId": "queso_de_mano",
@@ -1647,7 +1661,7 @@
       "receta": [
         {
           "insumoId": "masa_cachapa",
-          "cantidad": 1
+          "cantidad": 300
         },
         {
           "insumoId": "queso_de_mano",
@@ -1668,7 +1682,7 @@
       "receta": [
         {
           "insumoId": "masa_cachapa",
-          "cantidad": 1
+          "cantidad": 300
         },
         {
           "insumoId": "queso_de_mano",
@@ -1676,7 +1690,7 @@
         },
         {
           "insumoId": "tocino",
-          "cantidad": 1
+          "cantidad": 4
         }
       ]
     },
@@ -1693,7 +1707,7 @@
       "receta": [
         {
           "insumoId": "arroz",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
           "insumoId": "chuleta_cerdo",
@@ -1701,11 +1715,7 @@
         },
         {
           "insumoId": "ensalada_rusa",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "platano_maduro",
-          "cantidad": 0.5
+          "cantidad": 60
         }
       ]
     },
@@ -1726,23 +1736,19 @@
         },
         {
           "insumoId": "arroz",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
           "insumoId": "caraotas_negras",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
           "insumoId": "carne_mechada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "huevo",
           "cantidad": 1
-        },
-        {
-          "insumoId": "platano_maduro",
-          "cantidad": 0.5
         }
       ]
     },
@@ -1759,19 +1765,15 @@
       "receta": [
         {
           "insumoId": "carne_molida",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
           "insumoId": "carta_tallarin",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "platano_maduro",
-          "cantidad": 0.5
+          "cantidad": 250
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 40
         }
       ]
     },
@@ -1788,15 +1790,15 @@
       "receta": [
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "masa_empanada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
-          "insumoId": "queso_fresquito",
-          "cantidad": 1
+          "insumoId": "queso_rallar",
+          "cantidad": 30
         }
       ]
     },
@@ -1813,11 +1815,11 @@
       "receta": [
         {
           "insumoId": "carne_mechada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_empanada",
-          "cantidad": 1
+          "cantidad": 150
         }
       ]
     },
@@ -1834,11 +1836,11 @@
       "receta": [
         {
           "insumoId": "carne_molida",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_empanada",
-          "cantidad": 1
+          "cantidad": 150
         }
       ]
     },
@@ -1855,11 +1857,11 @@
       "receta": [
         {
           "insumoId": "masa_empanada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "cantidad": 150
         }
       ]
     },
@@ -1876,11 +1878,11 @@
       "receta": [
         {
           "insumoId": "masa_empanada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
-          "insumoId": "queso_fresquito",
-          "cantidad": 1
+          "insumoId": "queso_rallar",
+          "cantidad": 30
         }
       ]
     },
@@ -1897,11 +1899,11 @@
       "receta": [
         {
           "insumoId": "masa_empanada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "salchicha",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -1921,6 +1923,10 @@
           "cantidad": 1
         },
         {
+          "insumoId": "ensalada_lechuga_tomate_cebolla",
+          "cantidad": 50
+        },
+        {
           "insumoId": "huevo",
           "cantidad": 1
         },
@@ -1933,15 +1939,11 @@
           "cantidad": 1
         },
         {
-          "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "insumoId": "papas_fritas",
+          "cantidad": 200
         },
         {
           "insumoId": "queso_chedar",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "repollo",
           "cantidad": 1
         },
         {
@@ -1966,8 +1968,8 @@
           "cantidad": 1
         },
         {
-          "insumoId": "carta_chorizo",
-          "cantidad": 1
+          "insumoId": "ensalada_lechuga_tomate_cebolla",
+          "cantidad": 50
         },
         {
           "insumoId": "huevo",
@@ -1975,7 +1977,7 @@
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 2
         },
         {
           "insumoId": "pan_hamburguesa",
@@ -1983,23 +1985,19 @@
         },
         {
           "insumoId": "papas_fritas",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
-          "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "insumoId": "pollo_picado",
+          "cantidad": 110
         },
         {
           "insumoId": "queso_chedar",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 2
         },
         {
           "insumoId": "tocino",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -2019,6 +2017,10 @@
           "cantidad": 1
         },
         {
+          "insumoId": "ensalada_lechuga_tomate_cebolla",
+          "cantidad": 50
+        },
+        {
           "insumoId": "huevo",
           "cantidad": 1
         },
@@ -2028,14 +2030,10 @@
         },
         {
           "insumoId": "papas_fritas",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
           "insumoId": "queso_chedar",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "repollo",
           "cantidad": 1
         }
       ]
@@ -2053,7 +2051,7 @@
       "receta": [
         {
           "insumoId": "carta_fresa",
-          "cantidad": 200
+          "cantidad": 150
         }
       ]
     },
@@ -2070,7 +2068,7 @@
       "receta": [
         {
           "insumoId": "carta_guayaba",
-          "cantidad": 200
+          "cantidad": 150
         }
       ]
     },
@@ -2087,7 +2085,7 @@
       "receta": [
         {
           "insumoId": "carta_melon",
-          "cantidad": 250
+          "cantidad": 150
         }
       ]
     },
@@ -2104,7 +2102,7 @@
       "receta": [
         {
           "insumoId": "carta_pina",
-          "cantidad": 250
+          "cantidad": 150
         }
       ]
     },
@@ -2121,15 +2119,15 @@
       "receta": [
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "masa_pastelito",
-          "cantidad": 1
+          "cantidad": 2
         },
         {
-          "insumoId": "queso_fresquito",
-          "cantidad": 1
+          "insumoId": "queso_rallar",
+          "cantidad": 40
         }
       ]
     },
@@ -2146,11 +2144,11 @@
       "receta": [
         {
           "insumoId": "carne_mechada",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_pastelito",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -2167,11 +2165,11 @@
       "receta": [
         {
           "insumoId": "carne_molida",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "masa_pastelito",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -2188,11 +2186,11 @@
       "receta": [
         {
           "insumoId": "masa_pastelito",
-          "cantidad": 1
+          "cantidad": 2
         },
         {
           "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "cantidad": 150
         }
       ]
     },
@@ -2209,11 +2207,11 @@
       "receta": [
         {
           "insumoId": "masa_pastelito",
-          "cantidad": 1
+          "cantidad": 2
         },
         {
-          "insumoId": "queso_fresquito",
-          "cantidad": 1
+          "insumoId": "queso_rallar",
+          "cantidad": 40
         }
       ]
     },
@@ -2230,11 +2228,11 @@
       "receta": [
         {
           "insumoId": "carne_mechada",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "platano_verde",
@@ -2242,15 +2240,15 @@
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         },
         {
           "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 100
         },
         {
           "insumoId": "tocino",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -2267,11 +2265,11 @@
       "receta": [
         {
           "insumoId": "carne_molida",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "platano_verde",
@@ -2279,15 +2277,15 @@
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         },
         {
           "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 100
         },
         {
           "insumoId": "tocino",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -2304,7 +2302,7 @@
       "receta": [
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "platano_verde",
@@ -2312,19 +2310,19 @@
         },
         {
           "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "cantidad": 200
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         },
         {
           "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 100
         },
         {
           "insumoId": "tocino",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -2341,15 +2339,19 @@
       "receta": [
         {
           "insumoId": "carta_chorizo",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "crema_maiz",
-          "cantidad": 1
+          "cantidad": 20
+        },
+        {
+          "insumoId": "ensalada_lechuga_tomate_cebolla",
+          "cantidad": 60
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "pan_pepito",
@@ -2357,19 +2359,15 @@
         },
         {
           "insumoId": "papas_ralladas",
-          "cantidad": 1
+          "cantidad": 50
         },
         {
-          "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "insumoId": "pollo_picado",
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 40
         }
       ]
     },
@@ -2386,15 +2384,19 @@
       "receta": [
         {
           "insumoId": "carne_shawarma",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "carta_chorizo",
-          "cantidad": 1
+          "cantidad": 3
+        },
+        {
+          "insumoId": "ensalada_lechuga_tomate_cebolla",
+          "cantidad": 60
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "pan_pepito",
@@ -2402,23 +2404,19 @@
         },
         {
           "insumoId": "papas_ralladas",
-          "cantidad": 1
+          "cantidad": 50
         },
         {
-          "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "insumoId": "pollo_picado",
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 40
         },
         {
           "insumoId": "tocino",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -2439,11 +2437,11 @@
         },
         {
           "insumoId": "crema_maiz",
-          "cantidad": 1
+          "cantidad": 20
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 2
         },
         {
           "insumoId": "pan_perro",
@@ -2451,11 +2449,11 @@
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         },
         {
           "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 40
         }
       ]
     },
@@ -2476,27 +2474,27 @@
         },
         {
           "insumoId": "crema_maiz",
-          "cantidad": 1
+          "cantidad": 20
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 2
         },
         {
           "insumoId": "pan_perro",
           "cantidad": 1
         },
         {
-          "insumoId": "pollo_desmechado",
-          "cantidad": 1
+          "insumoId": "pollo_picado",
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         },
         {
           "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 40
         }
       ]
     },
@@ -2517,11 +2515,11 @@
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
+          "cantidad": 30
         },
         {
           "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 40
         },
         {
           "insumoId": "salchicha_perro",
@@ -2542,7 +2540,7 @@
       "receta": [
         {
           "insumoId": "papas_fritas",
-          "cantidad": 1
+          "cantidad": 200
         }
       ]
     },
@@ -2558,8 +2556,8 @@
       "iconoEmoji": "🧀",
       "receta": [
         {
-          "insumoId": "queso_fresquito",
-          "cantidad": 1
+          "insumoId": "queso_rallar",
+          "cantidad": 40
         }
       ]
     },
@@ -2576,7 +2574,7 @@
       "receta": [
         {
           "insumoId": "carta_maracuya",
-          "cantidad": 80
+          "cantidad": 1
         }
       ]
     },
@@ -2593,7 +2591,7 @@
       "receta": [
         {
           "insumoId": "carta_maracuya",
-          "cantidad": 120
+          "cantidad": 2
         }
       ]
     },
@@ -2610,7 +2608,7 @@
       "receta": [
         {
           "insumoId": "carta_maracuya",
-          "cantidad": 250
+          "cantidad": 4
         }
       ]
     },
@@ -2627,11 +2625,11 @@
       "receta": [
         {
           "insumoId": "carta_limon",
-          "cantidad": 40
+          "cantidad": 3
         },
         {
           "insumoId": "carta_papelon",
-          "cantidad": 60
+          "cantidad": 0.25
         }
       ]
     },
@@ -2648,11 +2646,11 @@
       "receta": [
         {
           "insumoId": "carta_limon",
-          "cantidad": 60
+          "cantidad": 4
         },
         {
           "insumoId": "carta_papelon",
-          "cantidad": 90
+          "cantidad": 0.5
         }
       ]
     },
@@ -2669,11 +2667,11 @@
       "receta": [
         {
           "insumoId": "carta_limon",
-          "cantidad": 120
+          "cantidad": 8
         },
         {
           "insumoId": "carta_papelon",
-          "cantidad": 180
+          "cantidad": 1
         }
       ]
     },
@@ -2690,15 +2688,19 @@
       "receta": [
         {
           "insumoId": "carne_shawarma",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "crema_maiz",
-          "cantidad": 1
+          "cantidad": 20
+        },
+        {
+          "insumoId": "ensalada_lechuga_tomate_cebolla",
+          "cantidad": 50
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "pan_arabe",
@@ -2706,23 +2708,19 @@
         },
         {
           "insumoId": "papas_ralladas",
-          "cantidad": 1
+          "cantidad": 50
         },
         {
           "insumoId": "pollo_shawarma",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 40
         },
         {
           "insumoId": "tocino",
-          "cantidad": 1
+          "cantidad": 2
         }
       ]
     },
@@ -2739,11 +2737,15 @@
       "receta": [
         {
           "insumoId": "crema_maiz",
-          "cantidad": 1
+          "cantidad": 20
+        },
+        {
+          "insumoId": "ensalada_lechuga_tomate_cebolla",
+          "cantidad": 50
         },
         {
           "insumoId": "jamon",
-          "cantidad": 1
+          "cantidad": 3
         },
         {
           "insumoId": "pan_arabe",
@@ -2751,19 +2753,15 @@
         },
         {
           "insumoId": "papas_ralladas",
-          "cantidad": 1
+          "cantidad": 50
         },
         {
           "insumoId": "pollo_shawarma",
-          "cantidad": 1
+          "cantidad": 150
         },
         {
           "insumoId": "queso_rallar",
-          "cantidad": 1
-        },
-        {
-          "insumoId": "repollo",
-          "cantidad": 1
+          "cantidad": 40
         }
       ]
     },
@@ -2780,7 +2778,7 @@
       "receta": [
         {
           "insumoId": "costillas",
-          "cantidad": 1
+          "cantidad": 0.5
         }
       ]
     },
@@ -2797,7 +2795,7 @@
       "receta": [
         {
           "insumoId": "costillas",
-          "cantidad": 2
+          "cantidad": 1
         }
       ]
     },
@@ -2814,7 +2812,7 @@
       "receta": [
         {
           "insumoId": "mondongo",
-          "cantidad": 1
+          "cantidad": 100
         }
       ]
     },
@@ -2831,7 +2829,7 @@
       "receta": [
         {
           "insumoId": "mondongo",
-          "cantidad": 2
+          "cantidad": 200
         }
       ]
     }
