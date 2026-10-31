@@ -93,7 +93,8 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     sku: "",
     nombre: "",
     descripcion: "",
-    precio: 0,
+    // Texto tal cual lo escribe el usuario; se convierte a número al guardar
+    precio: "",
     categoria: "Arepas Tradicionales",
     iconoEmoji: "🌽",
     isAvailable: true,
@@ -178,7 +179,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           sku: prod.sku || "",
           nombre: prod.nombre || "",
           descripcion: prod.descripcion || "",
-          precio: typeof prod.precio === "number" ? prod.precio : (parseFloat(String(prod.precio)) || 0),
+          precio: String(typeof prod.precio === "number" ? prod.precio : (parseFloat(String(prod.precio)) || 0)),
           categoria: getCatName(prod.categoria) || categoriasProducto[0] || "General",
           iconoEmoji: prod.iconoEmoji || "🌽",
           isAvailable: prod.isAvailable !== false,
@@ -193,7 +194,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
           sku: `PROD${nextNum}`,
           nombre: "",
           descripcion: "",
-          precio: 0,
+          precio: "",
           categoria: categoriasProducto[0] || "General",
           iconoEmoji: "🌽",
           isAvailable: true,
@@ -248,7 +249,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         sku: formData.sku?.trim() || `PROD${(products?.length || 0) + 1}`,
         nombre: formData.nombre?.trim() || "Nuevo Producto",
         descripcion: formData.descripcion?.trim() || "",
-        precio: Number(formData.precio) || 0,
+        precio: Number(String(formData.precio).replace(",", ".")) || 0,
         categoria: formData.categoria || categoriasProducto[0] || "General",
         iconoEmoji: formData.iconoEmoji || "🌽",
         isAvailable: formData.isAvailable !== false,
@@ -733,14 +734,15 @@ export function ProductosPageContent(props?: ProductosPageProps) {
                     Precio (S/)
                   </label>
                   <input
-                    type="number"
-                    step="0.50"
+                    type="text"
+                    inputMode="decimal"
                     required
+                    placeholder="0.00"
                     value={formData.precio}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        precio: parseFloat(e.target.value) || 0,
+                        precio: e.target.value,
                       })
                     }
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"

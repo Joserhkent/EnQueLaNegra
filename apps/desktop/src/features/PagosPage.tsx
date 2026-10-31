@@ -29,9 +29,15 @@ export default function PagosPage() {
   const [orderAmount, setOrderAmount] = useState<string | number>("");
   const [cashReceived, setCashReceived] = useState<string | number>("");
 
-  const numOrderAmount = typeof orderAmount === "number" ? orderAmount : (parseFloat(orderAmount) || 0);
-  const numCashReceived = typeof cashReceived === "number" ? cashReceived : (parseFloat(cashReceived) || 0);
+  // Acepta coma o punto decimal: el teclado del celular en español escribe "35,50"
+  const toMonto = (v: string | number) =>
+    typeof v === "number" ? v : (parseFloat(v.replace(",", ".")) || 0);
+  const numOrderAmount = toMonto(orderAmount);
+  const numCashReceived = toMonto(cashReceived);
   const changeValue = Math.max(0, numCashReceived - numOrderAmount);
+  const faltaCobrar = numCashReceived > 0 && numCashReceived < numOrderAmount
+    ? numOrderAmount - numCashReceived
+    : 0;
 
   // Abrir Caja Modal
   const [isOpenShiftModalOpen, setIsOpenShiftModalOpen] = useState(false);
@@ -473,8 +479,9 @@ export default function PagosPage() {
                   Total de la venta (S/)
                 </label>
                 <input
-                  type="number"
-                  step="0.10"
+                  type="text"
+                  inputMode="decimal"
+                  autoFocus
                   value={orderAmount}
                   onChange={(e) => setOrderAmount(e.target.value)}
                   placeholder="0.00"
@@ -487,8 +494,8 @@ export default function PagosPage() {
                   Efectivo recibido (S/)
                 </label>
                 <input
-                  type="number"
-                  step="0.10"
+                  type="text"
+                  inputMode="decimal"
                   value={cashReceived}
                   onChange={(e) => setCashReceived(e.target.value)}
                   placeholder="0.00"
@@ -510,12 +517,21 @@ export default function PagosPage() {
               </div>
 
               {/* Vuelto Display */}
-              <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-lg text-center space-y-1">
-                <span className="text-[11px] font-bold text-emerald-800">Vuelto</span>
-                <div className="text-3xl font-display text-emerald-600">
-                  S/ {changeValue.toFixed(2)}
+              {faltaCobrar > 0 ? (
+                <div className="bg-rose-50 border border-rose-200 p-4 rounded-lg text-center space-y-1">
+                  <span className="text-[11px] font-bold text-rose-800">Falta cobrar</span>
+                  <div className="text-3xl font-display text-rose-600">
+                    S/ {faltaCobrar.toFixed(2)}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-lg text-center space-y-1">
+                  <span className="text-[11px] font-bold text-emerald-800">Vuelto</span>
+                  <div className="text-3xl font-display text-emerald-600">
+                    S/ {changeValue.toFixed(2)}
+                  </div>
+                </div>
+              )}
 
               <button
                 onClick={() => {
