@@ -53,7 +53,7 @@ export default function InventarioPage() {
   }, []);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
-  const [statusFilter, setStatusFilter] = useState<"all" | "critico" | "bajo" | "optimo">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "critico" | "bajo" | "optimo" | "incompleto">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"insumos" | "historial">("insumos");
 
@@ -199,13 +199,18 @@ export default function InventarioPage() {
     }
   };
 
+  // Sin costo o sin mínimo: la jefa los completa en el sistema (el costo se llena solo al recibir con lo pagado)
+  const faltaDato = (i: Insumo) => !(i.costoUnitario > 0) || !(i.stockMinimo > 0);
+
   // Filtered insumos
   const filteredInsumos = insumos.filter((item) => {
     const status = getInsumoStatus(item);
     const catNombre = getNombreTexto(item.categoria);
     
     const matchesCategory = selectedCategory === "Todos" || catNombre === selectedCategory;
-    const matchesStatus = statusFilter === "all" || status === statusFilter;
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "incompleto" ? faltaDato(item) : status === statusFilter);
     const matchesSearch = item.nombre.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesStatus && matchesSearch;
   });
@@ -214,6 +219,7 @@ export default function InventarioPage() {
   const totalInsumos = insumos.length;
   const criticalCount = insumos.filter((i) => getInsumoStatus(i) === "critico").length;
   const lowCount = insumos.filter((i) => getInsumoStatus(i) === "bajo").length;
+  const incompletosCount = insumos.filter(faltaDato).length;
   const totalInventoryValue = insumos.reduce((acc, curr) => acc + curr.stockActual * curr.costoUnitario, 0);
 
   return (
@@ -263,6 +269,23 @@ export default function InventarioPage() {
       {aviso && (
         <div role="status" className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
           <CheckCircle2 className="w-4 h-4 shrink-0" /> {aviso}
+        </div>
+      )}
+
+      {isJefe && incompletosCount > 0 && statusFilter !== "incompleto" && (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 hidden sm:block" />
+          <p className="flex-1 text-sm text-amber-900">
+            <span className="font-bold">{incompletosCount} insumos sin costo o sin mínimo.</span>{" "}
+            El costo se llena solo cuando recibes mercadería y escribes lo que pagaste. El mínimo ponlo con el lápiz.
+          </p>
+          <button
+            type="button"
+            onClick={() => { setActiveTab("insumos"); setStatusFilter("incompleto"); }}
+            className="shrink-0 px-3 py-1.5 rounded-md bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold"
+          >
+            Ver cuáles
+          </button>
         </div>
       )}
 
@@ -367,6 +390,16 @@ export default function InventarioPage() {
               >
                 Bajos ({lowCount})
               </button>
+              {isJefe && incompletosCount > 0 && (
+                <button
+                  onClick={() => setStatusFilter("incompleto")}
+                  className={`px-3 py-1.5 rounded-md transition whitespace-nowrap ${
+                    statusFilter === "incompleto" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"
+                  }`}
+                >
+                  Por completar ({incompletosCount})
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -453,10 +486,20 @@ export default function InventarioPage() {
                             </div>
                           </td>
                           <td className="py-3 px-4 font-semibold text-slate-600">
-                            {formatConPresentacion(item.stockMinimo, item)}
+                            {item.stockMinimo > 0 ? (
+                              formatConPresentacion(item.stockMinimo, item)
+                            ) : (
+                              <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold">Falta</span>
+                            )}
                           </td>
                           <td className="py-3 px-4 font-semibold text-slate-700">
-                            {formatCosto(Number(item.costoUnitario || 0), item)}
+                            {item.costoUnitario > 0 ? (
+                              formatCosto(item.costoUnitario, item)
+                            ) : (
+                              <span className="px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold" title="Se llena solo al recibir mercadería con lo pagado">
+                                Al comprar
+                              </span>
+                            )}
                           </td>
                           <td className="py-3 px-4 font-bold text-slate-900">
                             S/ {(item.stockActual * item.costoUnitario).toFixed(2)}
