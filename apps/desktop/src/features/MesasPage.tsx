@@ -250,9 +250,11 @@ export default function MesasPage() {
     setIsSubmittingTanda(true);
     try {
       const targetMesaId = selectedMesa.id;
+      let abiertaAhora = false;
       if (selectedMesa.status === "AVAILABLE") {
         const opened = await openMesa(targetMesaId);
         if (!opened) return; // openMesa ya muestra la alerta si falla
+        abiertaAhora = true;
       }
 
       const items: OrderItem[] = cartList.map((item) => {
@@ -271,6 +273,19 @@ export default function MesasPage() {
       });
 
       const result = await addItemsToMesa(targetMesaId, items);
+      if (!result) {
+        // Se rechazó la tanda (p. ej. sin stock). Si la mesa se abrió en este mismo
+        // envío y sigue vacía, se libera: si no, quedaría «Ocupada» sin nada pedido.
+        if (abiertaAhora) {
+          await fetchMesas();
+          const mesa = usePosStore.getState().mesas.find((m) => m.id === targetMesaId);
+          if (mesa?.currentOrder && mesa.currentOrder.items.length === 0) {
+            await checkoutMesa(targetMesaId, "Efectivo");
+          }
+        }
+        // Stock al día para que el producto que falló aparezca «Sin stock»
+        void fetchInsumos();
+      }
       if (result) {
         setCart({});
         // La comanda la imprime la estación de comandas (la laptop con la ticketera),
@@ -748,7 +763,9 @@ export default function MesasPage() {
                     {selectedMesa.joinedTables?.length
                       ? `Mesas ${[selectedMesa.number, ...selectedMesa.joinedTables.map((table) => table.number)].sort((a, b) => a - b).join(" + ")}`
                       : `Mesa ${selectedMesa.number}`}
-                    {selectedMesa.currentOrder?.customer ? ` · ${selectedMesa.currentOrder.customer}` : ""}
+                    {selectedMesa.currentOrder?.customer && selectedMesa.currentOrder.customer !== `Mesa ${selectedMesa.number}`
+                      ? ` · ${selectedMesa.currentOrder.customer}`
+                      : ""}
                   </h3>
                   <p className="text-[11px] text-slate-400">
                     {selectedMesa.joinedTables?.length

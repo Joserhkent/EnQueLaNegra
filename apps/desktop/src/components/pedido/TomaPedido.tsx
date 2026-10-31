@@ -66,6 +66,13 @@ export default function TomaPedido(props: Props) {
 
   // Al enviar la tanda el carrito queda vacío y el resumen del pedido se cierra solo
   if (pedidoAbierto && lineas.length === 0) setVerPedido(false);
+  // Tras enviar a cocina el carrito queda vacío: se vuelve al inicio para el siguiente pedido
+  const [enviado, setEnviado] = useState(false);
+  if (enviado && lineas.length === 0) {
+    setEnviado(false);
+    setCategoria(null);
+    setBusqueda("");
+  }
   const verPedido = pedidoAbierto && lineas.length > 0;
 
   const cerrar = () => {
@@ -177,7 +184,10 @@ export default function TomaPedido(props: Props) {
       </div>
       <button
         type="button"
-        onClick={onEnviar}
+        onClick={() => {
+          setEnviado(true);
+          onEnviar();
+        }}
         disabled={!lineas.length || !cajaAbierta || enviando}
         className="h-14 rounded-xl bg-slate-900 text-amber-400 font-extrabold text-[17px] flex items-center justify-center gap-2 active:scale-[.98] transition disabled:opacity-35"
       >
