@@ -30,6 +30,14 @@ interface Carta {
     iconoEmoji: string | null;
     receta: { insumoId: string; cantidad: number }[];
   }[];
+  agregados?: {
+    nombre: string;
+    precio: number;
+    insumoId: string;
+    consumo: number;
+    activo: boolean;
+    orden: number;
+  }[];
 }
 
 const adapter = new PrismaPg(process.env.DATABASE_URL as string);
@@ -59,6 +67,7 @@ async function main() {
   await prisma.cierreCaja.deleteMany();
   await prisma.cajaSesion.deleteMany();
   await prisma.recetaItem.deleteMany();
+  await prisma.agregado.deleteMany();
   await prisma.producto.deleteMany();
   await prisma.insumo.deleteMany();
   await prisma.categoria.deleteMany();
@@ -204,6 +213,11 @@ async function main() {
     });
   }
   console.log(`🍽️  ${carta.productos.length} Productos y Recetas (BOM) creados.`);
+
+  if (carta.agregados?.length) {
+    await prisma.agregado.createMany({ data: carta.agregados });
+    console.log(`➕ ${carta.agregados.length} Agregados cargados.`);
+  }
 
   // 10. Turno de caja inicial abierto para que el sistema esté listo para demostración
   await prisma.cajaSesion.create({

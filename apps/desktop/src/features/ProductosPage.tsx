@@ -8,12 +8,14 @@ import {
   Plus,
   LayoutGrid,
   List ,
-  Tags
+  Tags,
+  PlusSquare
 } from "lucide-react";
 
 import { usePosStore, type ProductoPayload } from "../store/usePosStore";
 import ErrorBoundary from "../components/ErrorBoundary";
 import RecetaEditor from "../components/carta/RecetaEditor";
+import AgregadosModal from "../components/carta/AgregadosModal";
 import { cantidadBaseLinea, lineaDesdeCantidad, type LineaReceta } from "../lib/receta";
 
 // Tipos adaptados para tolerar objeto o string en categoría
@@ -90,6 +92,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+  const [isAgregadosOpen, setIsAgregadosOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     sku: "",
@@ -97,7 +100,7 @@ export function ProductosPageContent(props?: ProductosPageProps) {
     descripcion: "",
     // Texto tal cual lo escribe el usuario; se convierte a número al guardar
     precio: "",
-    categoria: "Arepas Tradicionales",
+    categoria: "",
     iconoEmoji: "🌽",
     isAvailable: true,
     isPopular: false,
@@ -271,6 +274,14 @@ export function ProductosPageContent(props?: ProductosPageProps) {
         </div>
 
         {isJefe && (
+          <div className="flex gap-2 shrink-0">
+          <button
+            onClick={() => setIsAgregadosOpen(true)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold rounded-md text-sm transition-colors active:scale-95"
+          >
+            <PlusSquare className="w-4 h-4 text-slate-500" />
+            Agregados
+          </button>
           <button
             onClick={() => handleOpenModal()}
             className="flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold rounded-md text-sm transition-colors active:scale-95 shrink-0"
@@ -278,8 +289,11 @@ export function ProductosPageContent(props?: ProductosPageProps) {
             <Plus className="w-4 h-4 stroke-[3]" />
             Nuevo producto
           </button>
+          </div>
         )}
       </div>
+
+      {isAgregadosOpen && <AgregadosModal onClose={() => setIsAgregadosOpen(false)} />}
 
       {/* Bar Search & Categorías & Vista */}
       <div className="bg-white p-4 rounded-lg border border-slate-200/80 space-y-4">

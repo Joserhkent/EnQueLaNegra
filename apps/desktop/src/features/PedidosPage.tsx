@@ -5,7 +5,7 @@ import CambioEfectivo from "../components/CambioEfectivo";
 import OrderDetailModal from "../components/OrderDetailModal";
 import { avisar } from "../components/AvisoFlotante";
 import { esEstacionComandas } from "../lib/estacionComandas";
-import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
+import { agregadosDisponibles, extrasDeAgregados, precioAgregados } from "../lib/agregados";
 import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import {
@@ -49,7 +49,7 @@ type PedidosPageProps = {
 };
 
 export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
-  const { pedidos, productos, insumos, mesas, addOrder, updateOrderStatus, fetchInsumos, cajaEstado, fetchCajaEstado } = usePosStore();
+  const { pedidos, productos, insumos, agregados, mesas, addOrder, updateOrderStatus, fetchInsumos, cajaEstado, fetchCajaEstado } = usePosStore();
 
   useEffect(() => {
     fetchCajaEstado();
@@ -69,7 +69,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [montoEfectivo, setMontoEfectivo] = useState<string>("");
   const [montoDigital, setMontoDigital] = useState<string>("");
   const { tabs: menuTabs, activeCategory: selectedCategory, setSelectedCategory } = useMenuCategories(productos);
-  const agregadosVisibles = useMemo(() => agregadosConInsumo(insumos), [insumos]);
+  const agregadosVisibles = useMemo(() => agregadosDisponibles(agregados, insumos), [agregados, insumos]);
   const [selectedPrintOrder, setSelectedPrintOrder] = useState<Order | null>(null);
   const [selectedKitchenOrder, setSelectedKitchenOrder] = useState<Order | null>(null);
   const [selectedDetailOrder, setSelectedDetailOrder] = useState<Order | null>(null);
@@ -97,13 +97,6 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
     }
   };
 
-  // Busca el ID real del insumo por nombre (para mandar el "extra" correctamente al backend)
-  const findInsumoId = (nombre: string): string | null => {
-    const found = insumos.find(
-      (i) => i.nombre.trim().toLowerCase() === nombre.trim().toLowerCase()
-    );
-    return found ? found.id : null;
-  };
 
   // Cart items inside Modal: lineId (no el sku, para permitir 2 líneas del mismo producto
   // con personalización distinta) -> { product, quantity, notes, agregados }
@@ -191,12 +184,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   };
 
   // Suma el precio de los agregados seleccionados de un item (por unidad) — solo para mostrar en el carrito
-  const getAgregadosUnitPrice = (agregados: string[]) => {
-    return agregados.reduce((sum, nombre) => {
-      const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === nombre);
-      return sum + (found ? found.precio : 0);
-    }, 0);
-  };
+  const getAgregadosUnitPrice = (elegidos: string[]) => precioAgregados(elegidos, agregados);
 
   const getCartItemTotal = (item: { product: Producto; quantity: number; agregados: string[] }) => {
     const unitPrice = item.product.precio + getAgregadosUnitPrice(item.agregados);
@@ -239,15 +227,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
         customer: customerName.trim() || "Cliente Mostrador",
         items: cartList.map((item) => {
           // Convierte los agregados seleccionados en "extras" con su precio real
-          const extrasFromAgregados = item.agregados
-            .map((agregadoName) => {
-              const insumoId = findInsumoId(agregadoName);
-              const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === agregadoName);
-              return insumoId
-                ? { insumoId, cantidad: 1, precioExtra: found ? found.precio : 0 }
-                : null;
-            })
-            .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
+          const extrasFromAgregados = extrasDeAgregados(item.agregados, agregados);
 
           return {
             productoId: item.product.id,

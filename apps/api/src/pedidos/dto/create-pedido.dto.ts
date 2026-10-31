@@ -39,6 +39,14 @@ export class PedidoItemExtraDto {
   @Min(0)
   @IsOptional()
   precioExtra?: number = 0;
+
+  // Si viene, el servidor toma de ese agregado el insumo, el precio y el consumo
+  @IsString()
+  @IsOptional()
+  agregadoId?: string;
+
+  // Sin decorador: el cliente no lo puede mandar (whitelist); lo pone resolverAgregados
+  consumo?: number;
 }
 
 export class PedidoItemDto {

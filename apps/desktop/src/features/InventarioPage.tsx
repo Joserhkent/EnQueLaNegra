@@ -474,7 +474,7 @@ export default function InventarioPage() {
                               {/* 🛠️ FIX 1: Renderizado seguro de la categoría */}
                               {categoriaNombre || "Sin categoría"}
                             </span>
-                            {categoriaNombre === "Salsas y Aderezos" && (
+                            {categoriaNombre === "Cremas" && (
                               <span className="block mt-1 px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200/60 rounded text-[9px] font-bold w-max">
                                 Aderezo libre
                               </span>

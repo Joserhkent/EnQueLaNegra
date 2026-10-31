@@ -4,7 +4,7 @@ import TicketReceiptModal from "../components/TicketReceiptModal";
 import CambioEfectivo from "../components/CambioEfectivo";
 import { avisar } from "../components/AvisoFlotante";
 import { esEstacionComandas } from "../lib/estacionComandas";
-import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
+import { agregadosDisponibles, extrasDeAgregados, precioAgregados } from "../lib/agregados";
 import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import {
@@ -61,6 +61,7 @@ export default function MesasPage() {
     fetchMesas,
     fetchProductos,
     fetchInsumos,
+    agregados,
     openMesa,
     addItemsToMesa,
     updateMesaItem,
@@ -91,7 +92,7 @@ export default function MesasPage() {
   const [mainJoinTableId, setMainJoinTableId] = useState<string | null>(null);
 
   const { tabs: CATEGORIES, activeCategory: selectedCategory, setSelectedCategory } = useMenuCategories(productos);
-  const agregadosVisibles = useMemo(() => agregadosConInsumo(insumos), [insumos]);
+  const agregadosVisibles = useMemo(() => agregadosDisponibles(agregados, insumos), [agregados, insumos]);
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [customizingProduct, setCustomizingProduct] = useState<Producto | null>(null);
   const [customizingQuantity, setCustomizingQuantity] = useState(1);
@@ -130,10 +131,6 @@ export default function MesasPage() {
 
   const selectedMesa = mesas.find((m) => m.id === selectedMesaId) || null;
 
-  const findInsumoId = (nombre: string): string | null => {
-    const found = insumos.find((i) => i.nombre.trim().toLowerCase() === nombre.trim().toLowerCase());
-    return found ? found.id : null;
-  };
 
   const scrollCategories = (direction: "left" | "right") => {
     if (categoryScrollRef.current) {
@@ -195,11 +192,7 @@ export default function MesasPage() {
     });
   };
 
-  const getAgregadosUnitPrice = (agregados: string[]) =>
-    agregados.reduce((sum, nombre) => {
-      const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === nombre);
-      return sum + (found ? found.precio : 0);
-    }, 0);
+  const getAgregadosUnitPrice = (elegidos: string[]) => precioAgregados(elegidos, agregados);
 
   const getCartItemTotal = (item: CartLine) => (item.product.precio + getAgregadosUnitPrice(item.agregados)) * item.quantity;
   const calculateCartTotal = () => Object.values(cart).reduce((acc, item) => acc + getCartItemTotal(item), 0);
@@ -229,13 +222,7 @@ export default function MesasPage() {
       }
 
       const items: OrderItem[] = cartList.map((item) => {
-        const extrasFromAgregados = item.agregados
-          .map((agregadoName) => {
-            const insumoId = findInsumoId(agregadoName);
-            const found = AGREGADOS_DISPONIBLES.find((a) => a.nombre === agregadoName);
-            return insumoId ? { insumoId, cantidad: 1, precioExtra: found ? found.precio : 0 } : null;
-          })
-          .filter((e): e is { insumoId: string; cantidad: number; precioExtra: number } => e !== null);
+        const extrasFromAgregados = extrasDeAgregados(item.agregados, agregados);
 
         return {
           productoId: item.product.id,

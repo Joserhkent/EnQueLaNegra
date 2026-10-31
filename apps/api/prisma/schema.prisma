@@ -110,7 +110,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  rol         Rol               @relation(fields: [rolId], references: [id])
+  rol              Rol               @relation(fields: [rolId], references: [id])
   orders           Order[]
   movimientos      MovimientoStock[]
   cierres          CierreCaja[]
@@ -132,24 +132,41 @@ model Categoria {
 }
 
 model Insumo {
-  id            String   @id // slug: pan_brioche, carne_hamburguesa, etc.
-  categoriaId   String
-  nombre        String
-  unidadMedida  String   // unidad, porción, ml
-  stockActual   Float    @default(0)
-  stockMinimo   Float    @default(0)
-  costoUnitario Float    @default(0)
+  id                   String   @id // slug: pan_brioche, carne_hamburguesa, etc.
+  categoriaId          String
+  nombre               String
+  unidadMedida         String // unidad, porción, ml
+  stockActual          Float    @default(0)
+  stockMinimo          Float    @default(0)
+  costoUnitario        Float    @default(0)
   // Presentación de compra (opcional): cómo llega y se cuenta, ej. "lata" que trae
   // 130 (g). Las recetas y el stock siguen en unidadMedida; esto solo convierte.
   presentacionNombre   String?
   presentacionCantidad Float?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   categoria       Categoria         @relation(fields: [categoriaId], references: [id])
   recetaItems     RecetaItem[]
   movimientos     MovimientoStock[]
   orderItemExtras OrderItemExtra[]
+  agregados       Agregado[]
+}
+
+// Agregado que se cobra aparte en un plato ("+ queso", "+ tocineta"). La jefa
+// lo edita: precio y cuánto del insumo gasta cada uno (en su unidad, ej. 50 g).
+model Agregado {
+  id        String   @id @default(uuid())
+  nombre    String
+  precio    Float
+  insumoId  String
+  consumo   Float
+  activo    Boolean  @default(true)
+  orden     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  insumo Insumo @relation(fields: [insumoId], references: [id])
 }
 
 model Producto {
@@ -165,16 +182,16 @@ model Producto {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  categoria   Categoria       @relation(fields: [categoriaId], references: [id])
+  categoria   Categoria    @relation(fields: [categoriaId], references: [id])
   recetaItems RecetaItem[]
   orderItems  OrderItem[]
 }
 
 model RecetaItem {
-  id                String   @id @default(uuid())
+  id                String @id @default(uuid())
   productoId        String
   insumoId          String
-  cantidadRequerida Float    @default(1.0)
+  cantidadRequerida Float  @default(1.0)
 
   producto Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
   insumo   Insumo   @relation(fields: [insumoId], references: [id], onDelete: Cascade)
@@ -209,15 +226,15 @@ model Order {
   type          OrderType     @default(MESA)
   status        OrderStatus   @default(PREPARACION)
   paymentMethod PaymentMethod @default(YAPE_PLIN)
-  montoEfectivo Float?        // solo se usa cuando paymentMethod = MIXTO
-  montoDigital  Float?        // solo se usa cuando paymentMethod = MIXTO
+  montoEfectivo Float? // solo se usa cuando paymentMethod = MIXTO
+  montoDigital  Float? // solo se usa cuando paymentMethod = MIXTO
   subtotal      Float
   igv           Float
   total         Float
   userId        String?
-  tableId       String?       // presente cuando type = MESA (atención por mesa acumulativa)
-  fecha         String        // YYYY-MM-DD
-  hora          String        // HH:mm
+  tableId       String? // presente cuando type = MESA (atención por mesa acumulativa)
+  fecha         String // YYYY-MM-DD
+  hora          String // HH:mm
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -229,7 +246,7 @@ model Order {
 }
 
 model OrderItem {
-  id            String             @id @default(uuid())
+  id            String            @id @default(uuid())
   orderId       String
   productoId    String
   sku           String
@@ -238,9 +255,9 @@ model OrderItem {
   cantidad      Int
   subtotal      Float
   notas         String? // texto libre: "sin cebolla", "bien cocido", etc.
-  ronda         Int                @default(1) // tanda/ronda de pedido dentro de una mesa acumulativa
-  kitchenStatus ItemKitchenStatus  @default(PENDING)
-  createdAt     DateTime           @default(now())
+  ronda         Int               @default(1) // tanda/ronda de pedido dentro de una mesa acumulativa
+  kitchenStatus ItemKitchenStatus @default(PENDING)
+  createdAt     DateTime          @default(now())
 
   order    Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
   producto Producto         @relation(fields: [productoId], references: [id])
@@ -254,6 +271,8 @@ model OrderItemExtra {
   insumoId    String
   cantidad    Float  @default(1)
   precioExtra Float  @default(0) // 0 si el extra es gratis (ej. crema de ajo); >0 si se cobra aparte
+  // Cuánto insumo gasta 1 extra (ej. 50 g de carne). Lo pone el servidor desde el Agregado.
+  consumo     Float  @default(1)
 
   orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   insumo    Insumo    @relation(fields: [insumoId], references: [id])
@@ -291,41 +310,41 @@ enum EstadoCaja {
 }
 
 model CajaSesion {
-  id                String      @id @default(uuid())
-  estado            EstadoCaja  @default(ABIERTA)
+  id     String     @id @default(uuid())
+  estado EstadoCaja @default(ABIERTA)
 
   // Apertura
-  montoInicial      Float       @default(0) // Fondo de caja / sencillo inicial
-  fechaApertura     DateTime    @default(now())
+  montoInicial      Float    @default(0) // Fondo de caja / sencillo inicial
+  fechaApertura     DateTime @default(now())
   usuarioAperturaId String?
-  usuarioApertura   String      @default("Cajero")
+  usuarioApertura   String   @default("Cajero")
   notasApertura     String?
 
   // Cierre
-  fechaCierre       DateTime?
-  usuarioCierreId   String?
-  usuarioCierre     String?
-  totalVendido      Float?      @default(0)
-  efectivoVentas    Float?      @default(0)
-  yapePlin          Float?      @default(0)
-  tarjeta           Float?      @default(0)
-  cantidadPedidos   Int?        @default(0)
-  efectivoEsperado  Float?      @default(0) // montoInicial + efectivoVentas
-  efectivoReal      Float?                  // Conteo físico ingresado por el cajero
-  diferencia        Float?                  // efectivoReal - efectivoEsperado (+ sobrante, - faltante)
-  notasCierre       String?
+  fechaCierre      DateTime?
+  usuarioCierreId  String?
+  usuarioCierre    String?
+  totalVendido     Float?    @default(0)
+  efectivoVentas   Float?    @default(0)
+  yapePlin         Float?    @default(0)
+  tarjeta          Float?    @default(0)
+  cantidadPedidos  Int?      @default(0)
+  efectivoEsperado Float?    @default(0) // montoInicial + efectivoVentas
+  efectivoReal     Float? // Conteo físico ingresado por el cajero
+  diferencia       Float? // efectivoReal - efectivoEsperado (+ sobrante, - faltante)
+  notasCierre      String?
 
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  userApertura      User?       @relation("CajaAperturaUser", fields: [usuarioAperturaId], references: [id])
-  userCierre        User?       @relation("CajaCierreUser", fields: [usuarioCierreId], references: [id])
+  userApertura User? @relation("CajaAperturaUser", fields: [usuarioAperturaId], references: [id])
+  userCierre   User? @relation("CajaCierreUser", fields: [usuarioCierreId], references: [id])
 }
 
 model CierreCaja {
   id              String   @id @default(uuid())
-  fecha           String   // YYYY-MM-DD
-  hora            String   // HH:mm
+  fecha           String // YYYY-MM-DD
+  hora            String // HH:mm
   totalVendido    Float
   efectivo        Float
   yapePlin        Float

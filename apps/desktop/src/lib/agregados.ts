@@ -1,22 +1,19 @@
-// Agregados que se cobran aparte por plato. Cada uno debe existir como insumo con el
-// mismo nombre: así se descuenta su stock y se guarda como extra del ítem.
-export const AGREGADOS_DISPONIBLES = [
-  { nombre: "Queso Amarillo", precio: 0.75 },
-  { nombre: "Plátano Maduro", precio: 0.75 },
-  { nombre: "Carne Mechada", precio: 1.50 },
-  { nombre: "Pollo Desmechado", precio: 1.50 },
-  { nombre: "Tocineta", precio: 1.00 },
-  { nombre: "Chicharrón", precio: 1.00 },
-];
+import type { Agregado, Insumo } from "../store/usePosStore";
 
-const normalizar = (s: string) => s.trim().toLowerCase();
-
-// Solo se ofrecen los agregados que tienen su insumo en inventario y con stock. Si no,
-// el carrito los mostraba con precio pero al enviar se descartaban sin cobrarse (o el
-// backend rechazaba la tanda por falta de stock).
-export function agregadosConInsumo(insumos: { nombre: string; stockActual: number }[]) {
-  const nombres = new Set(
-    insumos.filter((i) => i.stockActual >= 1).map((i) => normalizar(i.nombre))
-  );
-  return AGREGADOS_DISPONIBLES.filter((a) => nombres.has(normalizar(a.nombre)));
+// Agregados que se pueden ofrecer ahora: activos y con stock para al menos uno.
+// Si no, el carrito los mostraría con precio pero el backend rechazaría la tanda.
+export function agregadosDisponibles(agregados: Agregado[], insumos: Insumo[]) {
+  const stock = new Map(insumos.map((i) => [i.id, i.stockActual]));
+  return agregados.filter((a) => a.activo && (stock.get(a.insumoId) ?? 0) >= a.consumo);
 }
+
+// Precio por unidad del plato de los agregados elegidos (se guardan por nombre en el carrito)
+export const precioAgregados = (elegidos: string[], agregados: Agregado[]) =>
+  elegidos.reduce((sum, nombre) => sum + (agregados.find((a) => a.nombre === nombre)?.precio ?? 0), 0);
+
+// Extras para el pedido; el servidor completa el precio y el consumo desde el agregado
+export const extrasDeAgregados = (elegidos: string[], agregados: Agregado[]) =>
+  elegidos.flatMap((nombre) => {
+    const a = agregados.find((x) => x.nombre === nombre);
+    return a ? [{ insumoId: a.insumoId, agregadoId: a.id, cantidad: 1, precioExtra: a.precio }] : [];
+  });

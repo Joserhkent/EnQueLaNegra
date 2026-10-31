@@ -69,6 +69,7 @@ export default function App() {
     logout: storeLogout,
     fetchProductos,
     fetchInsumos,
+    fetchAgregados,
     fetchPedidos,
     fetchMesas,
     fetchCajaEstado,
@@ -92,13 +93,14 @@ export default function App() {
     Promise.all([
       fetchProductos(),
       fetchInsumos(),
+      fetchAgregados(),
       fetchPedidos(),
       fetchMesas(),
       fetchCajaEstado(),
     ])
       .then(() => console.log("✅ Toda la base de datos cargada con éxito"))
       .catch((error) => console.error("❌ Error al cargar la base de datos:", error));
-  }, [sesionActiva, fetchProductos, fetchInsumos, fetchPedidos, fetchMesas, fetchCajaEstado]);
+  }, [sesionActiva, fetchProductos, fetchInsumos, fetchAgregados, fetchPedidos, fetchMesas, fetchCajaEstado]);
 
   const handleLogin = async (username: string, password: string): Promise<boolean> => {
     setAuthError("");

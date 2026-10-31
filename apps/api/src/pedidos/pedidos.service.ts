@@ -16,6 +16,7 @@ import {
 import { formatFecha, formatHora } from '../common/date';
 import { itemLineTotal, splitIgv } from '../common/order-totals';
 import { resolverProductos } from '../common/productos';
+import { resolverAgregados } from '../common/agregados';
 import {
   assertStockSuficiente,
   descontarStock,
@@ -84,6 +85,7 @@ export class PedidosService {
     const hora = formatHora(now);
 
     // Productos resueltos contra el catálogo en UNA sola consulta, con su precio real.
+    await resolverAgregados(this.prisma, dto.items);
     const itemsWithProductoId = await resolverProductos(this.prisma, dto.items);
 
     // Insumo -> cantidad total a descontar, calculado en memoria (1 sola consulta
@@ -150,6 +152,7 @@ export class PedidosService {
               insumoId: extra.insumoId,
               cantidad: extra.cantidad ?? 1,
               precioExtra: extra.precioExtra ?? 0,
+              consumo: extra.consumo ?? 1,
             })),
           }
         : undefined,
@@ -325,7 +328,10 @@ export class PedidosService {
         }
       }
       for (const extra of item.extras ?? []) {
-        acumular(extra.insumoId, (extra.cantidad ?? 1) * item.cantidad);
+        acumular(
+          extra.insumoId,
+          (extra.consumo ?? 1) * (extra.cantidad ?? 1) * item.cantidad,
+        );
       }
     }
 

@@ -23,6 +23,7 @@ import { UpdateTableDto } from './dto/update-table.dto';
 import { formatFecha, formatHora } from '../common/date';
 import { itemLineTotal, round2, splitIgv } from '../common/order-totals';
 import { resolverProductos } from '../common/productos';
+import { resolverAgregados } from '../common/agregados';
 import {
   assertStockSuficiente,
   descontarStock,
@@ -355,7 +356,9 @@ export class MesasService {
           },
         },
       }),
-      resolverProductos(this.prisma, dto.items),
+      resolverAgregados(this.prisma, dto.items).then(() =>
+        resolverProductos(this.prisma, dto.items),
+      ),
     ]);
 
     if (!table) throw new NotFoundException('Mesa no encontrada');
@@ -383,6 +386,7 @@ export class MesasService {
               insumoId: extra.insumoId,
               cantidad: extra.cantidad ?? 1,
               precioExtra: extra.precioExtra ?? 0,
+              consumo: extra.consumo ?? 1,
             })),
           }
         : undefined,
@@ -783,7 +787,7 @@ export class MesasService {
   private async buildAdjustOps(
     item: {
       productoId: string;
-      extras: { insumoId: string; cantidad: number }[];
+      extras: { insumoId: string; cantidad: number; consumo: number }[];
     },
     cantidadDelta: number,
     userId: string | undefined,
@@ -800,7 +804,7 @@ export class MesasService {
     for (const r of recetas)
       acumular(r.insumoId, r.cantidadRequerida * cantidadDelta);
     for (const e of item.extras)
-      acumular(e.insumoId, e.cantidad * cantidadDelta);
+      acumular(e.insumoId, e.consumo * e.cantidad * cantidadDelta);
 
     if (deltas.size === 0) return [];
 
@@ -892,7 +896,10 @@ export class MesasService {
         }
       }
       for (const extra of item.extras ?? []) {
-        acumular(extra.insumoId, (extra.cantidad ?? 1) * item.cantidad);
+        acumular(
+          extra.insumoId,
+          (extra.consumo ?? 1) * (extra.cantidad ?? 1) * item.cantidad,
+        );
       }
     }
 

@@ -69,8 +69,23 @@ export interface OrderItemExtra {
   insumoId: string;
   cantidad: number;
   precioExtra: number;
+  // Al pedir: el servidor toma precio, insumo y consumo de este agregado
+  agregadoId?: string;
   insumo?: { nombre: string };
 }
+
+// Agregado que se cobra aparte ("+ tocineta"); consumo en la unidad del insumo
+export interface Agregado {
+  id: string;
+  nombre: string;
+  precio: number;
+  insumoId: string;
+  consumo: number;
+  activo: boolean;
+  orden: number;
+}
+
+export type AgregadoDatos = Omit<Agregado, "id" | "orden">;
 
 export interface OrderItem {
   id?: string;
@@ -264,6 +279,12 @@ interface PosStore {
   deleteProduct: (id: string) => Promise<void>;
 
   fetchCategorias: () => Promise<void>;
+
+  agregados: Agregado[];
+  fetchAgregados: () => Promise<void>;
+  // Crea (id null) o edita un agregado. Devuelve null o el error.
+  guardarAgregado: (id: string | null, datos: Partial<AgregadoDatos>) => Promise<string | null>;
+  borrarAgregado: (id: string) => Promise<string | null>;
   addCategoria: (nombre: string, tipo: "PRODUCTO" | "INSUMO") => Promise<boolean>;
   deleteCategoria: (id: string) => Promise<boolean>;
 
@@ -407,6 +428,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
   insumos: [],
   productos: [],
   categorias: [],
+  agregados: [],
   movimientos: [],
   pedidos: [],
   cierresCaja: [],
@@ -909,6 +931,45 @@ export const usePosStore = create<PosStore>((set, get) => ({
       });
       if (!res.ok) return await mensajeError(res, "No se pudo guardar");
       await Promise.all([get().fetchInsumos(), get().fetchMovimientos()]);
+      return null;
+    } catch {
+      return "No se pudo conectar con el servidor";
+    }
+  },
+
+  fetchAgregados: async () => {
+    try {
+      const res = await authFetch(`${API_URL}/agregados`, { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error("Error obteniendo agregados");
+      set({ agregados: await res.json() });
+    } catch (error) {
+      console.error("Error al obtener agregados:", error);
+    }
+  },
+
+  guardarAgregado: async (id, datos) => {
+    try {
+      const res = await authFetch(`${API_URL}/agregados${id ? `/${id}` : ""}`, {
+        method: id ? "PATCH" : "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(datos),
+      });
+      if (!res.ok) return await mensajeError(res, "No se pudo guardar el agregado");
+      await get().fetchAgregados();
+      return null;
+    } catch {
+      return "No se pudo conectar con el servidor";
+    }
+  },
+
+  borrarAgregado: async (id) => {
+    try {
+      const res = await authFetch(`${API_URL}/agregados/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) return await mensajeError(res, "No se pudo borrar el agregado");
+      await get().fetchAgregados();
       return null;
     } catch {
       return "No se pudo conectar con el servidor";

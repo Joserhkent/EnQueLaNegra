@@ -4,20 +4,21 @@ import { join } from 'node:path';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-// Exporta la carta actual de la base (categorías, insumos, productos y recetas) a
+// Exporta la carta actual de la base (categorías, insumos, productos, recetas y agregados) a
 // prisma/seed-data/carta.json, que es lo que carga el seed. Solo LEE la base.
 // Uso: npm run carta:exportar  (después de cambiar la carta desde el POS)
 const adapter = new PrismaPg(process.env.DATABASE_URL as string);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const [categorias, insumos, productos] = await Promise.all([
+  const [categorias, insumos, productos, agregados] = await Promise.all([
     prisma.categoria.findMany({ orderBy: [{ tipo: 'asc' }, { orden: 'asc' }, { nombre: 'asc' }] }),
     prisma.insumo.findMany({ include: { categoria: true }, orderBy: { id: 'asc' } }),
     prisma.producto.findMany({
       include: { categoria: true, recetaItems: { orderBy: { insumoId: 'asc' } } },
       orderBy: { sku: 'asc' },
     }),
+    prisma.agregado.findMany({ orderBy: [{ orden: 'asc' }, { nombre: 'asc' }] }),
   ]);
 
   const carta = {
@@ -44,6 +45,14 @@ async function main() {
       descripcion: p.descripcion,
       iconoEmoji: p.iconoEmoji,
       receta: p.recetaItems.map((r) => ({ insumoId: r.insumoId, cantidad: r.cantidadRequerida })),
+    })),
+    agregados: agregados.map((a) => ({
+      nombre: a.nombre,
+      precio: a.precio,
+      insumoId: a.insumoId,
+      consumo: a.consumo,
+      activo: a.activo,
+      orden: a.orden,
     })),
   };
 
