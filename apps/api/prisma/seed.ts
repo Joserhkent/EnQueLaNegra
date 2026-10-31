@@ -15,6 +15,8 @@ interface Carta {
     stockActual: number;
     stockMinimo: number;
     costoUnitario: number;
+    presentacionNombre?: string | null;
+    presentacionCantidad?: number | null;
   }[];
   productos: {
     id: string;

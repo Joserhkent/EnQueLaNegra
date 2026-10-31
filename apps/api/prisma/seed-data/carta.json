@@ -154,7 +154,9 @@
       "unidadMedida": "unidad",
       "stockActual": 108,
       "stockMinimo": 6,
-      "costoUnitario": 4
+      "costoUnitario": 4,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "arroz",
@@ -163,7 +165,9 @@
       "unidadMedida": "g",
       "stockActual": 8000,
       "stockMinimo": 2000,
-      "costoUnitario": 0.04
+      "costoUnitario": 0.04,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "atun",
@@ -172,7 +176,9 @@
       "unidadMedida": "g",
       "stockActual": 5250,
       "stockMinimo": 650,
-      "costoUnitario": 0.0538461538461538
+      "costoUnitario": 0.0538461538461538,
+      "presentacionNombre": "lata",
+      "presentacionCantidad": 130
     },
     {
       "id": "caraotas_negras",
@@ -181,7 +187,9 @@
       "unidadMedida": "g",
       "stockActual": 8000,
       "stockMinimo": 1000,
-      "costoUnitario": 0.04
+      "costoUnitario": 0.04,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carne_bolonesa",
@@ -190,7 +198,9 @@
       "unidadMedida": "porción",
       "stockActual": 20,
       "stockMinimo": 0,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carne_hamburguesa",
@@ -199,7 +209,9 @@
       "unidadMedida": "unidad",
       "stockActual": 39,
       "stockMinimo": 20,
-      "costoUnitario": 8
+      "costoUnitario": 8,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carne_mechada",
@@ -208,7 +220,9 @@
       "unidadMedida": "g",
       "stockActual": 5250,
       "stockMinimo": 1000,
-      "costoUnitario": 0.0533
+      "costoUnitario": 0.0533,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carne_molida",
@@ -217,7 +231,9 @@
       "unidadMedida": "g",
       "stockActual": 4500,
       "stockMinimo": 1000,
-      "costoUnitario": 0.0533
+      "costoUnitario": 0.0533,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carne_shawarma",
@@ -226,7 +242,9 @@
       "unidadMedida": "g",
       "stockActual": 3750,
       "stockMinimo": 1500,
-      "costoUnitario": 0.08
+      "costoUnitario": 0.08,
+      "presentacionNombre": "porción",
+      "presentacionCantidad": 150
     },
     {
       "id": "carta_beb_agua",
@@ -235,7 +253,9 @@
       "unidadMedida": "unidad",
       "stockActual": 10,
       "stockMinimo": 10,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_coca_1500",
@@ -244,7 +264,9 @@
       "unidadMedida": "unidad",
       "stockActual": 12,
       "stockMinimo": 10,
-      "costoUnitario": 12
+      "costoUnitario": 12,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_coca_500",
@@ -253,7 +275,9 @@
       "unidadMedida": "unidad",
       "stockActual": 18,
       "stockMinimo": 10,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_coca_personal",
@@ -262,7 +286,9 @@
       "unidadMedida": "unidad",
       "stockActual": 36,
       "stockMinimo": 5,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_fanta",
@@ -271,7 +297,9 @@
       "unidadMedida": "unidad",
       "stockActual": 24,
       "stockMinimo": 10,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_frescolita",
@@ -280,7 +308,9 @@
       "unidadMedida": "unidad",
       "stockActual": 24,
       "stockMinimo": 10,
-      "costoUnitario": 10
+      "costoUnitario": 10,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_inca_1500",
@@ -289,7 +319,9 @@
       "unidadMedida": "unidad",
       "stockActual": 12,
       "stockMinimo": 10,
-      "costoUnitario": 12
+      "costoUnitario": 12,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_inca_500",
@@ -298,7 +330,9 @@
       "unidadMedida": "unidad",
       "stockActual": 18,
       "stockMinimo": 10,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_inca_personal",
@@ -307,7 +341,9 @@
       "unidadMedida": "unidad",
       "stockActual": 36,
       "stockMinimo": 5,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_malta",
@@ -316,7 +352,9 @@
       "unidadMedida": "unidad",
       "stockActual": 24,
       "stockMinimo": 10,
-      "costoUnitario": 10
+      "costoUnitario": 10,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_sporade",
@@ -325,7 +363,9 @@
       "unidadMedida": "unidad",
       "stockActual": 18,
       "stockMinimo": 10,
-      "costoUnitario": 4
+      "costoUnitario": 4,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_beb_sprite",
@@ -334,7 +374,9 @@
       "unidadMedida": "unidad",
       "stockActual": 24,
       "stockMinimo": 10,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_chorizo",
@@ -343,7 +385,9 @@
       "unidadMedida": "tajada",
       "stockActual": 73,
       "stockMinimo": 30,
-      "costoUnitario": 0.75
+      "costoUnitario": 0.75,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_diablito",
@@ -352,7 +396,9 @@
       "unidadMedida": "g",
       "stockActual": 1800,
       "stockMinimo": 600,
-      "costoUnitario": 0.1
+      "costoUnitario": 0.1,
+      "presentacionNombre": "porción",
+      "presentacionCantidad": 120
     },
     {
       "id": "carta_fresa",
@@ -361,7 +407,9 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 0.008
+      "costoUnitario": 0.008,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_guayaba",
@@ -370,7 +418,9 @@
       "unidadMedida": "g",
       "stockActual": 3000,
       "stockMinimo": 450,
-      "costoUnitario": 0.008
+      "costoUnitario": 0.008,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_leche",
@@ -379,7 +429,9 @@
       "unidadMedida": "ml",
       "stockActual": 6000,
       "stockMinimo": 0,
-      "costoUnitario": 0.005
+      "costoUnitario": 0.005,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_limon",
@@ -388,7 +440,9 @@
       "unidadMedida": "unidad",
       "stockActual": 90,
       "stockMinimo": 30,
-      "costoUnitario": 0.266666666666667
+      "costoUnitario": 0.266666666666667,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_mango",
@@ -397,7 +451,9 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 0.008
+      "costoUnitario": 0.008,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_maracuya",
@@ -406,7 +462,9 @@
       "unidadMedida": "unidad",
       "stockActual": 30,
       "stockMinimo": 10,
-      "costoUnitario": 0.8
+      "costoUnitario": 0.8,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_melon",
@@ -415,7 +473,9 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 0.008
+      "costoUnitario": 0.008,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_papaya",
@@ -424,7 +484,9 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 0.008
+      "costoUnitario": 0.008,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_papelon",
@@ -433,7 +495,9 @@
       "unidadMedida": "bola",
       "stockActual": 10,
       "stockMinimo": 0,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_pina",
@@ -442,7 +506,9 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 0.008
+      "costoUnitario": 0.008,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_salchicha_ahumada",
@@ -451,7 +517,9 @@
       "unidadMedida": "unidad",
       "stockActual": 30,
       "stockMinimo": 30,
-      "costoUnitario": 4
+      "costoUnitario": 4,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "carta_tallarin",
@@ -460,7 +528,9 @@
       "unidadMedida": "g",
       "stockActual": 3750,
       "stockMinimo": 2000,
-      "costoUnitario": 0.032
+      "costoUnitario": 0.032,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "chicharron",
@@ -469,7 +539,9 @@
       "unidadMedida": "g",
       "stockActual": 3000,
       "stockMinimo": 750,
-      "costoUnitario": 0.0667
+      "costoUnitario": 0.0667,
+      "presentacionNombre": "porción",
+      "presentacionCantidad": 150
     },
     {
       "id": "chuleta_cerdo",
@@ -478,7 +550,9 @@
       "unidadMedida": "unidad",
       "stockActual": 15,
       "stockMinimo": 10,
-      "costoUnitario": 12
+      "costoUnitario": 12,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "costillas",
@@ -487,7 +561,9 @@
       "unidadMedida": "presa",
       "stockActual": 15,
       "stockMinimo": 10,
-      "costoUnitario": 12
+      "costoUnitario": 12,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_aceituna",
@@ -496,7 +572,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_aji_esp",
@@ -505,7 +583,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_bbq",
@@ -514,7 +594,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_golf",
@@ -523,7 +605,9 @@
       "unidadMedida": "ml",
       "stockActual": 3000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_huancaina",
@@ -532,7 +616,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_maiz",
@@ -541,7 +627,9 @@
       "unidadMedida": "g",
       "stockActual": 1000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_queso",
@@ -550,7 +638,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_rocoto",
@@ -559,7 +649,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_tartara",
@@ -568,7 +660,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_tocino",
@@ -577,7 +671,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "crema_vinagreta",
@@ -586,7 +682,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "ensalada_lechuga_tomate_cebolla",
@@ -595,7 +693,9 @@
       "unidadMedida": "g",
       "stockActual": 3050,
       "stockMinimo": 0,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "ensalada_rusa",
@@ -604,7 +704,9 @@
       "unidadMedida": "g",
       "stockActual": 2500,
       "stockMinimo": 250,
-      "costoUnitario": 0.05
+      "costoUnitario": 0.05,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "huevo",
@@ -613,7 +715,9 @@
       "unidadMedida": "unidad",
       "stockActual": 58,
       "stockMinimo": 30,
-      "costoUnitario": 2
+      "costoUnitario": 2,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "jamon",
@@ -622,7 +726,9 @@
       "unidadMedida": "tajada",
       "stockActual": 113,
       "stockMinimo": 30,
-      "costoUnitario": 1.25
+      "costoUnitario": 1.25,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "ketchup",
@@ -631,7 +737,9 @@
       "unidadMedida": "ml",
       "stockActual": 3000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "masa_arepa",
@@ -640,7 +748,9 @@
       "unidadMedida": "g",
       "stockActual": 14100,
       "stockMinimo": 1500,
-      "costoUnitario": 0.04
+      "costoUnitario": 0.04,
+      "presentacionNombre": "porción",
+      "presentacionCantidad": 150
     },
     {
       "id": "masa_cachapa",
@@ -649,7 +759,9 @@
       "unidadMedida": "g",
       "stockActual": 12000,
       "stockMinimo": 6000,
-      "costoUnitario": 0.05
+      "costoUnitario": 0.05,
+      "presentacionNombre": "porción",
+      "presentacionCantidad": 300
     },
     {
       "id": "masa_empanada",
@@ -658,7 +770,9 @@
       "unidadMedida": "g",
       "stockActual": 6000,
       "stockMinimo": 2000,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "masa_pastelito",
@@ -667,7 +781,9 @@
       "unidadMedida": "unidad",
       "stockActual": 50,
       "stockMinimo": 30,
-      "costoUnitario": 4
+      "costoUnitario": 4,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "mayonesa",
@@ -676,7 +792,9 @@
       "unidadMedida": "ml",
       "stockActual": 4000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "mondongo",
@@ -685,7 +803,9 @@
       "unidadMedida": "g",
       "stockActual": 3000,
       "stockMinimo": 1000,
-      "costoUnitario": 0.05
+      "costoUnitario": 0.05,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "mostaza",
@@ -694,7 +814,9 @@
       "unidadMedida": "ml",
       "stockActual": 2000,
       "stockMinimo": 300,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "pan_arabe",
@@ -703,7 +825,9 @@
       "unidadMedida": "unidad",
       "stockActual": 35,
       "stockMinimo": 20,
-      "costoUnitario": 8
+      "costoUnitario": 8,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "pan_hamburguesa",
@@ -712,7 +836,9 @@
       "unidadMedida": "unidad",
       "stockActual": 44,
       "stockMinimo": 20,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "pan_pepito",
@@ -721,7 +847,9 @@
       "unidadMedida": "unidad",
       "stockActual": 40,
       "stockMinimo": 10,
-      "costoUnitario": 8
+      "costoUnitario": 8,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "pan_perro",
@@ -730,7 +858,9 @@
       "unidadMedida": "unidad",
       "stockActual": 40,
       "stockMinimo": 20,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "papas_fritas",
@@ -739,7 +869,9 @@
       "unidadMedida": "g",
       "stockActual": 16000,
       "stockMinimo": 1000,
-      "costoUnitario": 0.075
+      "costoUnitario": 0.075,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "papas_ralladas",
@@ -748,7 +880,9 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 1000,
-      "costoUnitario": 0.03
+      "costoUnitario": 0.03,
+      "presentacionNombre": "porción",
+      "presentacionCantidad": 100
     },
     {
       "id": "pasta_lasagna",
@@ -757,7 +891,9 @@
       "unidadMedida": "unidad",
       "stockActual": 20,
       "stockMinimo": 10,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "platano_maduro",
@@ -766,7 +902,9 @@
       "unidadMedida": "unidad",
       "stockActual": 30,
       "stockMinimo": 10,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "platano_verde",
@@ -775,7 +913,9 @@
       "unidadMedida": "unidad",
       "stockActual": 35,
       "stockMinimo": 10,
-      "costoUnitario": 6
+      "costoUnitario": 6,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "pollo_desmechado",
@@ -784,7 +924,9 @@
       "unidadMedida": "g",
       "stockActual": 7200,
       "stockMinimo": 1000,
-      "costoUnitario": 0.04
+      "costoUnitario": 0.04,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "pollo_picado",
@@ -793,7 +935,9 @@
       "unidadMedida": "g",
       "stockActual": 5110,
       "stockMinimo": 0,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "pollo_shawarma",
@@ -802,7 +946,9 @@
       "unidadMedida": "g",
       "stockActual": 3750,
       "stockMinimo": 750,
-      "costoUnitario": 0.0667
+      "costoUnitario": 0.0667,
+      "presentacionNombre": "porción",
+      "presentacionCantidad": 150
     },
     {
       "id": "queso_chedar",
@@ -811,7 +957,9 @@
       "unidadMedida": "lámina",
       "stockActual": 59,
       "stockMinimo": 15,
-      "costoUnitario": 5
+      "costoUnitario": 5,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "queso_de_mano",
@@ -820,7 +968,9 @@
       "unidadMedida": "unidad",
       "stockActual": 40,
       "stockMinimo": 15,
-      "costoUnitario": 7
+      "costoUnitario": 7,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "queso_edam",
@@ -829,7 +979,9 @@
       "unidadMedida": "g",
       "stockActual": 4500,
       "stockMinimo": 1000,
-      "costoUnitario": 0.0467
+      "costoUnitario": 0.0467,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "queso_fresquito",
@@ -838,7 +990,9 @@
       "unidadMedida": "g",
       "stockActual": 3000,
       "stockMinimo": 1000,
-      "costoUnitario": 0
+      "costoUnitario": 0,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "queso_rallar",
@@ -847,7 +1001,9 @@
       "unidadMedida": "g",
       "stockActual": 8000,
       "stockMinimo": 1000,
-      "costoUnitario": 0.05
+      "costoUnitario": 0.05,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "repollo",
@@ -856,7 +1012,9 @@
       "unidadMedida": "g",
       "stockActual": 2800,
       "stockMinimo": 250,
-      "costoUnitario": 0.04
+      "costoUnitario": 0.04,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "salchicha",
@@ -865,7 +1023,9 @@
       "unidadMedida": "unidad",
       "stockActual": 30,
       "stockMinimo": 30,
-      "costoUnitario": 3
+      "costoUnitario": 3,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "salchicha_perro",
@@ -874,7 +1034,9 @@
       "unidadMedida": "unidad",
       "stockActual": 35,
       "stockMinimo": 30,
-      "costoUnitario": 3
+      "costoUnitario": 3,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     },
     {
       "id": "tocino",
@@ -883,7 +1045,9 @@
       "unidadMedida": "tajada",
       "stockActual": 73,
       "stockMinimo": 30,
-      "costoUnitario": 1.75
+      "costoUnitario": 1.75,
+      "presentacionNombre": null,
+      "presentacionCantidad": null
     }
   ],
   "productos": [

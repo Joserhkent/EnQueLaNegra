@@ -1,5 +1,5 @@
 import type { Insumo } from "../store/usePosStore";
-import { factorDe, leerNumero, tienePresentacion, type OpcionUnidad } from "./cantidades";
+import { factorDe, leerNumero, opcionesUnidad, tienePresentacion, type OpcionUnidad } from "./cantidades";
 
 // Cada ingrediente como se escribe en pantalla; al guardar se pasa a la unidad del insumo
 export type LineaReceta = { insumoId: string; valor: string; clave: OpcionUnidad["clave"] };
@@ -20,3 +20,7 @@ export const cantidadBaseLinea = (insumo: Insumo | undefined, linea: LineaReceta
   if (n === null || n <= 0) return null;
   return insumo ? n * factorDe(insumo, linea.clave) : n;
 };
+
+// En una receta se piensa en g, ml, unidades o en la porción/lata del insumo;
+// kg y L sirven para comprar y contar, no para un plato.
+export const opcionesReceta = (insumo: Insumo) => opcionesUnidad(insumo).filter((o) => o.clave !== "grande");

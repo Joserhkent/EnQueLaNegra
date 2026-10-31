@@ -30,6 +30,8 @@ async function main() {
       stockActual: i.stockActual,
       stockMinimo: i.stockMinimo,
       costoUnitario: i.costoUnitario,
+      presentacionNombre: i.presentacionNombre,
+      presentacionCantidad: i.presentacionCantidad,
     })),
     productos: productos.map((p) => ({
       id: p.id,
