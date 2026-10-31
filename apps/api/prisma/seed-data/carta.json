@@ -233,7 +233,7 @@
       "nombre": "Agua Personal",
       "categoria": "Bebidas envasadas",
       "unidadMedida": "unidad",
-      "stockActual": 24,
+      "stockActual": 10,
       "stockMinimo": 10,
       "costoUnitario": 5
     },
@@ -361,7 +361,7 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 8
+      "costoUnitario": 0.008
     },
     {
       "id": "carta_guayaba",
@@ -370,7 +370,7 @@
       "unidadMedida": "g",
       "stockActual": 3000,
       "stockMinimo": 450,
-      "costoUnitario": 8
+      "costoUnitario": 0.008
     },
     {
       "id": "carta_leche",
@@ -379,7 +379,7 @@
       "unidadMedida": "ml",
       "stockActual": 6000,
       "stockMinimo": 0,
-      "costoUnitario": 5
+      "costoUnitario": 0.005
     },
     {
       "id": "carta_limon",
@@ -397,7 +397,7 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 8
+      "costoUnitario": 0.008
     },
     {
       "id": "carta_maracuya",
@@ -415,7 +415,7 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 8
+      "costoUnitario": 0.008
     },
     {
       "id": "carta_papaya",
@@ -424,7 +424,7 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 8
+      "costoUnitario": 0.008
     },
     {
       "id": "carta_papelon",
@@ -442,7 +442,7 @@
       "unidadMedida": "g",
       "stockActual": 4000,
       "stockMinimo": 450,
-      "costoUnitario": 8
+      "costoUnitario": 0.008
     },
     {
       "id": "carta_salchicha_ahumada",
@@ -1910,14 +1910,67 @@
     {
       "id": "HB02",
       "sku": "CARTA_HAMB_FULL_01",
-      "nombre": "Hamburguesa full",
+      "nombre": "Hamburguesa full de pollo",
       "categoria": "Hamburguesas",
       "precio": 22,
       "isAvailable": true,
       "isPopular": true,
-      "descripcion": "Pollo, huevo, jamón, tocino, queso cheddar, chorizo, ensalada y cremas al gusto.",
+      "descripcion": "Pollo picado, huevo, jamón, tocino, queso cheddar, chorizo, ensalada y cremas al gusto.",
       "iconoEmoji": "🍔",
       "receta": [
+        {
+          "insumoId": "carta_chorizo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "ensalada_lechuga_tomate_cebolla",
+          "cantidad": 50
+        },
+        {
+          "insumoId": "huevo",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "jamon",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "pan_hamburguesa",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "papas_fritas",
+          "cantidad": 200
+        },
+        {
+          "insumoId": "pollo_picado",
+          "cantidad": 110
+        },
+        {
+          "insumoId": "queso_chedar",
+          "cantidad": 1
+        },
+        {
+          "insumoId": "tocino",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "HB04",
+      "sku": "CARTA_HAMB_FULL_CARNE_01",
+      "nombre": "Hamburguesa full de carne",
+      "categoria": "Hamburguesas",
+      "precio": 22,
+      "isAvailable": true,
+      "isPopular": false,
+      "descripcion": "Carne (medallón), huevo, jamón, tocino, queso cheddar, chorizo, ensalada y cremas al gusto.",
+      "iconoEmoji": "🍔",
+      "receta": [
+        {
+          "insumoId": "carne_hamburguesa",
+          "cantidad": 1
+        },
         {
           "insumoId": "carta_chorizo",
           "cantidad": 1
@@ -1966,6 +2019,10 @@
         {
           "insumoId": "carne_hamburguesa",
           "cantidad": 1
+        },
+        {
+          "insumoId": "carta_chorizo",
+          "cantidad": 2
         },
         {
           "insumoId": "ensalada_lechuga_tomate_cebolla",
