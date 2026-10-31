@@ -28,7 +28,16 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
   let prod2: { id: string; sku: string; nombre: string; precio: number };
   let receta: { insumoId: string; cantidadRequerida: number }[];
   let mesas: { id: string; number: number }[];
-  const extra = { insumoId: 'platano_maduro', cantidad: 1, precioExtra: 0.75 };
+  // Agregado real (se activa en beforeAll): el servidor pone precio, insumo y consumo
+  const extra = {
+    insumoId: 'platano_maduro',
+    cantidad: 1,
+    precioExtra: 0.75,
+    agregadoId: '',
+  };
+  let consumoExtra = 0;
+  // Stock holgado: las recetas van en gramos (una arepa lleva 150 g de masa)
+  const STOCK_HOLGADO = 100000;
 
   const api = (
     method: 'get' | 'post' | 'patch' | 'delete',
@@ -75,7 +84,13 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     await app.init();
     db = new Pool({ connectionString: TEST_DB });
     // Stock holgado para los flujos; el bloqueo sin stock se prueba aparte
-    await db.query('update "Insumo" set "stockActual" = 100');
+    await db.query('update "Insumo" set "stockActual" = $1', [STOCK_HOLGADO]);
+    const [agregado] = await q<{ id: string; consumo: number }>(
+      `update "Agregado" set activo = true, precio = 0.75
+       where "insumoId" = 'platano_maduro' returning id, consumo`,
+    );
+    extra.agregadoId = agregado.id;
+    consumoExtra = agregado.consumo;
 
     [prod] =
       await q(`select id,sku,nombre,precio from "Producto" p where "isAvailable"
@@ -164,7 +179,7 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     expect(r.body.currentOrder.total).toBeCloseTo((prod.precio + 0.75) * 2, 2);
     const esperado =
       receta[0].cantidadRequerida * 2 +
-      (receta[0].insumoId === extra.insumoId ? 2 : 0);
+      (receta[0].insumoId === extra.insumoId ? consumoExtra * 2 : 0);
     expect(antes - (await stock(receta[0].insumoId))).toBeCloseTo(esperado, 5);
   });
 
@@ -185,6 +200,49 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     await api('post', `/tables/${mesas[0].id}/items`, empleado, {
       items: [],
     }).expect(400);
+  });
+
+  it('agregados: el precio lo pone el servidor y no se aceptan extras sueltos', async () => {
+    const mesa = mesas[6].id;
+    await api('post', `/tables/${mesa}/open`, empleado, {}).expect(201);
+    // Un celular alterado manda el agregado a S/ 0: se cobra el precio real
+    const r = await api('post', `/tables/${mesa}/items`, empleado, {
+      items: [item(prod, 1, [{ ...extra, precioExtra: 0, cantidad: 0 }])],
+    }).expect(201);
+    expect(r.body.currentOrder.total).toBeCloseTo(prod.precio + 0.75, 2);
+    // Extra sin agregado (insumo y precio a gusto del cliente): se rechaza
+    await api('post', `/tables/${mesa}/items`, empleado, {
+      items: [
+        item(prod, 1, [
+          { insumoId: 'carne_mechada', cantidad: 5, precioExtra: 0 },
+        ]),
+      ],
+    }).expect(400);
+    await api('post', '/pedidos', empleado, {
+      type: 'LLEVAR',
+      paymentMethod: 'EFECTIVO',
+      items: [
+        item(prod, 1, [
+          { insumoId: 'carne_mechada', cantidad: 5, precioExtra: 0 },
+        ]),
+      ],
+    }).expect(400);
+    // Agregado apagado por la jefa: ya no se puede pedir
+    await q('update "Agregado" set activo = false where id = $1', [
+      extra.agregadoId,
+    ]);
+    await api('post', `/tables/${mesa}/items`, empleado, {
+      items: [item(prod, 1, [extra])],
+    }).expect(400);
+    await q('update "Agregado" set activo = true where id = $1', [
+      extra.agregadoId,
+    ]);
+    // Se deja la mesa libre para los flujos siguientes
+    await api(
+      'delete',
+      `/tables/${mesa}/items/${r.body.currentOrder.items[0].id}`,
+      empleado,
+    ).expect(200);
   });
 
   it('pagos parciales: sin MIXTO, sin pasarse del saldo y sin bajar la cuenta', async () => {
@@ -386,7 +444,10 @@ describeSiHayBase('Flujos del POS (e2e)', () => {
     await api('delete', `/tables/${mesa}/items/${itemId}`, empleado).expect(
       200,
     );
-    await q('update "Insumo" set "stockActual"=100 where id=$1', [insumo]);
+    await q('update "Insumo" set "stockActual"=$2 where id=$1', [
+      insumo,
+      STOCK_HOLGADO,
+    ]);
   });
 
   it('permisos: el empleado opera pero no administra el catálogo', async () => {

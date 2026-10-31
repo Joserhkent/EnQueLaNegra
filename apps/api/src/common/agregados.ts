@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma.service';
 
 type ExtraEntrante = {
   insumoId: string;
+  cantidad?: number;
   precioExtra?: number;
   agregadoId?: string;
   consumo?: number;
@@ -16,6 +17,13 @@ export async function resolverAgregados(
   items: { extras?: ExtraEntrante[] }[],
 ) {
   const extras = items.flatMap((i) => i.extras ?? []);
+  // Todo extra debe venir de un agregado de la carta. Uno suelto traería el
+  // insumo, la cantidad y el precio que quiera el cliente (p. ej. carne a S/ 0).
+  if (extras.some((e) => !e.agregadoId)) {
+    throw new BadRequestException(
+      'Uno de los agregados ya no está disponible. Actualiza la pantalla.',
+    );
+  }
   const ids = [
     ...new Set(extras.map((e) => e.agregadoId).filter(Boolean)),
   ] as string[];
@@ -34,6 +42,8 @@ export async function resolverAgregados(
       );
     }
     extra.insumoId = agregado.insumoId;
+    // Un agregado es una porción por plato; la cantidad no la decide el cliente
+    extra.cantidad = 1;
     extra.precioExtra = agregado.precio;
     extra.consumo = agregado.consumo;
   }
