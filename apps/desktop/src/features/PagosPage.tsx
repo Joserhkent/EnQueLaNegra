@@ -5,7 +5,6 @@ import {
   Lock,
   Unlock,
   Search,
-  Calculator,
   X,
   Coins,
   AlertCircle,
@@ -23,21 +22,6 @@ export default function PagosPage() {
   const [methodFilter, setMethodFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<"hoy" | "semana" | "mes" | "custom">("hoy");
   const [customDate, setCustomDate] = useState<string>("");
-
-  // Vuelto Calculator Modal
-  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
-  const [orderAmount, setOrderAmount] = useState<string | number>("");
-  const [cashReceived, setCashReceived] = useState<string | number>("");
-
-  // Acepta coma o punto decimal: el teclado del celular en español escribe "35,50"
-  const toMonto = (v: string | number) =>
-    typeof v === "number" ? v : (parseFloat(v.replace(",", ".")) || 0);
-  const numOrderAmount = toMonto(orderAmount);
-  const numCashReceived = toMonto(cashReceived);
-  const changeValue = Math.max(0, numCashReceived - numOrderAmount);
-  const faltaCobrar = numCashReceived > 0 && numCashReceived < numOrderAmount
-    ? numOrderAmount - numCashReceived
-    : 0;
 
   // Abrir Caja Modal
   const [isOpenShiftModalOpen, setIsOpenShiftModalOpen] = useState(false);
@@ -187,14 +171,6 @@ export default function PagosPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setIsCalculatorOpen(true)}
-            className="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-semibold px-4 py-2.5 rounded-md text-sm transition-colors"
-          >
-            <Calculator className="w-4 h-4 text-slate-500" />
-            Vuelto
-          </button>
-
           {isCajaOpen ? (
             <button
               onClick={handleOpenCloseModal}
@@ -453,100 +429,6 @@ export default function PagosPage() {
           </table>
         </div>
       </div>
-
-      {/* CALCULADORA DE VUELTO MODAL */}
-      {isCalculatorOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-lg shadow-xl border border-slate-200 overflow-hidden">
-            <div className="px-6 py-5 bg-slate-900 text-white flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
-                  <Calculator className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-sm">Calcular vuelto</h3>
-              </div>
-              <button
-                onClick={() => setIsCalculatorOpen(false)}
-                className="p-1.5 rounded-lg bg-white/10 text-slate-400 hover:text-white transition"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 mb-1">
-                  Total de la venta (S/)
-                </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  autoFocus
-                  value={orderAmount}
-                  onChange={(e) => setOrderAmount(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 mb-1">
-                  Efectivo recibido (S/)
-                </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={cashReceived}
-                  onChange={(e) => setCashReceived(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                />
-              </div>
-
-              {/* Botones rápidos */}
-              <div className="flex gap-2">
-                {[10, 20, 50, 100].map((b) => (
-                  <button
-                    key={b}
-                    onClick={() => setCashReceived(b)}
-                    className="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-md text-xs font-bold text-slate-700 transition"
-                  >
-                    S/ {b}
-                  </button>
-                ))}
-              </div>
-
-              {/* Vuelto Display */}
-              {faltaCobrar > 0 ? (
-                <div className="bg-rose-50 border border-rose-200 p-4 rounded-lg text-center space-y-1">
-                  <span className="text-[11px] font-bold text-rose-800">Falta cobrar</span>
-                  <div className="text-3xl font-display text-rose-600">
-                    S/ {faltaCobrar.toFixed(2)}
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-lg text-center space-y-1">
-                  <span className="text-[11px] font-bold text-emerald-800">Vuelto</span>
-                  <div className="text-3xl font-display text-emerald-600">
-                    S/ {changeValue.toFixed(2)}
-                  </div>
-                </div>
-              )}
-
-              <button
-                onClick={() => {
-                  setOrderAmount("");
-                  setCashReceived("");
-                  setIsCalculatorOpen(false);
-                }}
-                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs transition"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* MODAL APERTURA DE CAJA */}
       {isOpenShiftModalOpen && (

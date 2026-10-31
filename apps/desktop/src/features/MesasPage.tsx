@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { usePosStore, type Mesa, type Producto, type Order, type OrderItem } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
+import CambioEfectivo from "../components/CambioEfectivo";
 import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
 import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
@@ -1166,6 +1167,17 @@ export default function MesasPage() {
                             </div>
                           </div>
                         </div>
+                      )}
+
+                      {paymentMethod === "Efectivo" && (
+                        <CambioEfectivo
+                          total={checkoutIsPartial
+                            ? (Number.parseFloat(partialPaymentAmount) || remainingAmount)
+                            : remainingAmount}
+                        />
+                      )}
+                      {!checkoutIsPartial && paymentMethod === "Mixto" && (
+                        <CambioEfectivo total={parseFloat(montoEfectivo) || 0} />
                       )}
 
                       <div className="grid grid-cols-2 gap-2">

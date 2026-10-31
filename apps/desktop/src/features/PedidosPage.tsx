@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { usePosStore, type Order, type Producto } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
+import CambioEfectivo from "../components/CambioEfectivo";
 import OrderDetailModal from "../components/OrderDetailModal";
 import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
 import { productoSinStock } from "../lib/stock";
@@ -937,7 +938,7 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                         [
                           { key: "Yape/Plin", label: "Yape/Plin" },
                           { key: "Efectivo", label: "Efectivo" },
-                          { key: "Mixto", label: "🔀 Mixto" },
+                          { key: "Mixto", label: "Mixto" },
                         ] as { key: "Efectivo" | "Yape/Plin" | "Mixto"; label: string }[]
                       ).map((m) => (
                         <button
@@ -997,6 +998,17 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
                             />
                           </div>
                         </div>
+                      </div>
+                    )}
+
+                    {paymentMethod === "Efectivo" && (
+                      <div className="mt-3">
+                        <CambioEfectivo total={calculateCartTotal()} />
+                      </div>
+                    )}
+                    {paymentMethod === "Mixto" && (
+                      <div className="mt-3">
+                        <CambioEfectivo total={parseFloat(montoEfectivo) || 0} />
                       </div>
                     )}
                   </div>

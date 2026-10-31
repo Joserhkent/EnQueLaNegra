@@ -7,7 +7,18 @@ import {
   EyeOff,
   ShieldCheck,
   UserCheck,
+  UtensilsCrossed,
+  ChefHat,
+  Wallet,
+  Boxes,
 } from "lucide-react";
+
+const MODULOS = [
+  { icon: UtensilsCrossed, titulo: "Mesas y pedidos", detalle: "Toma y para llevar" },
+  { icon: ChefHat, titulo: "Cocina", detalle: "Comandas por tanda" },
+  { icon: Wallet, titulo: "Caja", detalle: "Efectivo, Yape y Plin" },
+  { icon: Boxes, titulo: "Inventario", detalle: "Stock por receta" },
+];
 
 type LoginPageProps = {
   onLogin: (username: string, password: string) => Promise<boolean>;
@@ -62,56 +73,72 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-zinc-950 text-zinc-100 flex flex-col lg:flex-row antialiased selection:bg-amber-500 selection:text-zinc-950">
+    <div className="min-h-screen w-full bg-stone-950 text-stone-100 flex flex-col lg:flex-row antialiased selection:bg-amber-500 selection:text-stone-950">
       {/* Columna Izquierda: Información del Restaurante & Módulos (Desktop: Visible en pantalla grande; Móvil: Oculto para que el Login esté arriba sin scroll) */}
       <section 
         aria-label="Información del restaurante y módulos"
-        className="hidden lg:flex lg:w-7/12 xl:w-8/12 p-14 flex-col justify-between bg-black relative overflow-hidden"
+        className="hidden lg:flex lg:w-7/12 xl:w-8/12 px-14 py-12 flex-col bg-[#2a1710] relative overflow-hidden"
       >
-        <div className="franja-marca absolute inset-x-0 top-0 h-1" aria-hidden="true" />
+        <div className="franja-marca absolute inset-x-0 top-0 h-1.5" aria-hidden="true" />
 
-        <img
-          src="/logo.jpg"
-          alt="En que la Negra"
-          className="w-full max-w-xl object-contain"
-        />
+        <p className="text-sm text-amber-400 font-semibold">{formattedDate}</p>
 
-        <div className="space-y-3 max-w-xl">
-          <p className="text-sm text-amber-400 font-semibold">{formattedDate}</p>
+        {/* Logo y eslogan al centro. El logo tiene fondo negro: con mix-blend-screen
+            el negro desaparece sobre el fondo tostado y los colores quedan vivos */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center gap-2 py-8">
+          <img
+            src="/logo.jpg"
+            alt="En que la Negra"
+            className="w-full max-w-2xl object-contain mix-blend-screen"
+          />
           <h1 className="text-5xl xl:text-6xl text-white leading-none">
-            Todo listo para abrir el turno
+            Sabor que nos une
           </h1>
-          <p className="text-base text-zinc-400">
-            Arepas, cachapas y comida venezolana. Lima, Perú.
+          <p className="text-base text-orange-100/70 mt-2">
+            Todo listo para abrir el turno.
           </p>
         </div>
+
+        <ul className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+          {MODULOS.map(({ icon: Icon, titulo, detalle }) => (
+            <li
+              key={titulo}
+              className="flex items-center gap-3 rounded-lg border border-orange-200/15 bg-black/20 px-3.5 py-3"
+            >
+              <span className="w-9 h-9 shrink-0 rounded-md bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                <Icon className="w-4.5 h-4.5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-white">{titulo}</span>
+                <span className="block text-xs text-orange-100/60 truncate">{detalle}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Columna Derecha: Formulario de Login (En móvil: Ocupa toda la pantalla centrada y visible al instante) */}
       <section 
         aria-label="Formulario de inicio de sesión"
-        className="w-full lg:w-5/12 xl:w-4/12 min-h-screen lg:min-h-0 p-5 sm:p-8 lg:p-12 flex flex-col justify-center bg-zinc-950 relative"
+        className="w-full lg:w-5/12 xl:w-4/12 min-h-screen lg:min-h-0 p-5 sm:p-8 lg:p-12 flex flex-col justify-start lg:justify-center bg-stone-950 relative"
       >
-        <div className="w-full max-w-sm mx-auto space-y-5 my-auto">
+        <div className="w-full max-w-sm mx-auto space-y-5 lg:my-auto">
           {/* Header Móvil con Logo */}
-          <div className="lg:hidden flex items-center gap-3 pb-3 border-b border-zinc-800/80">
+          <div className="lg:hidden -mx-5 sm:-mx-[calc((100vw-24rem)/2)] -mt-5 sm:-mt-8 mb-2 px-5 pt-6 pb-5 bg-[#2a1710] flex flex-col items-center text-center relative">
+            <div className="franja-marca absolute inset-x-0 top-0 h-1" aria-hidden="true" />
             <img
-              src="/pwa-192x192.png"
-              alt="Logo"
-              className="w-10 h-10 rounded-lg bg-black border border-zinc-800 object-contain shrink-0"
+              src="/logo.jpg"
+              alt="En que la Negra"
+              className="w-full max-w-[280px] object-contain mix-blend-screen"
             />
-            <div>
-              <h2 className="font-bold text-sm text-white">
-                En que la Negra
-              </h2>
-            </div>
+            <p className="text-2xl font-display text-white">Sabor que nos une</p>
           </div>
 
           <header className="space-y-1">
             <h2 className="text-3xl sm:text-4xl font-display text-white">
               Inicia sesión
             </h2>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-stone-400">
               {import.meta.env.DEV
                 ? "Entra con tu usuario o elige un perfil de prueba."
                 : "Entra con tu usuario."}
@@ -121,8 +148,8 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
           {/* Acceso rápido SOLO en desarrollo (npm run dev): en el build de producción
               Vite reemplaza import.meta.env.DEV por false y este bloque no existe */}
           {import.meta.env.DEV && (
-          <div className="space-y-1.5 bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/80">
-            <p className="text-[10px] font-bold text-zinc-400 px-1">
+          <div className="space-y-1.5 bg-stone-900/60 p-2.5 rounded-lg border border-stone-800/80">
+            <p className="text-[10px] font-bold text-stone-400 px-1">
               Perfiles de prueba (solo en desarrollo)
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -132,13 +159,13 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                 className={`p-2 rounded-md border text-left transition flex items-center gap-2 ${
                   username === "admin"
                     ? "bg-amber-500/20 border-amber-500 text-amber-300 font-bold"
-                    : "bg-zinc-800/60 border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs"
+                    : "bg-stone-800/60 border-stone-700/60 hover:bg-stone-800 text-stone-300 text-xs"
                 }`}
               >
                 <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
                 <div className="truncate">
                   <div className="text-[11px] font-bold leading-tight">Jefa / Admin</div>
-                  <div className="text-[9px] text-zinc-400">admin</div>
+                  <div className="text-[9px] text-stone-400">admin</div>
                 </div>
               </button>
 
@@ -148,13 +175,13 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                 className={`p-2 rounded-md border text-left transition flex items-center gap-2 ${
                   username === "empleado"
                     ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold"
-                    : "bg-zinc-800/60 border-zinc-700/60 hover:bg-zinc-800 text-zinc-300 text-xs"
+                    : "bg-stone-800/60 border-stone-700/60 hover:bg-stone-800 text-stone-300 text-xs"
                 }`}
               >
                 <UserCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                 <div className="truncate">
                   <div className="text-[11px] font-bold leading-tight">Mesonero</div>
-                  <div className="text-[9px] text-zinc-400">empleado</div>
+                  <div className="text-[9px] text-stone-400">empleado</div>
                 </div>
               </button>
             </div>
@@ -166,12 +193,12 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             <div className="space-y-1">
               <label
                 htmlFor="username"
-                className="text-xs font-bold text-zinc-300 flex items-center justify-between"
+                className="text-xs font-bold text-stone-300 flex items-center justify-between"
               >
                 <span>Usuario</span>
               </label>
               <div className="relative">
-                <User className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <User className="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="username"
                   name="username"
@@ -179,7 +206,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                   placeholder="admin o empleado"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full rounded-md border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                  className="w-full rounded-md border border-stone-800 bg-stone-900/90 pl-10 pr-4 py-2.5 text-sm text-white placeholder-stone-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 />
               </div>
             </div>
@@ -188,12 +215,12 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             <div className="space-y-1">
               <label
                 htmlFor="password"
-                className="text-xs font-bold text-zinc-300 flex items-center justify-between"
+                className="text-xs font-bold text-stone-300 flex items-center justify-between"
               >
                 <span>Contraseña</span>
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="password"
                   name="password"
@@ -201,12 +228,12 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-md border border-zinc-800 bg-zinc-900/90 pl-10 pr-11 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                  className="w-full rounded-md border border-stone-800 bg-stone-900/90 pl-10 pr-11 py-2.5 text-sm text-white placeholder-stone-500 outline-none transition focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300 transition"
                   aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
                 >
                   {showPassword ? (
@@ -220,12 +247,12 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
 
             {/* Checkbox Recordar */}
             <div className="flex items-center justify-between text-xs pt-0.5">
-              <label className="flex items-center gap-2 cursor-pointer text-zinc-400 hover:text-zinc-300">
+              <label className="flex items-center gap-2 cursor-pointer text-stone-400 hover:text-stone-300">
                 <input
                   type="checkbox"
                   checked={rememberUser}
                   onChange={(e) => setRememberUser(e.target.checked)}
-                  className="rounded border-zinc-700 bg-zinc-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-950 w-4 h-4"
+                  className="rounded border-stone-700 bg-stone-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-stone-950 w-4 h-4"
                 />
                 <span>Recordar sesión en este equipo</span>
               </label>
@@ -242,11 +269,11 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
             <button
               type="submit"
               disabled={isSubmitting || !username.trim() || !password.trim()}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-950 font-bold text-sm active:scale-98 transition transform cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-stone-950 font-bold text-sm active:scale-98 transition transform cursor-pointer"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-zinc-950" />
+                  <Loader2 className="w-4 h-4 animate-spin text-stone-950" />
                   <span>Entrando…</span>
                 </>
               ) : (
@@ -259,7 +286,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
 
           {/* Soporte Footer */}
           <div className="text-center pt-1">
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-stone-500">
               ¿Olvidaste tu contraseña? La jefa puede restablecerla desde «Mi cuenta».
             </p>
           </div>
