@@ -10,6 +10,8 @@ import HistorialPage from "./features/HistorialPage";
 import LoginPage from "./features/LoginPage";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PwaInstallBanner from "./components/PwaInstallBanner";
+import ImpresoraComandas from "./components/ImpresoraComandas";
+import AvisoFlotante from "./components/AvisoFlotante";
 import { API_URL, usePosStore, type UserAccount } from "./store/usePosStore";
 import KitchenPage from "./features/kitchenPage";
 
@@ -187,6 +189,8 @@ export default function App() {
         </ErrorBoundary>
       </main>
       <PwaInstallBanner />
+      <ImpresoraComandas />
+      <AvisoFlotante />
     </div>
   );
 }

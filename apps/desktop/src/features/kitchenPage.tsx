@@ -1,6 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePosStore, type Order, type OrderItem } from "../store/usePosStore";
-import { ChefHat, Clock, CheckCircle2, Circle, Flame, UtensilsCrossed, ShoppingBag } from "lucide-react";
+import { ChefHat, Clock, CheckCircle2, Circle, Flame, UtensilsCrossed, ShoppingBag, Printer } from "lucide-react";
+import { activarEstacionComandas, comandasActuales, esEstacionComandas } from "../lib/estacionComandas";
 
 function isOlderThan(startIso: string | null | undefined, ms: number): boolean {
   return startIso ? Date.now() - new Date(startIso).getTime() > ms : false;
@@ -49,6 +50,7 @@ export default function KitchenPage() {
     updateMesaItem,
     updateOrderItemKitchenStatus,
     updateOrderStatus,
+    currentUser,
   } = usePosStore();
 
   useEffect(() => {
@@ -149,6 +151,13 @@ export default function KitchenPage() {
 
   const isAllReady = (items: OrderItem[]) => items.length > 0 && items.every((i) => i.kitchenStatus === "DELIVERED");
 
+  // Estación de comandas: el equipo con la ticketera imprime solo cada tanda nueva
+  const [esEstacion, setEsEstacion] = useState(esEstacionComandas);
+  const cambiarEstacion = (activa: boolean) => {
+    activarEstacionComandas(activa, comandasActuales(mesas, pedidos));
+    setEsEstacion(activa);
+  };
+
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12">
       <div className="flex items-end justify-between gap-4 pb-4 border-b border-slate-200">
@@ -164,6 +173,31 @@ export default function KitchenPage() {
           {tickets.filter((t) => !isAllReady(t.items)).length} pendientes
         </span>
       </div>
+
+      {(currentUser?.role === "jefe" || esEstacion) && (
+      <label
+        className={`flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${
+          esEstacion ? "border-emerald-300 bg-emerald-50" : "border-slate-200 bg-white hover:bg-slate-50"
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={esEstacion}
+          onChange={(e) => cambiarEstacion(e.target.checked)}
+          className="mt-0.5 w-5 h-5 accent-emerald-600 shrink-0"
+        />
+        <span className="min-w-0">
+          <span className="flex items-center gap-1.5 text-sm font-bold text-slate-900">
+            <Printer className="w-4 h-4" /> Este equipo imprime las comandas
+          </span>
+          <span className="block text-xs text-slate-600 mt-0.5">
+            {esEstacion
+              ? "Activo: cada tanda nueva se imprime aquí sola, aunque la envíen desde un celular. Deja la app abierta."
+              : "Actívalo solo en la laptop que tiene la ticketera. Los demás equipos solo envían."}
+          </span>
+        </span>
+      </label>
+      )}
 
       {tickets.length === 0 ? (
         <div className="text-center py-16 text-slate-500 text-sm bg-white rounded-lg border border-dashed border-slate-300">

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { X, Printer } from "lucide-react";
 import { type Order, usePosStore } from "../store/usePosStore";
 
@@ -12,6 +13,9 @@ interface TicketReceiptModalProps {
   /** Si se indica, la comanda de cocina imprime SOLO los ítems de esa ronda
    *  (tanda), no toda la cuenta acumulada de la mesa. */
   soloRonda?: number | null;
+  /** Imprime apenas se abre y se cierra al terminar (estación de comandas).
+   *  Con Chrome en modo --kiosk-printing sale directo a la ticketera. */
+  autoPrint?: boolean;
   onClose: () => void;
 }
 
@@ -21,7 +25,19 @@ const MODE_META: Record<TicketMode, { title: string; screenLabel: string; printL
   comanda: { title: "COMANDA DE COCINA", screenLabel: "Comanda de cocina", printLabel: "Imprimir comanda" },
 };
 
-export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero, soloRonda, onClose }: TicketReceiptModalProps) {
+export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero, soloRonda, autoPrint, onClose }: TicketReceiptModalProps) {
+  useEffect(() => {
+    if (!autoPrint || !order) return;
+    // Un instante para que el ticket termine de pintarse antes de imprimir.
+    // window.print() bloquea hasta que se imprime o se cancela.
+    const t = setTimeout(() => {
+      window.print();
+      onClose();
+    }, 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoPrint, order]);
+
   // La descripción del producto no viaja en el OrderItem; se resuelve contra el
   // catálogo por SKU. Solo importa para la comanda de cocina (el detalle de
   // preparación), en la boleta se imprime igual que siempre.
@@ -111,7 +127,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
             {/* Logo sin fondo; la sombra de 1px marca las estrellas blancas sobre el papel */}
             <img src="/logo-sin-fondo.png" alt="En que la Negra" className="w-40 mx-auto mb-1 drop-shadow-[0_0_1px_rgba(0,0,0,0.45)] print:hidden" />
             <h2 className="font-bold text-base tracking-tight text-slate-900 uppercase">En que la Negra</h2>
-            <p className="text-[10px] font-sans text-slate-600 font-medium">Sabor Venezolano de Siempre</p>
+            <p className="text-[10px] font-sans text-slate-600 font-medium">Sabor que nos une</p>
             <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wide">{meta.title}</p>
           </div>
 

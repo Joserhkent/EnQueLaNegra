@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { usePosStore, type Mesa, type Producto, type Order, type OrderItem } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
 import CambioEfectivo from "../components/CambioEfectivo";
+import { avisar } from "../components/AvisoFlotante";
+import { esEstacionComandas } from "../lib/estacionComandas";
 import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
 import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
@@ -250,11 +252,14 @@ export default function MesasPage() {
       const result = await addItemsToMesa(targetMesaId, items);
       if (result) {
         setCart({});
-        // Boletera de cocina automática: al enviar la tanda se abre el ticket con
-        // únicamente los ítems de ESTA ronda (la nueva), no toda la mesa.
+        // La comanda la imprime la estación de comandas (la laptop con la ticketera),
+        // no el equipo que envía: al mesonero en el celular no le sale nada que imprimir.
         const nuevaRonda = Math.max(0, ...result.currentOrder?.items.map((i) => i.ronda ?? 1) ?? [0]) || 1;
-        setKitchenOrder(result.currentOrder);
-        setKitchenRonda(nuevaRonda);
+        avisar(
+          esEstacionComandas()
+            ? `Tanda ${nuevaRonda} enviada a cocina. Imprimiendo comanda…`
+            : `Tanda ${nuevaRonda} enviada a cocina.`
+        );
       }
     } finally {
       setIsSubmittingTanda(false);

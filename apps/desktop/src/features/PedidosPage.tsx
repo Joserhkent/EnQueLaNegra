@@ -3,6 +3,8 @@ import { usePosStore, type Order, type Producto } from "../store/usePosStore";
 import TicketReceiptModal from "../components/TicketReceiptModal";
 import CambioEfectivo from "../components/CambioEfectivo";
 import OrderDetailModal from "../components/OrderDetailModal";
+import { avisar } from "../components/AvisoFlotante";
+import { esEstacionComandas } from "../lib/estacionComandas";
 import { AGREGADOS_DISPONIBLES, agregadosConInsumo } from "../lib/agregados";
 import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
@@ -280,7 +282,12 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
       setMontoEfectivo("");
       setMontoDigital("");
       setSelectedPrintOrder(createdOrder);
-      setSelectedKitchenOrder(createdOrder);
+      // La comanda la imprime la estación de comandas (ver ImpresoraComandas)
+      avisar(
+        esEstacionComandas()
+          ? `Pedido ${createdOrder.code} enviado a cocina. La comanda sale después de la boleta.`
+          : `Pedido ${createdOrder.code} enviado a cocina.`
+      );
     } catch (error: unknown) {
       console.error("Error creating order:", error);
       const message = error instanceof Error ? error.message : "Error desconocido";
