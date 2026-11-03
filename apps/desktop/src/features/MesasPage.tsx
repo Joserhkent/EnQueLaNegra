@@ -9,6 +9,7 @@ import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import { useMediaQuery, QUERY_TACTIL } from "../lib/useMediaQuery";
 import TomaPedido, { type CartLine } from "../components/pedido/TomaPedido";
+import PersonalizarPedidoModal from "../components/pedido/PersonalizarPedidoModal";
 import {
   Users,
   Clock,
@@ -1312,51 +1313,19 @@ export default function MesasPage() {
       )}
 
       {customizingProduct && (
-        <div className="fixed inset-0 z-[70] bg-slate-900/60 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-lg shadow-xl border-slate-200 overflow-hidden">
-            <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
-              <div>
-                <div className="text-[10px] text-amber-400 font-extrabold">Personalizar pedido</div>
-                <h3 className="font-bold text-base mt-1">{customizingProduct.iconoEmoji} {customizingProduct.nombre}</h3>
-              </div>
-              <button type="button" onClick={() => setCustomizingProduct(null)} className="p-2 rounded-md bg-white/10 hover:bg-white/20 transition">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
-              <div className="flex items-center justify-between bg-slate-50 rounded-lg p-3 border-slate-200">
-                <span className="text-xs font-bold text-slate-700">Cantidad</span>
-                <div className="flex items-center gap-3 bg-white border-slate-200 rounded-md p-1">
-                  <button type="button" onClick={() => setCustomizingQuantity((value) => Math.max(1, value - 1))} className="w-7 h-7 rounded-lg font-bold text-slate-700 hover:bg-rose-100">-</button>
-                  <span className="w-5 text-center text-sm font-extrabold text-slate-900">{customizingQuantity}</span>
-                  <button type="button" onClick={() => setCustomizingQuantity((value) => value + 1)} className="w-7 h-7 rounded-lg font-bold text-slate-700 hover:bg-emerald-100">+</button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5">Descripción / indicaciones (incluye las cremas aquí)</label>
-                <textarea rows={4} value={customizingNotes} onChange={(event) => setCustomizingNotes(event.target.value)} placeholder="Ej: sin cebolla, con mayonesa, ketchup y queso cheddar..." className="w-full px-3 py-3 bg-slate-50 border-slate-200 rounded-md text-base font-medium text-slate-900 focus:outline-none focus:border-amber-500 resize-y" />
-              </div>
-
-              <div>
-                <div className="text-[10px] font-bold text-slate-500 mb-1.5">Agregados</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {agregadosVisibles.map((agregado) => (
-                    <button key={agregado.nombre} type="button" onClick={() => toggleCustomizationAgregado(agregado.nombre)} className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition ${customizingAgregados.includes(agregado.nombre) ? "bg-blue-500 text-white border-blue-500" : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>
-                      {agregado.nombre} +S/{agregado.precio.toFixed(2)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <button type="button" onClick={() => setCustomizingProduct(null)} className="py-3 bg-white border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-lg text-xs transition">Cancelar</button>
-                <button type="button" onClick={handleConfirmCustomization} className="py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-lg text-xs transition">Agregar a la tanda</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PersonalizarPedidoModal
+          producto={customizingProduct}
+          agregados={agregadosVisibles}
+          cantidad={customizingQuantity}
+          notas={customizingNotes}
+          agregadosSeleccionados={customizingAgregados}
+          textoConfirmar="Agregar a la tanda"
+          onCantidadChange={setCustomizingQuantity}
+          onNotasChange={setCustomizingNotes}
+          onToggleAgregado={toggleCustomizationAgregado}
+          onCancelar={() => setCustomizingProduct(null)}
+          onConfirmar={handleConfirmCustomization}
+        />
       )}
 
       {showCreateTable && (

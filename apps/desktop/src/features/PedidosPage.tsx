@@ -10,6 +10,7 @@ import { productoSinStock } from "../lib/stock";
 import { useMenuCategories, getCategoriaNombre, labelCategoria, permitePersonalizacion } from "../lib/menuCategories";
 import { useMediaQuery, QUERY_TACTIL } from "../lib/useMediaQuery";
 import TomaPedido from "../components/pedido/TomaPedido";
+import PersonalizarPedidoModal from "../components/pedido/PersonalizarPedidoModal";
 import {
   ShoppingBag,
   PlusCircle,
@@ -70,6 +71,10 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
   const [paymentMethod, setPaymentMethod] = useState<"Efectivo" | "Yape/Plin" | "Mixto">("Yape/Plin");
   const [montoEfectivo, setMontoEfectivo] = useState<string>("");
   const [montoDigital, setMontoDigital] = useState<string>("");
+  const [customizingProduct, setCustomizingProduct] = useState<Producto | null>(null);
+  const [customizingQuantity, setCustomizingQuantity] = useState(1);
+  const [customizingNotes, setCustomizingNotes] = useState("");
+  const [customizingAgregados, setCustomizingAgregados] = useState<string[]>([]);
   const { tabs: menuTabs, activeCategory: selectedCategory, setSelectedCategory } = useMenuCategories(productos);
   const agregadosVisibles = useMemo(() => agregadosDisponibles(agregados, insumos), [agregados, insumos]);
   const [selectedPrintOrder, setSelectedPrintOrder] = useState<Order | null>(null);
@@ -108,40 +113,35 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
     Record<string, { product: Producto; quantity: number; notes: string; cremas?: string[]; agregados: string[] }>
   >({});
 
-  // Agrega una unidad más a una línea EXISTENTE del mismo producto solo si esa línea
-  // todavía no tiene personalización (recién agregada, sin cremas/agregados/notas).
-  // Si todas las líneas de ese producto ya están personalizadas, abre una línea nueva
-  // en vez de heredar cremas/agregados que pertenecen a otra unidad distinta.
   const handleAddToCart = (prod: Producto) => {
-    setCart((prev) => {
-      const emptyLineId = Object.keys(prev).find((lineId) => {
-        const item = prev[lineId];
-        return (
-          item.product.sku === prod.sku &&
-          item.agregados.length === 0 &&
-          !item.notes.trim()
-        );
-      });
+    setCustomizingProduct(prod);
+    setCustomizingQuantity(1);
+    setCustomizingNotes("");
+    setCustomizingAgregados([]);
+  };
 
-      if (emptyLineId) {
-        return {
-          ...prev,
-          [emptyLineId]: { ...prev[emptyLineId], quantity: prev[emptyLineId].quantity + 1 },
-        };
-      }
+  const handleConfirmCustomization = () => {
+    if (!customizingProduct) return;
+    const lineId = `${customizingProduct.sku}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    setCart((prev) => ({
+      ...prev,
+      [lineId]: {
+        product: customizingProduct,
+        quantity: customizingQuantity,
+        notes: customizingNotes.trim(),
+        cremas: [],
+        agregados: customizingAgregados,
+      },
+    }));
+    setCustomizingProduct(null);
+  };
 
-      const newLineId = `${prod.sku}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      return {
-        ...prev,
-        [newLineId]: {
-          product: prod,
-          quantity: 1,
-          notes: "",
-          cremas: [],
-          agregados: [],
-        },
-      };
-    });
+  const toggleCustomizationAgregado = (agregado: string) => {
+    setCustomizingAgregados((prev) =>
+      prev.includes(agregado)
+        ? prev.filter((item) => item !== agregado)
+        : [...prev, agregado],
+    );
   };
 
   // «−» en la toma de pedido táctil: quita una unidad de la línea sin nota ni
@@ -1168,6 +1168,22 @@ export default function PedidosPage({ onGoToMesas }: PedidosPageProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {customizingProduct && (
+        <PersonalizarPedidoModal
+          producto={customizingProduct}
+          agregados={agregadosVisibles}
+          cantidad={customizingQuantity}
+          notas={customizingNotes}
+          agregadosSeleccionados={customizingAgregados}
+          textoConfirmar="Agregar al pedido"
+          onCantidadChange={setCustomizingQuantity}
+          onNotasChange={setCustomizingNotes}
+          onToggleAgregado={toggleCustomizationAgregado}
+          onCancelar={() => setCustomizingProduct(null)}
+          onConfirmar={handleConfirmCustomization}
+        />
       )}
 
       {selectedPrintOrder && !selectedKitchenOrder && (
