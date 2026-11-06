@@ -54,9 +54,23 @@
 }
 
 @layer base {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
+  html {
+    /* Fondo coherente con la barra superior (#0a0a0a) para evitar huecos blancos detrás del notch */
+    background-color: #0a0a0a;
+  }
+
   body {
     /* Montos, cantidades y horas alineados en columna para leerlos de un vistazo */
     font-variant-numeric: tabular-nums;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   h1 {
     font-stretch: 78%;

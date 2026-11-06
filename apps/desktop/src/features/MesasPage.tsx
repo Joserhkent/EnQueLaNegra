@@ -754,7 +754,7 @@ export default function MesasPage() {
         <div className={`fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center ${enCuentaTactil ? "p-0 sm:p-4" : "p-4"}`}>
           <div className={`bg-white w-full rounded-lg shadow-xl border border-slate-200 overflow-hidden flex flex-col ${enCuentaTactil ? "max-w-xl h-full sm:h-auto sm:max-h-[92vh] rounded-none sm:rounded-lg" : "max-w-6xl max-h-[92vh]"}`}>
             {/* Header */}
-            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+            <div className={`px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0 ${enCuentaTactil ? "pt-[max(1rem,calc(0.75rem+env(safe-area-inset-top,0px)))] pl-[max(1.5rem,calc(1rem+env(safe-area-inset-left,0px)))] pr-[max(1.5rem,calc(1rem+env(safe-area-inset-right,0px)))]" : ""}`}>
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center text-xl font-display">
                   #{selectedMesa.number}
@@ -951,7 +951,7 @@ export default function MesasPage() {
               </div>
 
               {/* Carrito / Acciones */}
-              <div className={`p-6 bg-slate-50/50 flex flex-col overflow-y-auto ${enCuentaTactil ? "justify-start gap-4" : "justify-between md:col-span-2"}`}>
+              <div className={`p-6 bg-slate-50/50 flex flex-col overflow-y-auto ${enCuentaTactil ? "justify-start gap-4 pb-[max(2rem,calc(1.5rem+env(safe-area-inset-bottom,0px)))]" : "justify-between md:col-span-2"}`}>
                 <div className="space-y-4">
                   {rondas.length > 0 && (
                     <div className="pb-4 border-b border-slate-200 space-y-3">

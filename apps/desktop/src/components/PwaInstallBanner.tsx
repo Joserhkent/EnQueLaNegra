@@ -150,7 +150,7 @@ export default function PwaInstallBanner() {
       {/* Alerta flotante idéntica a PANCA para PC y Móviles */}
       <aside
         aria-label="Instalación de la aplicación"
-        className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm z-40 animate-in fade-in slide-in-from-bottom-6 duration-300"
+        className="fixed bottom-[max(1rem,calc(1rem+env(safe-area-inset-bottom,0px)))] left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm z-40 animate-in fade-in slide-in-from-bottom-6 duration-300"
       >
         <div className="relative overflow-hidden rounded-lg bg-zinc-950 border border-zinc-800 shadow-lg p-3 sm:p-5 text-white">
           {/* Botón cerrar X en esquina superior derecha */}

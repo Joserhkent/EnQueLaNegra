@@ -179,9 +179,9 @@ export default function App() {
   const ActivePageComponent = pages[pageToRender] as ComponentType<object>;
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-[#F4F5F7]">
+    <div className="flex flex-col lg:flex-row min-h-screen min-h-[100dvh] bg-[#F4F5F7] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]">
       <Sidebar activePage={pageToRender} onChangePage={setActivePage} onLogout={handleLogout} />
-      <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
+      <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto pb-[max(1.5rem,calc(1rem+env(safe-area-inset-bottom,0px)))]">
         <ErrorBoundary key={pageToRender} fallbackTitle="Esta sección no se pudo cargar">
           {pageToRender === "pedidos" ? (
             <PedidosPage onGoToMesas={() => setActivePage("mesas")} />

@@ -315,7 +315,7 @@ export default function Sidebar({
   return (
     <>
       {/* Mobile Top Bar */}
-      <header className="lg:hidden sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-30 bg-slate-900 border-b border-slate-800 px-4 pb-3 pt-[max(0.75rem,calc(0.5rem+env(safe-area-inset-top,0px)))] pl-[max(1rem,calc(0.75rem+env(safe-area-inset-left,0px)))] pr-[max(1rem,calc(0.75rem+env(safe-area-inset-right,0px)))] flex items-center justify-between">
         <div className="franja-marca absolute inset-x-0 top-0 h-[3px]" aria-hidden="true" />
         <div className="flex items-center gap-3">
           <button
@@ -364,14 +364,14 @@ export default function Sidebar({
             className="fixed inset-0 bg-black/60"
             onClick={() => setIsMobileOpen(false)}
           />
-          <aside className="fixed inset-y-0 left-0 w-[280px] bg-slate-900 text-white p-5 border-r border-slate-800 shadow-xl z-50">
+          <aside className="fixed inset-y-0 left-0 w-[285px] max-w-[85vw] h-full h-[100dvh] bg-slate-900 text-white px-5 pt-[max(1.25rem,calc(0.75rem+env(safe-area-inset-top,0px)))] pb-[max(1.25rem,calc(0.75rem+env(safe-area-inset-bottom,0px)))] pl-[max(1.25rem,calc(0.75rem+env(safe-area-inset-left,0px)))] border-r border-slate-800 shadow-xl z-50 flex flex-col justify-between">
             {renderNavContent(true)}
           </aside>
         </div>
       )}
 
       {/* Desktop Persistent Sidebar */}
-      <aside className="hidden lg:flex h-screen w-[260px] bg-slate-900 text-white flex-col justify-between p-4 pt-5 border-r border-slate-800 shrink-0 sticky top-0">
+      <aside className="hidden lg:flex h-screen h-[100dvh] w-[260px] bg-slate-900 text-white flex-col justify-between p-4 pt-5 border-r border-slate-800 shrink-0 sticky top-0">
         <div className="franja-marca absolute inset-x-0 top-0 h-[3px]" aria-hidden="true" />
         {renderNavContent(false)}
       </aside>

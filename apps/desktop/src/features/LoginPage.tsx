@@ -73,7 +73,7 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-stone-950 text-stone-100 flex flex-col lg:flex-row antialiased selection:bg-amber-500 selection:text-stone-950">
+    <div className="min-h-screen min-h-[100dvh] w-full bg-stone-950 text-stone-100 flex flex-col lg:flex-row antialiased selection:bg-amber-500 selection:text-stone-950">
       {/* Columna Izquierda: Información del Restaurante & Módulos (Desktop: Visible en pantalla grande; Móvil: Oculto para que el Login esté arriba sin scroll) */}
       <section 
         aria-label="Información del restaurante y módulos"
@@ -120,11 +120,11 @@ export default function LoginPage({ onLogin, authError }: LoginPageProps) {
       {/* Columna Derecha: Formulario de Login (En móvil: Ocupa toda la pantalla centrada y visible al instante) */}
       <section 
         aria-label="Formulario de inicio de sesión"
-        className="w-full lg:w-5/12 xl:w-4/12 min-h-screen lg:min-h-0 p-5 sm:p-8 lg:p-12 flex flex-col justify-start lg:justify-center bg-stone-950 relative"
+        className="w-full lg:w-5/12 xl:w-4/12 min-h-screen min-h-[100dvh] lg:min-h-0 p-5 sm:p-8 lg:p-12 pb-[max(1.5rem,calc(1.25rem+env(safe-area-inset-bottom,0px)))] flex flex-col justify-start lg:justify-center bg-stone-950 relative"
       >
         <div className="w-full max-w-sm mx-auto space-y-5 lg:my-auto">
           {/* Header Móvil con Logo */}
-          <div className="lg:hidden -mx-5 sm:-mx-[calc((100vw-24rem)/2)] -mt-5 sm:-mt-8 mb-2 px-5 pt-6 pb-5 bg-[#2a1710] flex flex-col items-center text-center relative">
+          <div className="lg:hidden -mx-5 sm:-mx-[calc((100vw-24rem)/2)] -mt-5 sm:-mt-8 mb-2 px-5 pt-[max(1.5rem,calc(1.25rem+env(safe-area-inset-top,0px)))] pb-5 bg-[#2a1710] flex flex-col items-center text-center relative">
             <div className="franja-marca absolute inset-x-0 top-0 h-1" aria-hidden="true" />
             <img
               src="/logo.jpg"
