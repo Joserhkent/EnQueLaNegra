@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: enquelanegra-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: EnQueLaNegra2026Secure!
+      POSTGRES_DB: enquelanegra
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: enquelanegra-api
+    restart: always
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://postgres:EnQueLaNegra2026Secure!@postgres:5432/enquelanegra?schema=public"
+      DIRECT_URL: "postgresql://postgres:EnQueLaNegra2026Secure!@postgres:5432/enquelanegra?schema=public"
+      JWT_SECRET: "en_que_la_negra_pos_secret_key_2026"
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/desktop/Dockerfile
+    container_name: enquelanegra-web
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+    name: pos-db_pgdata
+    external: true
