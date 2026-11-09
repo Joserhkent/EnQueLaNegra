@@ -80,23 +80,48 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
           }
           #printable-ticket, #printable-ticket * {
             visibility: visible !important;
+            color: #000000 !important;
+            border-color: #000000 !important;
+            background: transparent !important;
+            box-shadow: none !important;
           }
           #printable-ticket {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
-            width: 78mm !important;
-            max-width: 78mm !important;
+            width: 48mm !important;
+            max-width: 48mm !important;
             padding: 2mm !important;
             margin: 0 !important;
             font-family: monospace, sans-serif !important;
-            font-size: 11px !important;
-            line-height: 1.3 !important;
+            font-size: 12px !important;
+            line-height: 1.35 !important;
             color: #000000 !important;
             background: #ffffff !important;
           }
+          #printable-ticket .ticket-mesa {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #000000 !important;
+          }
+          #printable-ticket .ticket-mesa * {
+            color: #000000 !important;
+          }
+          #printable-ticket .ticket-product {
+            font-size: 14px !important;
+            line-height: 1.3 !important;
+          }
+          #printable-ticket .ticket-detail {
+            font-size: 12px !important;
+          }
+          #printable-ticket .ticket-small {
+            font-size: 10px !important;
+          }
+          #printable-ticket .ticket-total {
+            font-size: 15px !important;
+          }
           @page {
-            size: 80mm auto;
+            size: 48mm auto;
             margin: 0mm;
           }
         }
@@ -143,11 +168,11 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
             </div>
             {/* Número de mesa GRANDE y destacado: es lo primero que cocina debe ver */}
             {isComanda && numeroMesa ? (
-              <div className="text-center py-2 bg-slate-900 text-white rounded-lg -mx-1">
-                <div className="text-[9px] uppercase tracking-widest text-amber-400 font-bold">MESA</div>
+              <div className="ticket-mesa text-center py-2 rounded-lg -mx-1">
+                <div className="text-[9px] uppercase tracking-widest font-bold">MESA</div>
                 <div className="text-2xl font-display leading-none">N° {numeroMesa}</div>
                 {soloRonda != null && (
-                  <div className="text-[9px] uppercase tracking-widest text-amber-300 font-bold mt-0.5">
+                  <div className="text-[9px] uppercase tracking-widest font-bold mt-0.5">
                     TANDA {soloRonda} · SOLO ESTOS ÍTEMS
                   </div>
                 )}
@@ -201,11 +226,11 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
                 <div key={idx} className="space-y-0.5">
                   <div className="flex justify-between items-start text-[11px]">
                     <div className="pr-2">
-                      <div className="font-bold text-slate-900">
+                      <div className="ticket-product font-bold text-slate-900">
                         {item.cantidad}x {item.nombre}
                       </div>
                       {!isComanda && (
-                        <div className="text-[9px] text-slate-500">@ S/ {item.precio.toFixed(2)} c/u</div>
+                        <div className="ticket-detail text-[9px] text-slate-500">@ S/ {item.precio.toFixed(2)} c/u</div>
                       )}
                     </div>
                     {!isComanda && (
@@ -251,7 +276,7 @@ export default function TicketReceiptModal({ order, mode = "boleta", mesaNumero,
             <div className="space-y-1.5 pt-1 text-[11px]">
               <div className="flex justify-between items-center text-sm font-bold pt-1">
                 <span>{mode === "precuenta" ? "TOTAL ESTIMADO:" : "TOTAL A PAGAR:"}</span>
-                <span className="text-slate-950 text-base font-extrabold">S/ {order.total.toFixed(2)}</span>
+                <span className="ticket-total text-slate-950 text-base font-extrabold">S/ {order.total.toFixed(2)}</span>
               </div>
 
               {mode === "precuenta" && (order.pagos?.length ?? 0) > 0 && (() => {
