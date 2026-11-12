@@ -17,6 +17,11 @@ export class CajaController {
     return this.cajaService.getEstadoActual();
   }
 
+  @Get('sesion-activa/cobros')
+  getCobrosSesionActiva() {
+    return this.cajaService.getCobrosSesionActiva();
+  }
+
   @Post('abrir')
   abrirCaja(@Body() dto: AbrirCajaDto, @GetUser() user?: AuthenticatedUser) {
     return this.cajaService.abrirCaja(dto, user?.id, user);

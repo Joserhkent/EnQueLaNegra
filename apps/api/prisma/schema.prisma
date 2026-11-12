@@ -234,6 +234,8 @@ model Order {
   igv           Float
   total         Float
   userId        String?
+  cajaSesionId  String?
+  fechaNegocio  String? // YYYY-MM-DD del turno operativo en America/Lima
   tableId       String? // presente cuando type = MESA (atención por mesa acumulativa)
   fecha         String // YYYY-MM-DD
   hora          String // HH:mm
@@ -241,6 +243,7 @@ model Order {
   updatedAt     DateTime      @updatedAt
 
   user            User?       @relation(fields: [userId], references: [id])
+  cajaSesion      CajaSesion? @relation(fields: [cajaSesionId], references: [id])
   table           Table?      @relation("TableOrders", fields: [tableId], references: [id])
   asCurrentOfMesa Table?      @relation("TableCurrentOrder")
   items           OrderItem[]
@@ -281,13 +284,15 @@ model OrderItemExtra {
 }
 
 model Pago {
-  id         String        @id @default(uuid())
-  orderId    String
-  metodoPago PaymentMethod
-  monto      Float
-  fecha      DateTime      @default(now())
+  id           String        @id @default(uuid())
+  orderId      String
+  cajaSesionId String?
+  metodoPago   PaymentMethod
+  monto        Float
+  fecha        DateTime      @default(now())
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order      Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  cajaSesion CajaSesion? @relation(fields: [cajaSesionId], references: [id])
 }
 
 // ---------- Inventario ----------
@@ -318,6 +323,7 @@ model CajaSesion {
   // Apertura
   montoInicial      Float    @default(0) // Fondo de caja / sencillo inicial
   fechaApertura     DateTime @default(now())
+  fechaNegocio      String // YYYY-MM-DD de la jornada operativa en America/Lima
   usuarioAperturaId String?
   usuarioApertura   String   @default("Cajero")
   notasApertura     String?
@@ -334,13 +340,17 @@ model CajaSesion {
   efectivoEsperado Float?    @default(0) // montoInicial + efectivoVentas
   efectivoReal     Float? // Conteo físico ingresado por el cajero
   diferencia       Float? // efectivoReal - efectivoEsperado (+ sobrante, - faltante)
+  fondoQueQueda    Float?    @default(0) // Sencillo que queda en gaveta para siguiente turno
+  efectivoRetirado Float?    @default(0) // efectivoReal - fondoQueQueda
   notasCierre      String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userApertura User? @relation("CajaAperturaUser", fields: [usuarioAperturaId], references: [id])
-  userCierre   User? @relation("CajaCierreUser", fields: [usuarioCierreId], references: [id])
+  userApertura User?   @relation("CajaAperturaUser", fields: [usuarioAperturaId], references: [id])
+  userCierre   User?   @relation("CajaCierreUser", fields: [usuarioCierreId], references: [id])
+  orders       Order[]
+  pagos        Pago[]
 }
 
 model CierreCaja {

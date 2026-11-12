@@ -14,6 +14,7 @@ node_modules
 
 # Backups and local configs
 *.sql
+!apps/api/prisma/migrations/**/*.sql
 .claude/
 restaurar-en-servidor.sh
 

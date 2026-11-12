@@ -159,6 +159,7 @@ export interface CajaSesion {
   estado: "ABIERTA" | "CERRADA";
   montoInicial: number;
   fechaApertura: string;
+  fechaNegocio?: string | null;
   usuarioAperturaId?: string | null;
   usuarioApertura: string;
   notasApertura?: string | null;
@@ -172,6 +173,8 @@ export interface CajaSesion {
   cantidadPedidos?: number | null;
   efectivoEsperado?: number | null;
   efectivoReal?: number | null;
+  fondoQueQueda?: number | null;
+  efectivoRetirado?: number | null;
   diferencia?: number | null;
   notasCierre?: string | null;
   createdAt: string;
@@ -181,6 +184,9 @@ export interface CajaEstadoResponse {
   isOpen: boolean;
   sesion: CajaSesion | null;
   lastSession?: CajaSesion | null;
+  esSesionOlvidada?: boolean;
+  horaCorte?: string;
+  fechaNegocio?: string;
   resumenActual?: {
     montoInicial: number;
     totalVendido: number;
@@ -190,6 +196,24 @@ export interface CajaEstadoResponse {
     efectivoEsperado: number;
     cantidadPedidos: number;
   };
+}
+
+export interface CobroSesionItem {
+  orderId: string;
+  code: string;
+  customer: string;
+  tableNumber: number | null;
+  createdAt: string;
+  metodos: string[];
+  montoEfectivo: number;
+  montoDigital: number;
+  totalCobradoEnSesion: number;
+  pagos: {
+    id: string;
+    monto: number;
+    metodoPago: string;
+    createdAt: string;
+  }[];
 }
 
 interface PosStore {
@@ -203,6 +227,7 @@ interface PosStore {
   cierresCaja: CierreCaja[];
   cajaEstado: CajaEstadoResponse | null;
   cajaSesiones: CajaSesion[];
+  cobrosSesionActiva: CobroSesionItem[];
   mesas: Mesa[];
   loading: boolean;
 
@@ -213,8 +238,14 @@ interface PosStore {
   fetchMesas: () => Promise<void>;
   fetchCajaEstado: () => Promise<CajaEstadoResponse | null>;
   fetchCajaSesiones: () => Promise<void>;
+  fetchCobrosSesionActiva: () => Promise<CobroSesionItem[]>;
   abrirCaja: (montoInicial: number, notas?: string) => Promise<boolean>;
-  cerrarCajaSesion: (efectivoReal?: number, notas?: string) => Promise<boolean>;
+  cerrarCajaSesion: (params: {
+    efectivoReal: number;
+    fondoQueQueda: number;
+    notas?: string;
+    forzarCierreConPendientes?: boolean;
+  }) => Promise<boolean>;
   createMesa: (capacity: number) => Promise<Mesa | null>;
   updateMesa: (tableId: string, changes: { number?: number; capacity?: number }) => Promise<Mesa | null>;
   deleteMesa: (tableId: string) => Promise<boolean>;
@@ -463,6 +494,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
   cierresCaja: [],
   cajaEstado: null,
   cajaSesiones: [],
+  cobrosSesionActiva: [],
   mesas: [],
   loading: false,
 
@@ -1424,6 +1456,26 @@ export const usePosStore = create<PosStore>((set, get) => ({
     }
   },
 
+  fetchCobrosSesionActiva: async () => {
+    try {
+      const res = await authFetch(`${API_URL}/caja/sesion-activa/cobros`, {
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) {
+        set({ cobrosSesionActiva: [] });
+        return [];
+      }
+      const data = await res.json();
+      const cobros: CobroSesionItem[] = Array.isArray(data.cobros) ? data.cobros : [];
+      set({ cobrosSesionActiva: cobros });
+      return cobros;
+    } catch (error) {
+      console.error("Error al obtener cobros de la sesión activa:", error);
+      set({ cobrosSesionActiva: [] });
+      return [];
+    }
+  },
+
   abrirCaja: async (montoInicial: number, notas?: string) => {
     try {
       const res = await authFetch(`${API_URL}/caja/abrir`, {
@@ -1437,7 +1489,11 @@ export const usePosStore = create<PosStore>((set, get) => ({
         alert(Array.isArray(msg) ? msg.join(", ") : msg);
         return false;
       }
-      await Promise.all([get().fetchCajaEstado(), get().fetchCajaSesiones()]);
+      await Promise.all([
+        get().fetchCajaEstado(),
+        get().fetchCajaSesiones(),
+        get().fetchCobrosSesionActiva(),
+      ]);
       return true;
     } catch (error) {
       console.error("Error al abrir caja:", error);
@@ -1446,12 +1502,17 @@ export const usePosStore = create<PosStore>((set, get) => ({
     }
   },
 
-  cerrarCajaSesion: async (efectivoReal?: number, notas?: string) => {
+  cerrarCajaSesion: async (params: {
+    efectivoReal: number;
+    fondoQueQueda: number;
+    notas?: string;
+    forzarCierreConPendientes?: boolean;
+  }) => {
     try {
       const res = await authFetch(`${API_URL}/caja/cerrar`, {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ efectivoReal, notas }),
+        body: JSON.stringify(params),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => null);
@@ -1464,6 +1525,7 @@ export const usePosStore = create<PosStore>((set, get) => ({
         get().fetchCajaSesiones(),
         get().fetchCierres(),
         get().fetchPedidos(),
+        get().fetchCobrosSesionActiva(),
       ]);
       return true;
     } catch (error) {

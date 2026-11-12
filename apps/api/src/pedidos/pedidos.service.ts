@@ -161,8 +161,27 @@ export class PedidosService {
     // Pedido e inventario van en una sola transacción: si algo falla no queda un
     // pedido sin descontar stock (ni stock descontado sin pedido).
     const crear = (code: string) =>
-      this.prisma.$transaction([
-        this.prisma.order.create({
+      this.prisma.$transaction(async (tx) => {
+        // Bloqueo FOR SHARE de la caja abierta para garantizar que no se cierre en paralelo
+        const [activeCaja] = await tx.$queryRaw<any[]>`
+          SELECT * FROM "CajaSesion"
+          WHERE "estado" = 'ABIERTA'::"EstadoCaja"
+          FOR SHARE
+          LIMIT 1
+        `;
+
+        if (!activeCaja) {
+          throw new BadRequestException(
+            'La caja está cerrada. Debe abrir un turno de caja antes de realizar pedidos.',
+          );
+        }
+
+        const pagosDataWithCaja = pagosData.map((p) => ({
+          ...p,
+          cajaSesionId: activeCaja.id,
+        }));
+
+        const order = await tx.order.create({
           data: {
             code,
             customer: dto.customer ?? 'Cliente Mostrador',
@@ -175,19 +194,33 @@ export class PedidosService {
             igv,
             total,
             userId,
+            cajaSesionId: activeCaja.id,
+            fechaNegocio: activeCaja.fechaNegocio,
             fecha,
             hora,
             items: {
               create: itemsFormatted,
             },
             pagos: {
-              create: pagosData,
+              create: pagosDataWithCaja,
             },
           },
           include: ORDER_INCLUDE,
-        }),
-        ...this.buildInventoryOps(deducciones, userId, `Venta comanda ${code}`),
-      ]);
+        });
+
+        const inventoryOps = this.buildInventoryOps(
+          deducciones,
+          userId,
+          `Venta comanda ${code}`,
+          MovimientoTipo.SALIDA,
+          tx,
+        );
+        for (const op of inventoryOps) {
+          await op;
+        }
+
+        return [order];
+      });
 
     // El código lo propone el navegador a partir de los pedidos que tiene cargados;
     // con dos dispositivos a la vez puede repetirse. En ese caso se usa uno único
@@ -343,18 +376,19 @@ export class PedidosService {
     userId: string | undefined,
     motivo: string,
     tipo: MovimientoTipo = MovimientoTipo.SALIDA,
+    client: any = this.prisma,
   ) {
     if (deducciones.size === 0) return [];
     return [
       ...[...deducciones.entries()].map(([insumoId, cantidad]) =>
         tipo === MovimientoTipo.SALIDA
-          ? descontarStock(this.prisma, insumoId, cantidad)
-          : this.prisma.insumo.update({
+          ? descontarStock(client, insumoId, cantidad)
+          : client.insumo.update({
               where: { id: insumoId },
               data: { stockActual: { increment: cantidad } },
             }),
       ),
-      this.prisma.movimientoStock.createMany({
+      client.movimientoStock.createMany({
         data: [...deducciones.entries()].map(([insumoId, cantidad]) => ({
           insumoId,
           tipo,

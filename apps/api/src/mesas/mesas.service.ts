@@ -492,13 +492,33 @@ export class MesasService {
       );
     }
 
-    const updatedOrder = await this.prisma.order.update({
-      where: { id: order.id },
-      data: {
-        userId: userId ?? order.userId ?? undefined,
-        pagos: { create: { metodoPago: paymentMethod, monto: amount } },
-      },
-      include: ORDER_INCLUDE,
+    const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      const [activeCaja] = await tx.$queryRaw<any[]>`
+        SELECT * FROM "CajaSesion"
+        WHERE "estado" = 'ABIERTA'::"EstadoCaja"
+        FOR SHARE
+        LIMIT 1
+      `;
+      if (!activeCaja) {
+        throw new BadRequestException(
+          'La caja está cerrada. Debe abrir un turno de caja antes de registrar pagos.',
+        );
+      }
+
+      return tx.order.update({
+        where: { id: order.id },
+        data: {
+          userId: userId ?? order.userId ?? undefined,
+          pagos: {
+            create: {
+              metodoPago: paymentMethod,
+              monto: amount,
+              cajaSesionId: activeCaja.id,
+            },
+          },
+        },
+        include: ORDER_INCLUDE,
+      });
     });
 
     return {
@@ -610,6 +630,24 @@ export class MesasService {
     // El pedido pasa a ENTREGADO y la mesa vuelve a AVAILABLE en el mismo golpe —
     // son escrituras a tablas distintas sin dependencia entre sí.
     const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      // Bloqueo FOR SHARE de la caja abierta para que no se cierre mientras se cobra
+      const [activeCaja] = await tx.$queryRaw<any[]>`
+        SELECT * FROM "CajaSesion"
+        WHERE "estado" = 'ABIERTA'::"EstadoCaja"
+        FOR SHARE
+        LIMIT 1
+      `;
+      if (!activeCaja) {
+        throw new BadRequestException(
+          'La caja está cerrada. Debe abrir un turno de caja antes de cobrar y cerrar mesas.',
+        );
+      }
+
+      const pagosDataWithCaja = pagosData.map((p) => ({
+        ...p,
+        cajaSesionId: activeCaja.id,
+      }));
+
       const updatedOrder = await tx.order.update({
         where: { id: order.id },
         data: {
@@ -617,10 +655,12 @@ export class MesasService {
           paymentMethod,
           montoEfectivo: isMixto ? (dto.montoEfectivo ?? 0) : undefined,
           montoDigital: isMixto ? (dto.montoDigital ?? 0) : undefined,
+          cajaSesionId: activeCaja.id,
+          fechaNegocio: activeCaja.fechaNegocio,
           fecha: formatFecha(now),
           hora: formatHora(now),
           userId: userId ?? order.userId ?? undefined,
-          pagos: { create: pagosData },
+          pagos: { create: pagosDataWithCaja },
         },
         include: ORDER_INCLUDE,
       });
