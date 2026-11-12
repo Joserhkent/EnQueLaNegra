@@ -10,6 +10,7 @@ import { CajaModule } from './caja/caja.module';
 import { MesasModule } from './mesas/mesas.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { AgregadosModule } from './agregados/agregados.module';
+import { ResumenModule } from './resumen/resumen.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AgregadosModule } from './agregados/agregados.module';
     MesasModule,
     CategoriasModule,
     AgregadosModule,
+    ResumenModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

@@ -31,3 +31,11 @@ export function splitIgv(total: number) {
 export function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
+
+export function toCents(n: number | null | undefined): number {
+  return Math.round((Number(n) || 0) * 100);
+}
+
+export function fromCents(cents: number): number {
+  return Number((cents / 100).toFixed(2));
+}

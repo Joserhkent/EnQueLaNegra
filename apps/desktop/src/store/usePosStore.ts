@@ -216,6 +216,73 @@ export interface CobroSesionItem {
   }[];
 }
 
+export interface DashboardResumenData {
+  fechaNegocio: string;
+  rango: "jornada" | "semana" | "mes";
+  fechaInicio: string;
+  fechaFin: string;
+  horarioConfig: {
+    diaSemana: string;
+    apertura: number;
+    cierre: number;
+  };
+  kpis: {
+    totalVentas: number;
+    totalComandas: number;
+    ticketPromedio: number;
+    efectivoTotal: number;
+    digitalTotal: number;
+    horaPico: {
+      hora: number;
+      label: string;
+      total: number;
+      comandas: number;
+    } | null;
+    conteosPorEstado: {
+      enCocina: number;
+      listos: number;
+      entregados: number;
+      abiertas: number;
+    };
+  };
+  grafico: {
+    tipo: "horas" | "jornadas";
+    barras: Array<{
+      clave: string;
+      label: string;
+      total: number;
+      comandas: number;
+      efectivo: number;
+      digital: number;
+      esPico?: boolean;
+    }>;
+  };
+  franjas?: {
+    tarde: { total: number; porcentaje: number; comandas: number };
+    noche: { total: number; porcentaje: number; comandas: number };
+    madrugada: { total: number; porcentaje: number; comandas: number };
+  };
+  topProductos: Array<{
+    nombre: string;
+    cantidad: number;
+    total: number;
+  }>;
+  comparacionSemanaAnterior?: {
+    fechaNegocioAnterior: string;
+    totalVentasAnterior: number;
+    diferenciaMonto: number;
+    diferenciaPorcentaje: number;
+  } | null;
+}
+
+export interface ComandasDashboardResponse {
+  items: Order[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 interface PosStore {
   currentUser: UserAccount | null;
   users: UserAccount[];
@@ -228,6 +295,9 @@ interface PosStore {
   cajaEstado: CajaEstadoResponse | null;
   cajaSesiones: CajaSesion[];
   cobrosSesionActiva: CobroSesionItem[];
+  dashboardData: DashboardResumenData | null;
+  comandasDashboard: ComandasDashboardResponse | null;
+  loadingDashboard: boolean;
   mesas: Mesa[];
   loading: boolean;
 
@@ -239,6 +309,18 @@ interface PosStore {
   fetchCajaEstado: () => Promise<CajaEstadoResponse | null>;
   fetchCajaSesiones: () => Promise<void>;
   fetchCobrosSesionActiva: () => Promise<CobroSesionItem[]>;
+  fetchDashboard: (
+    rango?: "jornada" | "semana" | "mes",
+    fechaNegocio?: string
+  ) => Promise<DashboardResumenData | null>;
+  fetchComandasDashboard: (params?: {
+    rango?: string;
+    fechaNegocio?: string;
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) => Promise<ComandasDashboardResponse | null>;
   abrirCaja: (montoInicial: number, notas?: string) => Promise<boolean>;
   cerrarCajaSesion: (params: {
     efectivoReal: number;
@@ -495,6 +577,9 @@ export const usePosStore = create<PosStore>((set, get) => ({
   cajaEstado: null,
   cajaSesiones: [],
   cobrosSesionActiva: [],
+  dashboardData: null,
+  comandasDashboard: null,
+  loadingDashboard: false,
   mesas: [],
   loading: false,
 
@@ -839,6 +924,10 @@ export const usePosStore = create<PosStore>((set, get) => ({
       const mesa = await res.json();
       set((state) => ({ mesas: upsertMesa(state.mesas, mesa) }));
       get().fetchPedidos();
+      if (get().dashboardData) {
+        get().fetchDashboard();
+        get().fetchComandasDashboard();
+      }
       return mesa;
     } catch (error) {
       console.error("Error al registrar pago parcial:", error);
@@ -870,6 +959,10 @@ export const usePosStore = create<PosStore>((set, get) => ({
       await get().fetchMesas();
       get().fetchPedidos();
       get().fetchInsumos();
+      if (get().dashboardData) {
+        get().fetchDashboard();
+        get().fetchComandasDashboard();
+      }
       return {
         ...order,
         status: normalizeStatusFromBackend(order.status),
@@ -1532,6 +1625,57 @@ export const usePosStore = create<PosStore>((set, get) => ({
       console.error("Error al cerrar caja:", error);
       alert("Error de conexión al cerrar caja.");
       return false;
+    }
+  },
+
+  fetchDashboard: async (rango = "jornada", fechaNegocio) => {
+    try {
+      set({ loadingDashboard: true });
+      const params = new URLSearchParams();
+      if (rango) params.set("rango", rango);
+      if (fechaNegocio) params.set("fechaNegocio", fechaNegocio);
+      const res = await authFetch(`${API_URL}/resumen/dashboard?${params.toString()}`, {
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) throw new Error("Error al obtener datos del dashboard");
+      const data: DashboardResumenData = await res.json();
+      set({ dashboardData: data, loadingDashboard: false });
+      return data;
+    } catch (error) {
+      console.error("fetchDashboard error:", error);
+      set({ loadingDashboard: false });
+      return null;
+    }
+  },
+
+  fetchComandasDashboard: async (params = {}) => {
+    try {
+      const q = new URLSearchParams();
+      if (params.rango) q.set("rango", params.rango);
+      if (params.fechaNegocio) q.set("fechaNegocio", params.fechaNegocio);
+      if (params.status && params.status !== "all") q.set("status", params.status);
+      if (params.search) q.set("search", params.search);
+      if (params.page) q.set("page", String(params.page));
+      if (params.limit) q.set("limit", String(params.limit));
+
+      const res = await authFetch(`${API_URL}/resumen/comandas?${q.toString()}`, {
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) throw new Error("Error al obtener comandas del dashboard");
+      const data: ComandasDashboardResponse = await res.json();
+      const normalizados: ComandasDashboardResponse = {
+        ...data,
+        items: data.items.map((o) => ({
+          ...o,
+          status: normalizeStatusFromBackend(o.status),
+          paymentMethod: normalizePaymentMethodFromBackend(o.paymentMethod),
+        })),
+      };
+      set({ comandasDashboard: normalizados });
+      return normalizados;
+    } catch (error) {
+      console.error("fetchComandasDashboard error:", error);
+      return null;
     }
   },
 
